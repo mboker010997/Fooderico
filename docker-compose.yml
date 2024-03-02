@@ -1,0 +1,42 @@
+version: "3.7"
+
+volumes:
+  cache:
+    driver: local
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/telebot
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: root
+      TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
+
+  #  DATABASES
+  db:
+    image: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: telebot
+      PGDATA: /data/postgres
+    restart: unless-stopped
+    ports:
+      - "5451:5432"
