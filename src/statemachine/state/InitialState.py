@@ -2,11 +2,14 @@ from State import State
 
 
 class InitialState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, bot, dp):
+        super().__init__(bot, dp)
 
-    async def processUpdate(self):
+    def processUpdate(self, message):
         pass
 
-    async def parseInput(self, message):
-        await message.answer("mbombo")
+    def getNextState(self, message):
+        return InitialState(self.bot, self.dp)
+    
+    async def sendMessage(self, message):
+        await message.answer("Initial State")
