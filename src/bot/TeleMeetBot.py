@@ -4,16 +4,15 @@ import os
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 import sys
-sys.path.append('/app/src/statemachine')
-from State import StateMachine
-
+sys.path.append('/app/src/statemachine') # todo fix imports
+from Handler import Handler
 
 class TelegramBot:
     def __init__(self):
         load_dotenv()
         self.bot = Bot(os.getenv("TOKEN"))
         self.dp = Dispatcher()
-        self.state_manager = StateMachine(self.dp)
+        self.handler = Handler(self.bot, self.dp)
         logging.basicConfig(level=logging.INFO)
 
     async def start_polling(self):
