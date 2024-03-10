@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from src.statemachine.Handler import Handler
+from src.bot.DBController import DBController
 
 
 class TelegramBot:
@@ -20,5 +21,9 @@ class TelegramBot:
 
 
 if __name__ == '__main__':
-    bot = TelegramBot()
-    asyncio.run(bot.start_polling())
+    try:
+        dbcontroller = DBController()
+        bot = TelegramBot()
+        asyncio.run(bot.start_polling())
+    except Exception as _ex:
+        print(_ex)

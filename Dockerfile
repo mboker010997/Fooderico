@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["python", "src/bot/TeleMeetBot.py"]
+CMD ["python", "-u", "src/bot/TeleMeetBot.py"]
