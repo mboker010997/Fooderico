@@ -1,4 +1,4 @@
-from state.InitialState import InitialState
+from src.statemachine.state.InitialState import InitialState
 
 
 class StateCacheHolder:
@@ -9,4 +9,4 @@ class StateCacheHolder:
         self.stateDict[chatId] = state
 
     def getState(self, chatId):
-        return self.stateDict.get(chatId)
+        return self.stateDict.get(chatId, InitialState())

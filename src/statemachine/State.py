@@ -1,10 +1,10 @@
 from abc import abstractmethod
-import logging 
+import logging
+
 
 class State:
-    def __init__(self, bot, dp):
-        self.bot = bot
-        self.dp = dp
+    def __init__(self):
+        self.nextState = self
     
     @abstractmethod
     def processUpdate(self, message):
@@ -15,7 +15,7 @@ class State:
         pass
 
     @abstractmethod
-    async def sendMessage(self, message):
+    async def sendMessage(self, message, bot, dp):
         pass
 
     def goNextState(self, message):
@@ -24,5 +24,4 @@ class State:
         except Exception as exc:
             logging.error(exc)
         return self.getNextState(message)
-
     

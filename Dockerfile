@@ -1,7 +1,8 @@
 FROM python:3.10
 
-WORKDIR /app
+WORKDIR /
 
+ENV PYTHONPATH "${PYTHONPATH}:/"
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 

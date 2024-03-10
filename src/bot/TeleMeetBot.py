@@ -3,14 +3,14 @@ import logging
 import os
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
-import sys
-sys.path.append('/app/src/statemachine') # todo fix imports
-from Handler import Handler
+from src.statemachine.Handler import Handler
+
 
 class TelegramBot:
     def __init__(self):
         load_dotenv()
         self.bot = Bot(os.getenv("TOKEN"))
+        # self.bot = Bot("6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I") # Debug
         self.dp = Dispatcher()
         self.handler = Handler(self.bot, self.dp)
         logging.basicConfig(level=logging.INFO)
