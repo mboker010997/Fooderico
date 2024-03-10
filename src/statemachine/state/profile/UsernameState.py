@@ -2,6 +2,7 @@ from src.statemachine.State import State
 from src.statemachine.state.profile.AgeState import AgeState
 from aiogram import types
 
+
 class UsernameState(State):
     def __init__(self):
         super().__init__()
@@ -16,5 +17,7 @@ class UsernameState(State):
         kb = [
             [types.KeyboardButton(text="Оставь текущее")],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        )
         await message.answer("Введите имя", reply_markup=keyboard)

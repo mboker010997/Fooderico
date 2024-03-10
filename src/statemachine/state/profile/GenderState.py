@@ -21,5 +21,7 @@ class GenderState(State):
             [types.KeyboardButton(text="Мужской")],
             [types.KeyboardButton(text="Женский")],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        )
         await message.answer("Какой у вас пол?", reply_markup=keyboard)

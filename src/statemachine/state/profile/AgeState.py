@@ -7,7 +7,6 @@ class AgeState(State):
         super().__init__()
 
     def processUpdate(self, message):
-        # send_to_db('age'=message.text)
         pass
 
     def getNextState(self, message):

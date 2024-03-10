@@ -7,11 +7,15 @@ class RestrictionsTagState(State):
     def __init__(self):
         super().__init__()
 
-    def processUpdate(self, message: types.Message):
+    def processUpdate(self, message: types.PollAnswer):
+        answer_ids = message.option_ids  # list of answers
         pass
 
     def getNextState(self, message):
         return InterestsTagState()
 
     async def sendMessage(self, message, bot, dp):
-        await message.answer("Какие у вас ограничения?")
+        await message.answer_poll(question='Какие у вас ограничения?',
+                                  options=['A)', 'B)', 'C'],
+                                  type='regular',
+                                  allows_multiple_answers=True)

@@ -17,6 +17,6 @@ class RegisterState(State):
         kb = [
             [types.KeyboardButton(text="Регистрация", request_contact=True)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
         await message.answer("Добро пожаловать в TeleMeetBot для регистрации предоставьте контакт",
                              reply_markup=keyboard)

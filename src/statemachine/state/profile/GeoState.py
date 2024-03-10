@@ -13,7 +13,7 @@ class GeoState(State):
         pass
 
     def getNextState(self, message):
-        return
+        return AboutState
 
     async def sendMessage(self, message, bot, dp):
         kb = [
@@ -22,6 +22,8 @@ class GeoState(State):
                 request_location=True,
             )],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
         await message.answer("Передайте геолокацию или укажите город",
                              reply_markup=keyboard)
