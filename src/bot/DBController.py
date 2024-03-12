@@ -2,7 +2,17 @@ import psycopg2
 from config import *
 
 class DBController:
+    __initialized = False
+
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(DBController, cls).__new__(cls)
+        return cls.instance
+    
     def __init__(self):
+        if self.__initialized:
+            return
+        self.__initialized = True
         self.connection = psycopg2.connect(
             host=host,
             user=user,
@@ -22,7 +32,7 @@ class DBController:
         # )
 
         # self.cursor.execute(
-        #     "INSERT INTO aa VALUES(10);"
+        #     "INSERT INTO aa VALUES(13);"
         # )
 
         # self.cursor.execute(
