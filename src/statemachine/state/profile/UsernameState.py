@@ -1,19 +1,21 @@
 from src.statemachine.State import State
 from src.statemachine.state.profile.AgeState import AgeState
-from aiogram import types
+from aiogram import types, Bot, Dispatcher
+from src.bot.Update import Update
 
 
 class UsernameState(State):
     def __init__(self):
         super().__init__()
 
-    def processUpdate(self, message):
+    def processUpdate(self, update: Update):
         pass
 
-    def getNextState(self, message):
+    def getNextState(self, update: Update):
         return AgeState()
 
-    async def sendMessage(self, message: types.Message, bot, dp):
+    async def sendMessage(self, update: Update):
+        message = update.getMessage()
         kb = [
             [types.KeyboardButton(text="Оставь текущее")],
         ]

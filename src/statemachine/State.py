@@ -1,5 +1,7 @@
 from abc import abstractmethod
 import logging
+from src.bot.Update import Update
+from aiogram import Bot, Dispatcher
 
 
 class State:
@@ -7,21 +9,21 @@ class State:
         self.nextState = self
     
     @abstractmethod
-    def processUpdate(self, message):
+    def processUpdate(self, update: Update):
         pass
 
     @abstractmethod
-    def getNextState(self, message):
+    def getNextState(self, update: Update):
         pass
 
     @abstractmethod
-    async def sendMessage(self, message, bot, dp):
+    async def sendMessage(self, update: Update):
         pass
 
-    def goNextState(self, message):
+    def goNextState(self, update: Update):
         try:
-            self.processUpdate(message)
+            self.processUpdate(update)
         except Exception as exc:
             logging.error(exc)
-        return self.getNextState(message)
+        return self.getNextState(update)
     

@@ -1,21 +1,22 @@
 from src.statemachine.State import State
-from aiogram import types
 from src.statemachine.state.profile.InterestsTagState import InterestsTagState
+from src.bot.Update import Update
 
 
 class RestrictionsTagState(State):
     def __init__(self):
         super().__init__()
 
-    def processUpdate(self, message: types.PollAnswer):
-        answer_ids = message.option_ids  # list of answers
+    def processUpdate(self, update: Update):
+        # expected poll answer
         pass
 
-    def getNextState(self, message):
+    def getNextState(self, update: Update):
         return InterestsTagState()
 
-    async def sendMessage(self, message, bot, dp):
+    async def sendMessage(self, update: Update):
+        message = update.getMessage()
         await message.answer_poll(question='Какие у вас ограничения?',
                                   options=['A)', 'B)', 'C'],
-                                  type='regular',
-                                  allows_multiple_answers=True)
+                                  allows_multiple_answers=True,
+                                  is_anonymous=False)
