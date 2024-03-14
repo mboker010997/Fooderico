@@ -5,8 +5,11 @@ from aiogram import types
 
 
 class PhotosState(State):
-    def __init__(self, photo_file_ids): #photo_file_ids: List - from typing import List
-        self.photo_file_ids = photo_file_ids
+    def __init__(self): #photo_file_ids: List - from typing import List
+        self.photo_file_ids = []
+
+    # def __init__(self, photo_file_ids): #photo_file_ids: List - from typing import List
+    #     self.photo_file_ids = photo_file_ids
 
     def processUpdate(self, message: types.Message):
         if message.text == "Посмотреть фото":
