@@ -1,6 +1,6 @@
 from src.statemachine.State import State
 from aiogram import types
-from src.statemachine.state.profile.AboutState import AboutState
+import src.statemachine.state.profile as profile
 from src.bot.Update import Update
 
 
@@ -12,7 +12,7 @@ class GeoState(State):
         pass
 
     def getNextState(self, update: Update):
-        return AboutState()
+        return profile.AboutState()
 
     async def sendMessage(self, update: Update):
         chatId = update.getChatId()

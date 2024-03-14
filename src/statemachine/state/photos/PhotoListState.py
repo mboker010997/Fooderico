@@ -1,5 +1,5 @@
 from src.statemachine.State import State
-from src.statemachine.state.photos.PhotosState import PhotosState
+# from src.statemachine.state.photos.PhotosState import PhotosState
 from aiogram import types
 
 
@@ -11,7 +11,8 @@ class PhotoListState(State):
         pass
 
     def getNextState(self, message: types.Message):
-        return PhotosState(self.photo_file_ids)
+        # return PhotosState(self.photo_file_ids)
+        pass
 
     async def sendMessage(self, message: types.Message, bot, dp):
         if not self.photo_file_ids:

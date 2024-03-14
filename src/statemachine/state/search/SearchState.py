@@ -1,9 +1,8 @@
 from src.statemachine.State import State
 from src.bot.Update import Update
-import src.statemachine.state.menu as menu
 
 
-class AboutState(State):
+class SearchState(State):
     def __init__(self):
         super().__init__()
 
@@ -11,8 +10,8 @@ class AboutState(State):
         pass
 
     def getNextState(self, update: Update):
-        return menu.MenuState()
+        pass
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()
-        await message.answer("Напишите информацию о себе")
+        await message.answer("Search")
