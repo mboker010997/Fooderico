@@ -15,8 +15,6 @@ class Handler:
         chat_id = update.getChatId()
         curState = self.stateCacheHolder.getState(chat_id)
         nextState = curState.goNextState(update)
-        print(update)
-        print(nextState)
         await nextState.sendMessage(update)
         self.stateCacheHolder.setState(chat_id, nextState)
 
@@ -26,15 +24,8 @@ class Handler:
             update = PollAnswer(self.bot, self.dp, poll)
             await self.update_handler(update)
 
-        @self.dp.message(F.location)
-        async def location_handler(message: types.Message):
-            print("location")
-            update = Message(self.bot, self.dp, message)
-            await self.update_handler(update)
-
         @self.dp.message()
         async def message_handler(message: types.Message):
-            print("ok")
             update = Message(self.bot, self.dp, message)
             await self.update_handler(update)
 
