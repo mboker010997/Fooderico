@@ -1,36 +1,40 @@
 from src.statemachine.State import State
-from src.statemachine.state.photos.PhotoListState import PhotoListState
-from src.statemachine.state.photos.PhotoUploadState import PhotoUploadState
+import src.statemachine.state.menu as menu
+import src.statemachine.state.photos as photos
+import src.statemachine.state.photos.test as test
+from src.bot.Update import Update
 from aiogram import types
 
 
 class PhotosState(State):
-    def __init__(self): #photo_file_ids: List - from typing import List
-        self.photo_file_ids = []
+    def __init__(self):
+        super().__init__()
+        self.photo_listBtn = "Список фотографий"
+        self.photo_uploadBtn = "Загрузить фото"
+        self.menuBtn = "Вернуться в меню"
+        self.nextStateDict = {
+            self.photo_listBtn: photos.PhotoListState,
+            self.photo_uploadBtn: photos.PhotoUploadState,
+            self.menuBtn: menu.MenuState,
+        }
+    def processUpdate(self, update: Update):
+        message = update.getMessage()
+        if test.DELETE_PHOTO_COMMAND in message.text:
+            photo_id = test.photo_ids[int(message.text[len(test.DELETE_PHOTO_COMMAND):])]
+            test.photo_ids.remove(photo_id)
 
-    # def __init__(self, photo_file_ids): #photo_file_ids: List - from typing import List
-    #     self.photo_file_ids = photo_file_ids
+    def getNextState(self, update: Update):
+        if update.getMessage().text in self.nextStateDict.keys():
+            return self.nextStateDict[update.getMessage().text]()
+        return self
 
-    def processUpdate(self, message: types.Message):
-        if message.text == "Посмотреть фото":
-            self.nextState = PhotoListState(self.photo_file_ids)
-        elif message.text == "Загрузить фото":
-            self.nextState = PhotoUploadState()
-        elif message.text == "Удалить фото":
-            photo_file_ids = []
-            self.nextState = self
-            # remove from db
-        else:
-            self.nextState = self
-
-    def getNextState(self, message: types.Message):
-        return self.nextState
-
-    async def sendMessage(self, message: types.Message, bot, dp):
+    async def sendMessage(self, update: Update):
+        message = update.getMessage()
+        text = "Меню Фотоальбом"
         kb = [
-            [types.KeyboardButton(text="Посмотреть фото")],
-            [types.KeyboardButton(text="Загрузить фото")],
-            [types.KeyboardButton(text="Удалить фото")],
+            [types.KeyboardButton(text=self.photo_listBtn)],
+            [types.KeyboardButton(text=self.photo_uploadBtn)],
+            [types.KeyboardButton(text=self.menuBtn)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, one_time_keyboard=True)
-        await message.answer("Что хотите сделать в фотоальбоме?", reply_markup=keyboard)
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
+        await message.answer(text, reply_markup=keyboard)
