@@ -142,7 +142,7 @@ class DBController:
             return None
         
     def getUser(self, id):
-        user_info = self.getAllInformation(id)
+        user_info = self.getUserDict(id)
         if user_info:
             user = User()
             user.id = user_info["id"]
@@ -175,6 +175,15 @@ class DBController:
             if value is not None:
                 update_fields[column_name] = value
         
-        self.updateUserInformation(user.id, update_fields)       
+        self.updateUserInformation(user.id, update_fields)
         
+    def getUserByChatId(self, chat_id):
+        if isinstance(chat_id, str) is False:
+            chat_id = str(chat_id)
         
+        self.cursor.execute(f"SELECT id FROM {self.table_name} WHERE chat_id = '{chat_id}';")
+        result = self.cursor.fetchone()
+        id = result[0] if result else None
+        if id is None:
+            return User()
+        return self.getUser(id)
