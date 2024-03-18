@@ -25,4 +25,4 @@ class PhotoListState(State):
         for photo_id in test.photo_ids:
             await message.answer_photo(photo=photo_id)
             await message.answer(text=test.DELETE_PHOTO_COMMAND+str(counter))
-            counter+=1
+            counter += 1

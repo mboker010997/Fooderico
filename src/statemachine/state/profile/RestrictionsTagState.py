@@ -9,10 +9,15 @@ class RestrictionsTagState(State):
 
     def processUpdate(self, update: Update):
         # expected poll answer
+        poll_answer = update.getPollAnswer()
+        if poll_answer is None:
+            self.nextState = self
+        else:
+            self.nextState = InterestsTagState()
         pass
 
     def getNextState(self, update: Update):
-        return InterestsTagState()
+        return self.nextState
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

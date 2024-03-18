@@ -9,10 +9,16 @@ class InterestsTagState(State):
 
     def processUpdate(self, update: Update):
         # expected poll answer
-        pass
+        # add prev_poll_id and check that answer_ids different?
+        poll_answer = update.getPollAnswer()
+        print(poll_answer)
+        if poll_answer is None:
+            self.nextState = self
+        else:
+            self.nextState = GeoState()
 
     def getNextState(self, update: Update):
-        return GeoState()
+        return self.nextState
 
     async def sendMessage(self, update: Update):
         await update.bot.send_poll(chat_id=update.getChatId(),
