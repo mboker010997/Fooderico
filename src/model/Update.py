@@ -12,10 +12,10 @@ class Update:
     def getChatId(self):
         pass
 
-    def getMessage(self):
+    def getMessage(self) -> types.Message:
         pass
 
-    def getPollAnswer(self):
+    def getPollAnswer(self) -> types.PollAnswer:
         pass
 
 
@@ -27,7 +27,7 @@ class Message(Update):
     def getChatId(self):
         return self.message.chat.id
 
-    def getMessage(self):
+    def getMessage(self) -> types.Message:
         return self.message
 
 
@@ -39,5 +39,5 @@ class PollAnswer(Update):
     def getChatId(self):
         return self.poll.user.id
 
-    def getPollAnswer(self):
+    def getPollAnswer(self) -> types.PollAnswer:
         return self.poll

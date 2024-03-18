@@ -1,34 +1,30 @@
-from src.statemachine.State import State
-from src.statemachine.state.search.SearchState import SearchState
-from src.statemachine.state.photos.PhotosState import PhotosState
-from src.statemachine.state.profile.ShowProfileState import ShowProfileState
-from src.statemachine.state.menu.StatusState import StatusState
-import src.statemachine.state.menu as menu
-from src.bot.Update import Update
+from src.statemachine import State
+from src.statemachine.state import search, photos, profile, menu
+from src.model import Update
 from aiogram import types
 
 
 class MenuState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
         self.searchBtn = "Поиск"
         self.photosBtn = "Фотоальбом"
         self.profileBtn = "Посмотреть профиль"
         self.statusBtn = "Статус пользователя"
         self.aboutBtn = "О сервисе"
         self.nextStateDict = {
-            self.searchBtn: SearchState(),
-            self.photosBtn: PhotosState(),
-            self.profileBtn: ShowProfileState(),
-            self.statusBtn: StatusState(),
-            self.aboutBtn: menu.AboutBotState(),
+            self.searchBtn: search.SearchState,
+            self.photosBtn: photos.PhotosState,
+            self.profileBtn: profile.ShowProfileState,
+            self.statusBtn: menu.StatusState,
+            self.aboutBtn: menu.AboutBotState,
         }
 
     def processUpdate(self, update: Update):
-        pass
-
-    def getNextState(self, update: Update):
-        return self.nextStateDict[update.getMessage().text]
+        text = update.getMessage().text
+        if text in self.nextStateDict.keys():
+            self.context.setState(self.nextStateDict.get(text)(self.context))
+            self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

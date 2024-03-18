@@ -1,17 +1,16 @@
-from src.statemachine.State import State
-from src.bot.Update import Update
-import src.statemachine.state.menu as menu
+from src.statemachine import State
+from src.model import Update
+from src.statemachine.state import menu
 
 
 class AboutState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
 
     def processUpdate(self, update: Update):
-        pass
-
-    def getNextState(self, update: Update):
-        return menu.MenuState()
+        self.context.user.about = update.getMessage().text
+        self.context.setState(menu.MenuState(self.context))
+        self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

@@ -1,7 +1,6 @@
 import psycopg2
 from config import *
-from src.statemachine.state.profile.AboutState import AboutState
-from src.bot.User import User
+from src.model.User import User
 ## import all classes
 
 class DBController:

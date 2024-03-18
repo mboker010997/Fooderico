@@ -1,24 +1,26 @@
-from src.statemachine.State import State
-from src.statemachine.state.profile.RestrictionsTagState import RestrictionsTagState
+from src.statemachine import State
+from src.statemachine.state import profile
 from aiogram import types
-from src.bot.Update import Update
+from src import model
 
 
 class GenderState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
 
-    def processUpdate(self, update: Update):
+    def processUpdate(self, update: model.Update):
         message = update.getMessage()
-        if message.text != "Мужской" and message.text != "Женский":
-            self.nextState = self
+        if message.text == "Мужской":
+            gender = model.Gender.MALE
+        elif message.text == "Женский":
+            gender = model.Gender.FEMALE
         else:
-            self.nextState = RestrictionsTagState()
+            return
+        self.context.user.gender = gender
+        self.context.setState(profile.RestrictionsTagState(self.context))
+        self.context.saveToDb()
 
-    def getNextState(self, update: Update):
-        return self.nextState
-
-    async def sendMessage(self, update: Update):
+    async def sendMessage(self, update: model.Update):
         message = update.getMessage()
         kb = [
             [types.KeyboardButton(text="Мужской")],

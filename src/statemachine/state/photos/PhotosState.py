@@ -1,14 +1,14 @@
 from src.statemachine.State import State
-import src.statemachine.state.menu as menu
-import src.statemachine.state.photos as photos
-import src.statemachine.state.photos.test as test
-from src.bot.Update import Update
+from src.statemachine.state import menu, photos
+from src.model.Update import Update
 from aiogram import types
 
 
 class PhotosState(State):
-    def __init__(self):
-        super().__init__()
+    DELETE_PHOTO_COMMAND = "/delete_photo_"
+
+    def __init__(self, context):
+        super().__init__(context)
         self.photo_listBtn = "Список фотографий"
         self.photo_uploadBtn = "Загрузить фото"
         self.menuBtn = "Вернуться в меню"
@@ -17,19 +17,20 @@ class PhotosState(State):
             self.photo_uploadBtn: photos.PhotoUploadState,
             self.menuBtn: menu.MenuState,
         }
+
     def processUpdate(self, update: Update):
         message = update.getMessage()
-        if test.DELETE_PHOTO_COMMAND in message.text:
-            photo_id = test.photo_ids[int(message.text[len(test.DELETE_PHOTO_COMMAND):])]
-            test.photo_ids.remove(photo_id)
-
-    def getNextState(self, update: Update):
+        photo_ids = self.context.user.photo_file_ids
+        # todo(mboker0109): check if delete_command is prefix and if it is number after command - FOOD-39
+        if PhotosState.DELETE_PHOTO_COMMAND in message.text:
+            photo_id = photo_ids[int(message.text[len(PhotosState.DELETE_PHOTO_COMMAND):])]
+            photo_ids.remove(photo_id)
         if update.getMessage().text in self.nextStateDict.keys():
-            return self.nextStateDict[update.getMessage().text]()
-        return self
+            self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
+            self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
-        message = update.getMessage()
+        chat_id = self.context.user.chat_id
         text = "Меню Фотоальбом"
         kb = [
             [types.KeyboardButton(text=self.photo_listBtn)],
@@ -37,4 +38,4 @@ class PhotosState(State):
             [types.KeyboardButton(text=self.menuBtn)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
-        await message.answer(text, reply_markup=keyboard)
+        await update.bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)

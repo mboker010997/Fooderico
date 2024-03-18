@@ -1,22 +1,26 @@
 from aiogram import Dispatcher, Bot, types
-from src.statemachine.StateCacheHolder import StateCacheHolder
-from src.bot.Update import Update, Message, PollAnswer
-from aiogram import F
+# from src.statemachine.StateCacheHolder import StateCacheHolder
+from src.model import Update, Message, PollAnswer
+import logging
+from src.model import StateUpdater
 
 
 class Handler:
     def __init__(self, bot: Bot, dp: Dispatcher):
         self.bot = bot
         self.dp = dp
-        self.stateCacheHolder = StateCacheHolder()
+        # self.stateCacheHolder = StateCacheHolder()
         self.register_handlers()
 
     async def update_handler(self, update: Update):
         chat_id = update.getChatId()
-        curState = self.stateCacheHolder.getState(chat_id)
+        curState = StateUpdater().getState(chat_id)
         nextState = curState.goNextState(update)
-        await nextState.sendMessage(update)
-        self.stateCacheHolder.setState(chat_id, nextState)
+        try:
+            await nextState.sendMessage(update)
+        except Exception as exc:
+            logging.error(exc)
+        StateUpdater.setState(chat_id, nextState)
 
     def register_handlers(self):
         @self.dp.poll_answer()

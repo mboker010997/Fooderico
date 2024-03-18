@@ -22,7 +22,6 @@ if __name__ == '__main__':
     try:
         dbcontroller = DBController()
         bot = TelegramBot()
-        
         asyncio.run(bot.start_polling())
     except Exception as _ex:
         print(_ex)
