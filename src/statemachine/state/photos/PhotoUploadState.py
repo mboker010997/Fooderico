@@ -1,28 +1,26 @@
 from src.statemachine.State import State
-import src.statemachine.state.photos as photos
-import src.statemachine.state.photos.test as test
-from src.bot.Update import Update
-from aiogram import types
+from src.statemachine.state import photos
+from src.model.Update import Update
+
 
 class PhotoUploadState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
         self.text = "Загрузить фото..."
 
     def processUpdate(self, update: Update):
         message = update.getMessage()
+        if self.context.user.photo_file_ids is None:
+            self.context.user.photo_file_ids = list()
+        photo_ids = self.context.user.photo_file_ids
         if message.photo:
             photo = message.photo[-1]
             photo_id = photo.file_id
-            test.photo_ids.append(photo_id)
-            self.nextState = photos.PhotosState()
-            # save_to_db
+            photo_ids.append(photo_id)
+            self.context.setState(photos.PhotosState(self.context))
+            self.context.saveToDb()
         else:
             self.text = "Загрузите фото, а не файл."
-            self.nextState = self
-
-    def getNextState(self, update: Update):
-        return self.nextState
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

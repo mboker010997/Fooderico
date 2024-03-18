@@ -1,18 +1,23 @@
 from src.statemachine.State import State
 from aiogram import types
-import src.statemachine.state.profile as profile
-from src.bot.Update import Update
+from src.statemachine.state import profile
+from src.model import Update
 
 
 class GeoState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
 
     def processUpdate(self, update: Update):
-        pass
-
-    def getNextState(self, update: Update):
-        return profile.AboutState()
+        message = update.getMessage()
+        if message.location:
+            # todo(mboker0109): FOOD-44
+            pass
+        else:
+            # todo(mboker0109): FOOD-44
+            pass
+        self.context.setState(profile.AboutState(self.context))
+        self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         chatId = update.getChatId()

@@ -1,13 +1,12 @@
-from src.statemachine.State import State
-import src.statemachine.state.menu as menu
-import src.statemachine.state.photos.test as test
-from src.bot.Update import Update
+from src.statemachine import State
+from src.statemachine.state import menu
+from src.model import Update
 from aiogram import types
 
 
 class SearchState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
         self.menu_text = "Главное меню"
         self.search_test = "Пользователь: "
         self.search_dislike = "Дизлайк"
@@ -15,26 +14,21 @@ class SearchState(State):
         self.search_like = "Лайк"
         self.search_no_more_users = "Больше нет профилей"
         self.nextStateDict = {
-            self.search_dislike: SearchState,
-            self.search_skip: SearchState,
-            self.search_like: SearchState,
             self.menu_text: menu.MenuState,
         }
 
     def processUpdate(self, update: Update):
-        #add relations to db: BLACKLIST, SKIPPED, FOLLOW
-        pass
-
-    def getNextState(self, update: Update):
+        # add relations to db: BLACKLIST, SKIPPED, FOLLOW
         if update.getMessage().text in self.nextStateDict.keys():
-            return self.nextStateDict[update.getMessage().text]()
-        return self
+            self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
+            self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         # findUnknownUserBySimplePriority
         # user is found, if not found go to menu
         message = update.getMessage()
-        for photo_id in test.photo_ids:
+        photo_ids = self.context.user.photo_file_ids
+        for photo_id in photo_ids:
             await message.answer_photo(photo=photo_id)
         kb = [
             [types.KeyboardButton(text=self.search_dislike)],

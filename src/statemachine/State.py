@@ -1,19 +1,15 @@
 from abc import abstractmethod
 import logging
-from src.bot.Update import Update
-from aiogram import Bot, Dispatcher
+from src.model import Update
 
 
 class State:
-    def __init__(self):
+    def __init__(self, context=None):
         self.nextState = self
+        self.context = context
     
     @abstractmethod
     def processUpdate(self, update: Update):
-        pass
-
-    @abstractmethod
-    def getNextState(self, update: Update):
         pass
 
     @abstractmethod
@@ -25,5 +21,5 @@ class State:
             self.processUpdate(update)
         except Exception as exc:
             logging.error(exc)
-        return self.getNextState(update)
+        return self.context.state
     

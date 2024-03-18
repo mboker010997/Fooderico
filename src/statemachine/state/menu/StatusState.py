@@ -1,12 +1,13 @@
 from src.statemachine.State import State
-from src.bot.Update import Update
+from src.model.Update import Update
 from aiogram import types
-import src.statemachine.state.menu as menu
+from src.statemachine.state import menu
+from src import model
 
 
 class StatusState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
         self.nextState = self
         self.enabled = ["Активен", "Активировать"]
         self.hidden = ["Скрыт", "Спрятать"]
@@ -16,10 +17,14 @@ class StatusState(State):
     def processUpdate(self, update: Update):
         text = update.getMessage().text
         if text == self.menuBtn:
-            self.nextState = menu.MenuState()
-
-    def getNextState(self, update: Update):
-        return self.nextState
+            self.context.setState(menu.MenuState(self.context))
+        elif text == self.enabled[1]:
+            self.context.user.status = model.Status.ENABLED
+        elif text == self.hidden[1]:
+            self.context.user.status = model.Status.HIDDEN
+        elif text == self.disabled[1]:
+            self.context.user.status = model.Status.DISABLED
+        self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

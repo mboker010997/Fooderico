@@ -1,14 +1,12 @@
 from src.statemachine.State import State
-from src.bot.Update import Update
+from src.model.Update import Update
 from aiogram import types
-import src.statemachine.state.menu as menu
-from src.statemachine.state.profile.UsernameState import UsernameState
-import logging
+from src.statemachine.state import menu, profile
 
 
 class ShowProfileState(State):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, context):
+        super().__init__(context)
         self.edit = "Редактировать"
         self.menu = "Вернуться в меню"
         self.nextState = self
@@ -16,12 +14,11 @@ class ShowProfileState(State):
     def processUpdate(self, update: Update):
         answer = update.getMessage().text
         if answer == self.edit:
-            self.nextState = UsernameState()
+            self.context.setState(profile.UsernameState(self.context))
+            self.context.saveToDb()
         elif answer == self.menu:
-            self.nextState = menu.MenuState()
-
-    def getNextState(self, update: Update):
-        return self.nextState
+            self.context.setState(menu.MenuState(self.context))
+            self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()
