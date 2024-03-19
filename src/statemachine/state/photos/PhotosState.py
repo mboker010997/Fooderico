@@ -21,8 +21,8 @@ class PhotosState(State):
     def processUpdate(self, update: Update):
         message = update.getMessage()
         photo_ids = self.context.user.photo_file_ids
-        # todo(mboker0109): check if delete_command is prefix and if it is number after command - FOOD-39
-        if PhotosState.DELETE_PHOTO_COMMAND in message.text:
+        if (message.text.startswith(PhotosState.DELETE_PHOTO_COMMAND)
+                and message.text[len(PhotosState.DELETE_PHOTO_COMMAND):].isdigit()):
             photo_id = photo_ids[int(message.text[len(PhotosState.DELETE_PHOTO_COMMAND):])]
             photo_ids.remove(photo_id)
         if update.getMessage().text in self.nextStateDict.keys():
