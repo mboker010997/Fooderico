@@ -47,7 +47,7 @@ class DBController:
     
     def createTables(self):
         self.createQuery("tele_meet_users", 
-        '''id BIGINT, 
+        '''id BIGINT,
         create_date TIMESTAMP WITHOUT TIME ZONE,
         update_date TIMESTAMP WITHOUT TIME ZONE, 
         about VARCHAR(2000), 
@@ -67,6 +67,12 @@ class DBController:
         state_class VARCHAR(255), 
         status VARCHAR(255), 
         username VARCHAR(255)''')
+
+        self.createQuery("tele_meet_relations",
+        '''user_id BIGINT PRIMARY KEY,
+        other_user_id BIGINT,
+        relation VARCHAR(20) NOT NULL
+        ''')
 
     def selectQuery(self, table_name, args):
         self.cursor.execute(f"SELECT {args} FROM {table_name}")
