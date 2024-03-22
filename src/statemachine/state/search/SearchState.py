@@ -1,5 +1,7 @@
 from src.statemachine import State
 from src.statemachine.state import menu
+from src.model.UserRelation import UserRelation
+from src.bot.DBController import DBController
 from src.model import Update
 from aiogram import types
 from src.algo import similarity
@@ -8,7 +10,6 @@ class SearchState(State):
     def __init__(self, context):
         super().__init__(context)
         self.menu_text = "Главное меню"
-        self.search_test = "Пользователь: "
         self.search_dislike = "Дизлайк"
         self.search_skip = "Пропустить"
         self.search_like = "Лайк"
@@ -17,6 +18,8 @@ class SearchState(State):
         self.view_photos = "Посмотреть фотоальбом"
         self.asked_view_photos = False
         self.asked_more = False
+        self.last_relation = None
+        self.is_match = False
         self.nextStateDict = {
             self.menu_text: menu.MenuState,
         }
@@ -35,6 +38,19 @@ class SearchState(State):
         elif message.text == self.view_photos:
             self.asked_more = False
             self.asked_view_photos = True
+        elif message.text in [self.search_like, self.search_dislike, self.search_skip]:
+            self.last_relation.relation = message.text
+            if self.last_relation.add_relation():
+                self.is_match = True
+
+    async def __notify_both(self, update: Update):
+        my_chat_id = DBController().getUser(self.last_relation.user_id).chat_id
+        my_profile_name = DBController().getUser(self.last_relation.user_id).profile_name
+        other_chat_id = DBController().getUser(self.last_relation.other_user_id).chat_id
+        other_profile_name = DBController().getUser(self.last_relation.other_user_id).profile_name
+        await update.bot.send_message(chat_id=my_chat_id, text="Вас лайкнул в ответ {}".format(other_profile_name))
+        await update.bot.send_message(chat_id=other_chat_id, text="Вас лайкнул в ответ {}".format(my_profile_name))
+        self.is_match = False
 
     async def sendMessage(self, update: Update):
         # findUnknownUserBySimplePriority
@@ -42,12 +58,16 @@ class SearchState(State):
         message = update.getMessage()
         other_user = self.context.user # todo: call sql_query to get right user FOOD-38
         photo_ids = other_user.photo_file_ids
+        self.last_relation = UserRelation(self.context.user.id, other_user.id, None)
         if self.asked_more:
             await self.__send_more_info(message, other_user, photo_ids)
         elif self.asked_view_photos:
             await self.__send_photos(message, photo_ids)
         else:
             await self.__send_user_info(message, other_user, photo_ids)
+        if self.is_match:
+            await self.__notify_both(update)
+
 
     async def __send_more_info(self, message, other_user, photo_ids):
         restrictions = ', '.join(map(str, other_user.restrictions_tags))
