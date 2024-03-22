@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher
 from src.bot.Handler import Handler
 from src.bot.DBController import DBController
 import os
+from src.model.Localization import Localization
+
 
 class TelegramBot:
     def __init__(self):
@@ -21,6 +23,7 @@ class TelegramBot:
 if __name__ == '__main__':
     try:
         dbcontroller = DBController()
+        Localization.loadInfo(['ru'])
         bot = TelegramBot()
         asyncio.run(bot.start_polling())
 

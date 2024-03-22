@@ -14,4 +14,4 @@ class AboutState(State):
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()
-        await message.answer("Напишите информацию о себе")
+        await message.answer(self.context.getMessage("about_text"))

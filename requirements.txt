@@ -1,4 +1,5 @@
 aiogram==3.4.1
 asyncio
 python-dotenv
+pyyml
 psycopg2-binary

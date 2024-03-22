@@ -24,5 +24,5 @@ class InterestsTagState(State):
                                    question='Какие у вас интересы?',
                                    options=self.options,
                                    is_anonymous=False,
-                                   allows_multiple_answers=True
+                                   allows_multiple_answers=True,
                                    )

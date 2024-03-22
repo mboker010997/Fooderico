@@ -6,7 +6,7 @@ from src.model.Update import Update
 class PhotoUploadState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.text = "Загрузить фото..."
+        self.text = self.context.getMessage("photo_upload_text")
 
     def processUpdate(self, update: Update):
         message = update.getMessage()
@@ -20,7 +20,7 @@ class PhotoUploadState(State):
             self.context.setState(photos.PhotosState(self.context))
             self.context.saveToDb()
         else:
-            self.text = "Загрузите фото, а не файл."
+            self.text = self.context.getMessage("photo_upload_text")
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

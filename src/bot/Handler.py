@@ -14,13 +14,15 @@ class Handler:
 
     async def update_handler(self, update: Update):
         chat_id = update.getChatId()
-        curState = StateUpdater().getState(chat_id)
+        curState = StateUpdater.getState(chat_id)
+        print("chat_id", chat_id)
+        print("curState: ", curState)
         nextState = curState.goNextState(update)
+        print("nextState: ", nextState)
         try:
             await nextState.sendMessage(update)
         except Exception as exc:
             logging.error(exc)
-        StateUpdater.setState(chat_id, nextState)
 
     def register_handlers(self):
         @self.dp.poll_answer()
