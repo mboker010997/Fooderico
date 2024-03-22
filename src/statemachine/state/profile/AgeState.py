@@ -6,7 +6,7 @@ from src.model import Update
 class AgeState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.text = "Введите возраст"
+        self.text = self.context.getMessage("age_text")
 
     def processUpdate(self, update: Update):
         message = update.getMessage()
@@ -15,7 +15,7 @@ class AgeState(State):
             self.context.setState(profile.GenderState(self.context))
             self.context.saveToDb()
         else:
-            self.text = "Возраст должен быть числом от 1 до 99"
+            self.text = self.context.getMessage("age_parsing_error")
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()

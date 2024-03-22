@@ -11,16 +11,16 @@ class UsernameState(State):
     async def sendMessage(self, update: Update):
         message = update.getMessage()
         kb = [
-            [types.KeyboardButton(text="Оставь текущее")],
+            [types.KeyboardButton(text=self.context.getMessage("username_skipBtn"))],
         ]
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
         )
-        await message.answer("Введите имя", reply_markup=keyboard)
+        await message.answer(self.context.getMessage("username_text"), reply_markup=keyboard)
 
     def processUpdate(self, update: Update):
         message = update.getMessage()
-        if message.text != "Оставь текущее":
+        if message.text != self.context.getMessage("username_skipBtn"):
             self.context.user.profile_name = message.text
         self.context.setState(profile.AgeState(self.context))
         self.context.saveToDb()

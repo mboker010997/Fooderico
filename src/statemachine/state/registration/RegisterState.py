@@ -11,10 +11,10 @@ class RegisterState(State):
     async def sendMessage(self, update: model.Update):
         message = update.getMessage()
         kb = [
-            [types.KeyboardButton(text="Регистрация", request_contact=True)],
+            [types.KeyboardButton(text=self.context.getMessage("register_regBtn"), request_contact=True)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
-        await message.answer("Добро пожаловать в TeleMeetBot для регистрации предоставьте контакт",
+        await message.answer(self.context.getMessage("register_text"),
                              reply_markup=keyboard)
 
     def processUpdate(self, update: model.Update):
@@ -25,6 +25,5 @@ class RegisterState(State):
         user.phone_number = message.contact.phone_number
         user.status = model.Status.ENABLED
         self.context.user = user
-
         self.context.setState(UsernameState(self.context))
         self.context.saveToDb()

@@ -6,16 +6,17 @@ from src.model import Update
 from aiogram import types
 from src.algo import similarity
 
+
 class SearchState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.menu_text = "Главное меню"
-        self.search_dislike = "Дизлайк"
-        self.search_skip = "Пропустить"
-        self.search_like = "Лайк"
-        self.search_no_more_users = "Больше нет профилей"
-        self.more = "Подробнее"
-        self.view_photos = "Посмотреть фотоальбом"
+        self.menu_text = self.context.getMessage("menu_text")
+        self.search_dislike = self.context.getMessage("search_dislike")
+        self.search_skip = self.context.getMessage("search_skip")
+        self.search_like = self.context.getMessage("search_like")
+        self.search_no_more_users = self.context.getMessage("search_no_more_users")
+        self.search_more = self.context.getMessage("search_more")
+        self.search_view_photos = self.context.getMessage("search_view_photos")
         self.asked_view_photos = False
         self.asked_more = False
         self.last_relation = None
@@ -32,10 +33,10 @@ class SearchState(State):
             self.context.saveToDb()
             self.asked_more = False
             self.asked_view_photos = False
-        elif message.text == self.more:
+        elif message.text == self.search_more:
             self.asked_more = True
             self.asked_view_photos = False
-        elif message.text == self.view_photos:
+        elif message.text == self.search_view_photos:
             self.asked_more = False
             self.asked_view_photos = True
         elif message.text in [self.search_like, self.search_dislike, self.search_skip]:
@@ -73,12 +74,12 @@ class SearchState(State):
         restrictions = ', '.join(map(str, other_user.restrictions_tags))
         interests = ', '.join(map(str, other_user.interests_tags))
         text = f"Ограничения: {restrictions}\nИнтересы: {interests}"
-        keyboard = self.__create_keyboard(for_more=True, photos_exist=(len(photo_ids) > 0))
+        keyboard = self.__create_keyboard(for_more=True, photos_exist=(photo_ids and len(photo_ids) > 0))
         await message.answer(text=text, reply_markup=keyboard)
         self.asked_more = False
 
     async def __send_photos(self, message, photo_ids):
-        keyboard = self.__create_keyboard(for_photos=True, photos_exist=(len(photo_ids) > 0))
+        keyboard = self.__create_keyboard(for_photos=True, photos_exist=(photo_ids and len(photo_ids) > 0))
         for photo_id in photo_ids:
             await message.answer_photo(photo=photo_id, reply_markup=keyboard)
         self.asked_view_photos = False
@@ -91,11 +92,12 @@ class SearchState(State):
         other_tags = other_user.restrictions_tags.union(other_user.interests_tags)
         my_tags = self.context.user.interests_tags.union(self.context.user.restrictions_tags)
         similarity_percentage = similarity(other_tags, my_tags)
-        return f"{name}, {age}, {city}\n{info}\nПроцент совпадения - {similarity_percentage}%"
+        return (self.context.getMessage("search_show_profile_template")
+                .format(name, age, city, info, similarity_percentage))
 
     async def __send_user_info(self, message, other_user, photo_ids):
         text = self.__get_beautiful_info(other_user)
-        keyboard = self.__create_keyboard(for_info=True, photos_exist = (len(photo_ids) > 0))
+        keyboard = self.__create_keyboard(for_info=True, photos_exist = (photo_ids and len(photo_ids) > 0))
         if photo_ids:
             await message.answer_photo(photo=photo_ids[0], caption=text, reply_markup=keyboard)  # send only first photo
         else:
@@ -109,11 +111,11 @@ class SearchState(State):
             [types.KeyboardButton(text=self.menu_text)],
         ]
         if for_more and photos_exist:
-            kb.append([types.KeyboardButton(text=self.view_photos)])
+            kb.append([types.KeyboardButton(text=self.search_view_photos)])
         if for_photos:
-            kb.append([types.KeyboardButton(text=self.more)])
+            kb.append([types.KeyboardButton(text=self.search_more)])
         if for_info:
-            kb.append([types.KeyboardButton(text=self.more)])
+            kb.append([types.KeyboardButton(text=self.search_more)])
             if photos_exist:
-                kb.append([types.KeyboardButton(text=self.view_photos)])
+                kb.append([types.KeyboardButton(text=self.search_view_photos)])
         return types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
