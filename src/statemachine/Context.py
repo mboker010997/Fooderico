@@ -1,6 +1,7 @@
 from src import model
 from src.model.User import User
 from src.model.BotConfig import BotConfig
+from src.bot.DBController import DBController
 
 
 class Context:
@@ -18,5 +19,4 @@ class Context:
         return self.bot_config.getMessage(text)
 
     def saveToDb(self):
-        # todo(mboker0109): FOOD-38
-        pass
+        DBController().setUser(user)
