@@ -138,22 +138,30 @@ class DBController:
             return None 
     
     def updateUserInformation(self, id, update_fields):
-        set_field = ", ".join([f"{field} = {value}" if isinstance(value, int)
+        try:
+            if id is None:
+                values = ", ".join([f"{value}" if isinstance(value, int)
+                                else f"'{value}'"
+                                for value in update_fields.values()])
+                self.insertQuery(self.table_name, values)
+            else:
+                set_field = ", ".join([f"{field} = {value}" if isinstance(value, int)
                                 else f"{field} = '{value}'"
                                 for field, value in update_fields.items()])
-        try:
-            self.cursor.execute(f"UPDATE {self.table_name} SET {set_field} WHERE id = {id};")
+                self.cursor.execute(f"UPDATE {self.table_name} SET {set_field} WHERE id = {id};")
             self.connection.commit()
         except Exception as exc:
             print(f'Exception: {exc}')
     
-    def updateState(self, id, state):
-        return self.updateUserInformation(id, {"state_class": state})
+    def updateState(self, chat_id, state):
+        return self.updateUserInformation(getIdByChatId(chat_id), {"state_class": state})
      
     def getClass(self, class_name):
         return globals()[class_name]
 
-    def getState(self, id):
+    def getState(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+
         self.cursor.execute(f"SELECT state_class FROM {self.table_name} WHERE id = {id};")
         result = self.cursor.fetchone()
         state_class_name = result[0] if result else None
@@ -224,6 +232,15 @@ class DBController:
         if id is None:
             return User()
         return self.getUser(id)
+    
+    def getTags(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+        if id is None:
+            raise Exception("There is no current user in database")
+        
+        self.cursor.execute(f"SELECT {self.tags_for_matching} FROM {self.table_name} WHERE id={id}")
+        return self.cursor.fetchone()
+
 
     def matchOneTag(self, first_answers, second_answers):
         list_first_answers = re.split(', |,', first_answers)

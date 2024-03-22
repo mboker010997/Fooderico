@@ -1,5 +1,6 @@
 from src import model
 from src.model.User import User
+from src.bot.DBController import DBController
 
 
 class Context:
@@ -13,5 +14,4 @@ class Context:
         model.StateUpdater.setState(self.user.chat_id, state)
 
     def saveToDb(self):
-        # todo(mboker0109): FOOD-38
-        pass
+        DBController().setUser(user)
