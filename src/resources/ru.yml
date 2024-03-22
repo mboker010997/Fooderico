@@ -4,7 +4,6 @@ format:
 
 tele-meet-bot:
   storageLocation: filestorage
-  #  TODO localization
   messages:
     #    Register
     register_text: "Добро пожаловать в TeleMeetBot для регистрации предоставьте контакт"
@@ -12,8 +11,8 @@ tele-meet-bot:
     #    Profile
     username_text: "Введите имя"
     username_skipBtn: "Оставить текущее"
-    age_text: "Возраст должен быть числом от 1 до 99"
-    age_parsing_error: "Возраст должен быть числом"
+    age_text: "Введите возраст"
+    age_parsing_error: "Возраст должен быть числом от 1 до 99"
     gender_text: "Какой у вас пол?"
     gender_M: "Муж."
     gender_F: "Жен."

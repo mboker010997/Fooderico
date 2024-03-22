@@ -23,7 +23,6 @@ class Handler:
             await nextState.sendMessage(update)
         except Exception as exc:
             logging.error(exc)
-        StateUpdater.setState(chat_id, nextState)
 
     def register_handlers(self):
         @self.dp.poll_answer()
