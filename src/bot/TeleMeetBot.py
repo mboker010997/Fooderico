@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher
 from src.bot.Handler import Handler
 from src.bot.DBController import DBController
 import os
+from src.model.Localization import Localization
+
 
 class TelegramBot:
     def __init__(self):

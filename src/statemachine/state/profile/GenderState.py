@@ -10,9 +10,9 @@ class GenderState(State):
 
     def processUpdate(self, update: model.Update):
         message = update.getMessage()
-        if message.text == "Мужской":
+        if message.text == self.context.getMessage("gender_M"):
             gender = model.Gender.MALE
-        elif message.text == "Женский":
+        elif message.text == self.context.getMessage("gender_F"):
             gender = model.Gender.FEMALE
         else:
             return
@@ -23,10 +23,10 @@ class GenderState(State):
     async def sendMessage(self, update: model.Update):
         message = update.getMessage()
         kb = [
-            [types.KeyboardButton(text="Мужской")],
-            [types.KeyboardButton(text="Женский")],
+            [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
+            [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
         ]
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
         )
-        await message.answer("Какой у вас пол?", reply_markup=keyboard)
+        await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)

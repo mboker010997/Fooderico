@@ -25,7 +25,7 @@ class Message(Update):
         self.message = message
 
     def getChatId(self):
-        return self.message.chat.id
+        return self.message.from_user.id
 
     def getMessage(self) -> types.Message:
         return self.message

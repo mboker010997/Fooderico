@@ -9,9 +9,9 @@ class PhotosState(State):
 
     def __init__(self, context):
         super().__init__(context)
-        self.photo_listBtn = "Список фотографий"
-        self.photo_uploadBtn = "Загрузить фото"
-        self.menuBtn = "Вернуться в меню"
+        self.photo_listBtn = self.context.getMessage("photo_listBtn")
+        self.photo_uploadBtn = self.context.getMessage("photo_uploadBtn")
+        self.menuBtn = self.context.getMessage("menuBtn")
         self.nextStateDict = {
             self.photo_listBtn: photos.PhotoListState,
             self.photo_uploadBtn: photos.PhotoUploadState,
@@ -30,8 +30,8 @@ class PhotosState(State):
             self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
-        chat_id = self.context.user.chat_id
-        text = "Меню Фотоальбом"
+        chat_id = update.getChatId()
+        text = self.context.getMessage("photos_text")
         kb = [
             [types.KeyboardButton(text=self.photo_listBtn)],
             [types.KeyboardButton(text=self.photo_uploadBtn)],

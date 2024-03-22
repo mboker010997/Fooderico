@@ -1,0 +1,105 @@
+format:
+  local-date-time: yyyy-MM-dd HH:mm:ss
+  local-date: yyyy-MM-dd
+
+tele-meet-bot:
+  storageLocation: filestorage
+  #  TODO localization
+  messages:
+    #    Register
+    register_text: "Добро пожаловать в TeleMeetBot для регистрации предоставьте контакт"
+    register_regBtn: "Регистрация"
+    #    Profile
+    username_text: "Введите имя"
+    username_skipBtn: "Оставить текущее"
+    age_text: "Возраст должен быть числом от 1 до 99"
+    age_parsing_error: "Возраст должен быть числом"
+    gender_text: "Какой у вас пол?"
+    gender_M: "Муж."
+    gender_F: "Жен."
+    show_profile_text: "Ваш профиль"
+    show_profile_template: "{}, {}, {}\n{}\nИнтересы: {}\nОграничения: {}"  # name, age, city, info, interests, restrictions
+    edit_profileBtn: "Редактировать"
+    #    Restrictions
+    restrictions_tag_text: "Какие у вас ограничения?"
+    interests_tag_text: "Какие у вас интересы?"
+
+    #    TAGS
+    tag_nothing_of_this: "Ничего из перечисленного"
+    tag_another: "Другие (далее напишу)"
+    #    Preferences Tags
+    tag_allergy_food_intolerance: "Аллергия и пищевая непереносимость"
+    tag_vegetable_food: "Только (почти) растительная пища"
+    tag_weight_loss: "Похудение"
+    tag_mass_retention: "Удержание массы"
+    tag_weight_gain: "Набор массы"
+    tag_diabetes: "Сахарный диабет"
+    tag_pregnancy: "Беременность"
+    tag_lure: "Прикорм"
+    tag_preparation: "Подготовка к обследованию"
+    #    Restrictions Tags
+    tag_allergy_to_cows_milk_protein: "Аллергия на белок коровьего молока, на лактозу"
+    tag_allergy_to_wheat_and_cereals: "Аллергия на пшеницу и злаковые, на глютен"
+    tag_egg_allergy: "Аллергия на яйцо"
+    tag_allergy_to_soy_lupine_and_legumes: "Аллергия на сою, люпин и бобовые"
+    tag_allergy_to_fish_and_seafood: "Аллергия на рыбу и на морепродукты"
+    tag_allergy_to_nuts_and_peanuts: "Аллергия на орехи и арахис"
+    tag_allergy_to_celery_sesame_mustard: "Аллергия на сельдерей, кунжут, горчицу"
+    tag_reaction_to_sulfur_oxide_monosodium_glutamate: "Реакция на оксид серы, глутамат натрия"
+    #    Diets Tags
+    tag_vegetarianism: "Вегетарианство"
+    tag_pescetarianism: "Пескетарианство"
+    tag_veganism: "Веганство"
+    tag_raw_food: "Сыроедение. Фрукторианство и т.п."
+    tag_low_sugar_carb: "Без сахара. Низкоуглеводная диета"
+    tag_high_protein: "Высокобелковая диета"
+    #    Interests Tags
+    tag_sport_fitness: "Спорт и фитнес"
+    tag_dancing: "Танцы"
+    tag_reading: "Чтение"
+    tag_music: "Музыки"
+    tag_drawing: "Рисование"
+    tag_creation: "Творчество и рукоделие"
+    tag_computer_games: "Компьютерные игры"
+    tag_cooking: "Кулинария и быт"
+    tag_films_series: "Кино и сериалы"
+
+    # Geolocation
+    geo_text: "Передайте геолокацию или укажите город"
+    geo_shareBtn: "Передать локацию"
+    # About
+    about_text: "Напишите информацию о себе"
+    #Menu
+    menu_text: "Главное меню"
+    menuBtn: "Вернуться в меню"
+    menu_profileBtn: "Посмотреть профиль"
+    menu_statusBtn: "Статус пользователя"
+    menu_photosBtn: "Фотоальбом"
+    menu_searchBtn: "Поиск"
+    menu_aboutBtn: "О сервисе"
+    #Photots
+    photos_text: "Меню Фотоальбом"
+    photo_listBtn: "Список фотографий"
+    photo_uploadBtn: "Загрузить фото"
+    photo_upload_text: "Загрузить фото..."
+    photo_upload_error: "Загрузите фото, а не файл"
+    photo_list_empty: "Пусто"
+    # Status
+    status_text: "Статус аккаунта"
+    status_enabled: "Активен"
+    status_hidden: "Скрыт"
+    status_disabled: "Отключен"
+    changeStatus_enableBtn: "Активировать"
+    changeStatus_hideBtn: "Спрятать"
+    changeStatus_disableBtn: "Отключить"
+    # Search
+    search_text: "Пользователь: "
+    search_dislike: "Дизлайк"
+    search_skip: "Пропустить"
+    search_like: "Лайк"
+    search_no_more_users: "Больше нет профилей"
+    search_more: "Подробнее"
+    search_view_photos: "Посмотреть фотоальбом"
+    search_show_profile_template: "{}, {}, {}\n{}\nПроцент совпадения - {}%"
+    # About bot
+    aboutBot_text: "О боте..."
