@@ -13,7 +13,6 @@ class User:
         self.phone_number = None  # string
         self.photo_file_ids = None  # string set
         self.profile_name = None  # string
-        self.restrictions_tags = None  # string set
         self.interests_tags = None  # string set
         self.state_class = None  # state class (exactly class, not instance)
         self.status = None  # enum Status
@@ -21,3 +20,8 @@ class User:
         self.about = None  # string
         self.active_poll_id = None  # string
         self.chat_id = None  # string
+        self.food_preferance_and_goals = None # string
+        self.food_allergens = None # string
+        self.dietary = None # string
+        self.main_interests = None # string
+        self.others_interests = None # string

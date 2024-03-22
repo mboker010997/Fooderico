@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg2, re
 from config import *
 from src.model.User import User
 ## import all classes
@@ -26,6 +26,11 @@ class DBController:
         self.createTables()
         
         self.table_name = 'tele_meet_users'
+        self.tags_for_matching = '''food_preferance_and_goals, 
+        food_allergens,
+        dietary,
+        main_interests'''
+
         
         # Temporary testing
         # self.cursor.execute(
@@ -37,17 +42,22 @@ class DBController:
         # )
 
         # self.cursor.execute(
-        #     "INSERT INTO aa VALUES(13);"
+        #     f"INSERT INTO tele_meet_users (id, chat_id, {self.tags_for_matching}) VALUES (2, 2, 'h', 'a', 'a,b', 'a, b');"
         # )
 
         # self.cursor.execute(
-        #     "SELECT * FROM aa;"
+        #     f"INSERT INTO tele_meet_users (id, {self.tags_for_matching}) VALUES (3, 'h', 'a', 'a, b', 'a,b');"
+        # )
+
+        # self.cursor.execute(
+        #     "SELECT * FROM tele_meet_users;"
         # )
         # print(self.cursor.fetchall())
+        # print(self.tagsMatchingQueue(2))
     
     def createTables(self):
-        self.createQuery("tele_meet_users", 
-        '''id BIGINT,
+        self.createQuery("tele_meet_users",
+        '''id BIGINT PRIMARY KEY,
         create_date TIMESTAMP WITHOUT TIME ZONE,
         update_date TIMESTAMP WITHOUT TIME ZONE, 
         about VARCHAR(2000), 
@@ -63,10 +73,15 @@ class DBController:
         phone_number VARCHAR(255), 
         photo_file_ids VARCHAR(255),
         profile_name VARCHAR(255), 
-        restrictions_tags VARCHAR(255), 
         state_class VARCHAR(255), 
         status VARCHAR(255), 
-        username VARCHAR(255)''')
+        username VARCHAR(255),
+        food_preferance_and_goals VARCHAR(255),
+        food_allergens VARCHAR(255),
+        dietary VARCHAR(255),
+        main_interests VARCHAR(255),
+        others_interests VARCHAR(255)
+        ''')
 
         self.createQuery("tele_meet_relations",
         '''user_id BIGINT PRIMARY KEY,
@@ -77,9 +92,6 @@ class DBController:
     def selectQuery(self, table_name, args):
         self.cursor.execute(f"SELECT {args} FROM {table_name}")
     
-    def updateQuery(self, table_name, args):
-        # not necessary
-        pass
     
     def createQuery(self, table_name, args):
         self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({args})")
@@ -109,10 +121,14 @@ class DBController:
                     "phone_number": row[13],
                     "photo_file_ids": row[14],
                     "profile_name": row[15],
-                    "restrictions_tags": row[16],
-                    "state_class": row[17],
-                    "status": row[18],
-                    "username": row[19]
+                    "state_class": row[16],
+                    "status": row[17],
+                    "username": row[18],
+                    "food_preferance_and_goals": row[19],
+                    "food_allergens": row[20],
+                    "dietary": row[21],
+                    "main_interests": row[22],
+                    "others_interests": row[23],
                 }
                 return columns_info
             else:
@@ -163,13 +179,17 @@ class DBController:
             user.phone_number = user_info["phone_number"]
             user.photo_file_ids = user_info["photo_file_ids"]
             user.profile_name = user_info["profile_name"]
-            user.restrictions_tags = user_info["restrictions_tags"]
             user.state_class = user_info["state_class"]
             user.status = user_info["status"]
             user.username = user_info["username"]
             user.about = user_info["about"]
             user.active_poll_id = user_info["active_poll_id"]
             user.chat_id = user_info["chat_id"]
+            user.food_preferance_and_goals = user_info["food_preferance_and_goals"]
+            user.food_allergens = user_info["food_allergens"]
+            user.dietary = user_info["dietary"]
+            user.main_interests = user_info["main_interests"]
+            user.others_interests = user_info["others_interests"]
             return user
         else:
             return None
@@ -181,14 +201,60 @@ class DBController:
                 update_fields[column_name] = value
         
         self.updateUserInformation(user.id, update_fields)
-        
-    def getUserByChatId(self, chat_id):
+    
+    def getIdByChatId(self, chat_id):
         if isinstance(chat_id, str) is False:
             chat_id = str(chat_id)
         
         self.cursor.execute(f"SELECT id FROM {self.table_name} WHERE chat_id = '{chat_id}';")
         result = self.cursor.fetchone()
-        id = result[0] if result else None
+        return result[0] if result else None
+    
+    def getChatIdById(self, id):
+        if isinstance(id, int) is False:
+            id = int(id)
+        
+        self.cursor.execute(f"SELECT chat_id FROM {self.table_name} WHERE id = '{id}';")
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+        
+    def getUserByChatId(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+
         if id is None:
             return User()
         return self.getUser(id)
+
+    def matchOneTag(self, first_answers, second_answers):
+        list_first_answers = re.split(', |,', first_answers)
+        list_second_answers = re.split(', |,', second_answers)
+
+        list_first_answers.sort()
+        list_second_answers.sort()
+
+        count_matches = 0
+        for answer_first in list_first_answers:
+            for answer_second in list_second_answers:
+                if answer_first == answer_second:
+                    count_matches += 1
+        return count_matches
+
+
+    def tagsMatchingQueue(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+
+        self.cursor.execute(f"SELECT id, {self.tags_for_matching} FROM {self.table_name} WHERE id={id}")
+        current_tags = self.cursor.fetchone()
+
+        self.cursor.execute(f"SELECT id, {self.tags_for_matching} FROM {self.table_name}")
+        list_of_tags = self.cursor.fetchall()
+
+        matching_queue = []
+        for person_tags in list_of_tags:
+            count_matches = 0
+            for tag_position in range(1, len(person_tags)):
+                count_matches += self.matchOneTag(person_tags[tag_position], current_tags[tag_position])
+            matching_queue.append((count_matches, person_tags[0]))
+        matching_queue.sort(reverse=True)
+        
+        return [id for count_matches, id in matching_queue[1:]]

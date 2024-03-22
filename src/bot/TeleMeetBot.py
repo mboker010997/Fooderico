@@ -23,9 +23,9 @@ if __name__ == '__main__':
         dbcontroller = DBController()
         bot = TelegramBot()
         asyncio.run(bot.start_polling())
-    except Exception as _ex:
-        print(_ex)
-    finally:
+
         if dbcontroller.connection:
             dbcontroller.connection.commit()
             dbcontroller.connection.close()
+    except Exception as _ex:
+        print(_ex)
