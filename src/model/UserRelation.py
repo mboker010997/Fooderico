@@ -1,4 +1,4 @@
-from src.bot.DBController import DBController
+from src import bot
 
 
 class UserRelation:
@@ -16,7 +16,7 @@ class UserRelation:
         }
 
     def add_relation(self):
-        DBController().insertQuery("tele_meet_relations",
+        bot.DBController().insertQuery("tele_meet_relations",
                                    f"{self.user_id}, {self.other_user_id}, {self.relation_to_db_alias[self.relation]}")
         query = f"SELECT * FROM tele_meet_relations WHERE user_id = {self.other_user_id} AND other_user_id = {self.user_id} AND relation = {self.relation}"
         other_user_rows = DBController().cursor.execute(query).fetchall()

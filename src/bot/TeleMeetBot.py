@@ -11,7 +11,8 @@ from src.model.Localization import Localization
 class TelegramBot:
     def __init__(self):
         load_dotenv()
-        self.bot = Bot(os.getenv("TOKEN"))
+        # self.bot = Bot(os.getenv("TOKEN"))
+        self.bot = Bot("6707853441:AAFRWBH_2vDOuhV3IRf6iC1T6GFs6qX5jVg")  # Debug
         self.dp = Dispatcher()
         self.handler = Handler(self.bot, self.dp)
         logging.basicConfig(level=logging.INFO)
@@ -21,14 +22,14 @@ class TelegramBot:
 
 
 if __name__ == '__main__':
-    try:
-        dbcontroller = DBController()
-        Localization.loadInfo(['ru'])
-        bot = TelegramBot()
-        asyncio.run(bot.start_polling())
+    # try:
+    dbcontroller = DBController()
+    Localization.loadInfo(['ru'])
+    bot = TelegramBot()
+    asyncio.run(bot.start_polling())
 
-        if dbcontroller.connection:
-            dbcontroller.connection.commit()
-            dbcontroller.connection.close()
-    except Exception as _ex:
-        print(_ex)
+    if dbcontroller.connection:
+        dbcontroller.connection.commit()
+        dbcontroller.connection.close()
+    # except Exception as _ex:
+    #     print(_ex)

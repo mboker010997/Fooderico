@@ -1,7 +1,7 @@
 from src.statemachine import State
 from src.statemachine.state import menu
 from src.model.UserRelation import UserRelation
-from src.bot.DBController import DBController
+from src import bot
 from src.model import Update
 from aiogram import types
 from src.algo import similarity
@@ -45,10 +45,10 @@ class SearchState(State):
                 self.is_match = True
 
     async def __notify_both(self, update: Update):
-        my_chat_id = DBController().getUser(self.last_relation.user_id).chat_id
-        my_profile_name = DBController().getUser(self.last_relation.user_id).profile_name
-        other_chat_id = DBController().getUser(self.last_relation.other_user_id).chat_id
-        other_profile_name = DBController().getUser(self.last_relation.other_user_id).profile_name
+        my_chat_id = bot.DBController().getUser(self.last_relation.user_id).chat_id
+        my_profile_name = bot.DBController().getUser(self.last_relation.user_id).profile_name
+        other_chat_id = bot.DBController().getUser(self.last_relation.other_user_id).chat_id
+        other_profile_name = bot.DBController().getUser(self.last_relation.other_user_id).profile_name
         await update.bot.send_message(chat_id=my_chat_id, text="Вас лайкнул в ответ {}".format(other_profile_name))
         await update.bot.send_message(chat_id=other_chat_id, text="Вас лайкнул в ответ {}".format(my_profile_name))
         self.is_match = False

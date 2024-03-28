@@ -17,9 +17,9 @@ class State:
         pass
 
     def goNextState(self, update: Update):
-        try:
-            self.processUpdate(update)
-        except Exception as exc:
-            logging.error(exc)
+        # try:
+        self.processUpdate(update)
+        # except Exception as exc:
+        #     logging.error(exc)
         return self.context.state
     

@@ -27,7 +27,7 @@ class PhotosState(State):
             photo_ids.remove(photo_id)
         if update.getMessage().text in self.nextStateDict.keys():
             self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
-            self.context.saveToDb()
+        self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
         chat_id = update.getChatId()

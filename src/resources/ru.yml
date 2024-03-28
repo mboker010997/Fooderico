@@ -81,7 +81,7 @@ tele-meet-bot:
     photo_listBtn: "Список фотографий"
     photo_uploadBtn: "Загрузить фото"
     photo_upload_text: "Загрузить фото..."
-    photo_upload_error: "Загрузите фото, а не файл"
+    photo_upload_error: "Загрузите фото, а не файл. Если хотите выйти, то нажмите на кнопку Назад"
     photo_list_empty: "Пусто"
     # Status
     status_text: "Статус аккаунта"

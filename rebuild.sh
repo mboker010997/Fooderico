@@ -2,11 +2,11 @@
 
 docker-compose down
 
-IMAGE_ID=$(docker images -q python-dockerfile)
+IMAGE_ID_backend=$(docker images -q tele-meet-bot-backend)
 
-if [ -n "$IMAGE_ID" ]; then
-    docker rmi -f $IMAGE_ID
+if [ -n "$IMAGE_ID_backend" ]; then
+    docker rmi -f $IMAGE_ID_backend
 fi
 
-docker build -t python-dockerfile .
-docker-compose up -d
+#docker-compose up -d
+docker-compose up
