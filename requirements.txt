@@ -4,3 +4,4 @@ python-dotenv
 pyyml
 psycopg2-binary
 requests
+geopy
