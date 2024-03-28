@@ -14,11 +14,10 @@ class Handler:
         chat_id = update.getChatId()
         curState = StateUpdater.getState(chat_id)
         nextState = curState.goNextState(update)
-        # StateUpdater.setState(chat_id, nextState)
-        # try:
-        await nextState.sendMessage(update)
-        # except Exception as exc:
-        #     logging.error(exc)
+        try:
+            await nextState.sendMessage(update)
+        except Exception as exc:
+            logging.error(exc)
 
     def register_handlers(self):
         @self.dp.poll_answer()

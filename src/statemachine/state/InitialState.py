@@ -5,8 +5,9 @@ from src.statemachine import Context
 
 
 class InitialState(State):
-    def __init__(self):
+    def __init__(self, context=Context()):
         super().__init__()
+        self.context = context
 
     async def sendMessage(self, update: Update):
         pass

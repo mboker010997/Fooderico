@@ -57,7 +57,14 @@ class SearchState(State):
         # findUnknownUserBySimplePriority
         # user is found, if not found go to menu
         message = update.getMessage()
-        other_user = self.context.user # todo: call sql_query to get right user FOOD-38
+        chatId = update.getChatId()
+        other_users = bot.DBController().tagsMatchingQueue(chatId)
+        if other_users:
+            other_user = other_users[0]
+            other_user = bot.DBController().getUser(other_user)
+        else:
+            await message.answer(self.context.getMessage("search_no_user_for_match"))
+            return
         photo_ids = other_user.photo_file_ids
         self.last_relation = UserRelation(self.context.user.id, other_user.id, None)
         if self.asked_more:
@@ -68,7 +75,6 @@ class SearchState(State):
             await self.__send_user_info(message, other_user, photo_ids)
         if self.is_match:
             await self.__notify_both(update)
-
 
     async def __send_more_info(self, message, other_user, photo_ids):
         restrictions = ', '.join(map(str, other_user.restrictions_tags))

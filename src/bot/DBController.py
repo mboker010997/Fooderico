@@ -27,10 +27,9 @@ class DBController:
         self.cursor = self.connection.cursor()
 
         self.table_name = 'tele_meet_users'
-        self.tags_for_matching = '''food_preferance_and_goals, 
-        food_allergens,
-        dietary,
-        main_interests'''
+        self.tags_for_matching = '''
+        restrictions_tags,
+        interests_tags'''
 
         self.users_table_columns = {
             "id": "SERIAL PRIMARY KEY",
@@ -109,8 +108,11 @@ class DBController:
         self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({args})")
         self.connection.commit()
     
-    def insertQuery(self, table_name, args):
-        self.cursor.execute(f"INSERT INTO {table_name} VALUES ({args})")
+    def insertQuery(self, table_name, args: dict):
+        columns = ",".join(args.keys())
+        values = ",".join(map(lambda x: str(x) if isinstance(x, int) else f"'{x}'", args.values()))
+        self.cursor.execute(f"INSERT INTO {table_name} ({columns}) VALUES ({values})")
+        self.connection.commit()
     
     def getUserDict(self, id):
         try:
@@ -127,7 +129,7 @@ class DBController:
                 return None
         except Exception as exc:
             print(f'Exception: {exc}')
-            return None 
+            return None
     
     def updateUserInformation(self, id, update_fields):
         if id is None:
