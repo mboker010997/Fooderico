@@ -63,7 +63,13 @@ class SearchState(State):
             other_user = other_users[0]
             other_user = bot.DBController().getUser(other_user)
         else:
-            await message.answer(self.context.getMessage("search_no_user_for_match"))
+            kb = [
+                [types.KeyboardButton(text=self.menu_text)],
+            ]
+            keyboard = types.ReplyKeyboardMarkup(
+                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
+            await message.answer(self.context.getMessage("search_no_user_for_match"), reply_markup=keyboard)
             return
         photo_ids = other_user.photo_file_ids
         self.last_relation = UserRelation(self.context.user.id, other_user.id, None)
