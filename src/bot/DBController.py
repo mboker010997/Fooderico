@@ -27,6 +27,7 @@ class DBController:
         self.cursor = self.connection.cursor()
 
         self.table_name = 'tele_meet_users'
+        self.deleteTable()
         self.tags_for_matching = '''
         preferences_tags
         restrictions_tags,
@@ -68,29 +69,9 @@ class DBController:
 
         self.createTables()
 
-        
-        # Temporary testing
-        # self.cursor.execute(
-        #     "SELECT version();"
-        # )
-        # print(self.cursor.fetchone())
-        # self.cursor.execute(
-        #     "CREATE TABLE IF NOT EXISTS aa (id BIGINT);"
-        # )
-
-        # self.cursor.execute(
-        #     f"INSERT INTO tele_meet_users (id, chat_id, {self.tags_for_matching}) VALUES (2, 2, 'h', 'a', 'a,b', 'a, b');"
-        # )
-
-        # self.cursor.execute(
-        #     f"INSERT INTO tele_meet_users (id, {self.tags_for_matching}) VALUES (3, 'h', 'a', 'a, b', 'a,b');"
-        # )
-
-        # self.cursor.execute(
-        #     "SELECT * FROM tele_meet_users;"
-        # )
-        # print(self.cursor.fetchall())
-        # print(self.tagsMatchingQueue(2))
+    def deleteTable(self):
+        self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
+        self.connection.commit()
     
     def createTables(self):
         self.createQuery("tele_meet_users", self.users_table_columns)

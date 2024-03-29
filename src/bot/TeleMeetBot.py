@@ -23,7 +23,7 @@ class TelegramBot:
 if __name__ == '__main__':
     try:
         dbcontroller = DBController()
-        Localization.loadInfo(['ru'])
+        Localization.loadInfo()
         bot = TelegramBot()
         asyncio.run(bot.start_polling())
 
