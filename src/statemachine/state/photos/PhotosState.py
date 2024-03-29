@@ -19,6 +19,8 @@ class PhotosState(State):
         }
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         photo_ids = self.context.user.photo_file_ids
         if (message.text.startswith(PhotosState.DELETE_PHOTO_COMMAND)

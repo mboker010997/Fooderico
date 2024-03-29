@@ -15,6 +15,8 @@ class GeoState(State):
         self.status = Status.INIT
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         self.status = Status.INIT
         if message.location:

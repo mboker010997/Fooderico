@@ -13,6 +13,8 @@ class InitialState(State):
         pass
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         lang_code = message.from_user.language_code
         self.context = Context(lang_code)

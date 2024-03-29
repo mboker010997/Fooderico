@@ -9,6 +9,8 @@ class GenderState(State):
         super().__init__(context)
 
     def processUpdate(self, update: model.Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         if message.text == self.context.getMessage("gender_M"):
             gender = model.Gender.MALE
@@ -21,6 +23,8 @@ class GenderState(State):
         self.context.saveToDb()
 
     async def sendMessage(self, update: model.Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("gender_M"))],

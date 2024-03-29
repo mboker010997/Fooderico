@@ -13,6 +13,8 @@ class PhotoUploadState(State):
         self.is_error = False
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         if self.context.user.photo_file_ids is None:
             self.context.user.photo_file_ids = list()
@@ -32,6 +34,8 @@ class PhotoUploadState(State):
             self.is_error = True
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         kb = [
             [types.KeyboardButton(text="Назад")],

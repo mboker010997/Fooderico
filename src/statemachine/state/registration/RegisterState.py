@@ -9,6 +9,8 @@ class RegisterState(State):
         super().__init__(context)
 
     async def sendMessage(self, update: model.Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("register_regBtn"), request_contact=True)],
@@ -18,6 +20,8 @@ class RegisterState(State):
                              reply_markup=keyboard)
 
     def processUpdate(self, update: model.Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         user = self.context.user
         user.first_name = message.contact.first_name
