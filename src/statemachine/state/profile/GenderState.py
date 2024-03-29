@@ -19,7 +19,7 @@ class GenderState(State):
         else:
             return
         self.context.user.gender = gender
-        self.context.setState(profile.RestrictionsTagState(self.context))
+        self.context.setState(profile.FoodPreferencesTagState(self.context))
         self.context.saveToDb()
 
     async def sendMessage(self, update: model.Update):

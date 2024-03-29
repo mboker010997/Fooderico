@@ -28,6 +28,7 @@ class DBController:
 
         self.table_name = 'tele_meet_users'
         self.tags_for_matching = '''
+        preferences_tags
         restrictions_tags,
         interests_tags'''
 
@@ -51,12 +52,10 @@ class DBController:
             "state_class": "VARCHAR(255)",
             "status": "VARCHAR(255)",
             "username": "VARCHAR(255)",
-            "restrictions_tags": "VARCHAR(255)",
-            "interests_tags": "VARCHAR(255)",
             "food_preferance_and_goals": "VARCHAR(255)",
-            "food_allergens": "VARCHAR(255)",
+            "restrictions_tags": "VARCHAR(255)",
             "dietary": "VARCHAR(255)",
-            "main_interests": "VARCHAR(255)",
+            "interests_tags": "VARCHAR(255)",
             "others_interests": "VARCHAR(255)",
         }
 
@@ -147,8 +146,6 @@ class DBController:
             print(f"UPDATE {self.table_name} SET {set_field} WHERE id = {id};")
             self.cursor.execute(f"UPDATE {self.table_name} SET {set_field} WHERE id = {id};")
         self.connection.commit()
-        # except Exception as exc:
-        #     print(f'Exception: {exc}')
     
     def updateState(self, chat_id, state):
         return self.updateUserInformation(self.getIdByChatId(chat_id),

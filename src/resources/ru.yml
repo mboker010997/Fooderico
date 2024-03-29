@@ -20,8 +20,10 @@ tele-meet-bot:
     show_profile_template: "{}, {}, {}\n{}\nИнтересы: {}\nОграничения: {}"  # name, age, city, info, interests, restrictions
     edit_profileBtn: "Редактировать"
     #    Restrictions
+    preferences_tag_text: "Пищевые предпочтения и цели?"
     restrictions_tag_text: "Какие у вас ограничения?"
-    interests_tag_text: "Какие у вас интересы?"
+    diets_tag_text: "Вы соблюдаете диету?"
+    interests_tag_text: "Основные интересы:"
 
     #    TAGS
     tag_nothing_of_this: "Ничего из перечисленного"
