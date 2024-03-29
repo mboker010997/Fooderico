@@ -26,3 +26,4 @@ class User:
         self.dietary = None # string
         self.main_interests = None # string
         self.others_interests = None # string
+        self.preferences_tags = None # string

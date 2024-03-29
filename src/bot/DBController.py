@@ -58,6 +58,7 @@ class DBController:
             "dietary": "VARCHAR(255)",
             "interests_tags": "VARCHAR(255)",
             "others_interests": "VARCHAR(255)",
+            "preferences_tags": "VARCHAR(255)",
         }
 
         self.relations_table_columns = {
