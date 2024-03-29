@@ -11,8 +11,8 @@ from src.model.Localization import Localization
 class TelegramBot:
     def __init__(self):
         load_dotenv()
-        # self.bot = Bot(os.getenv("TOKEN"))
-        self.bot = Bot("6707853441:AAFRWBH_2vDOuhV3IRf6iC1T6GFs6qX5jVg")  # Debug
+        self.bot = Bot(os.getenv("TOKEN"))
+        # self.bot = Bot("")
         self.dp = Dispatcher()
         self.handler = Handler(self.bot, self.dp)
         logging.basicConfig(level=logging.INFO)

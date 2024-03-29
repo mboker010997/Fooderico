@@ -15,6 +15,8 @@ class StatusState(State):
         self.menuBtn = "Вернуться в меню"
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         text = update.getMessage().text
         if text == self.menuBtn:
             self.context.setState(menu.MenuState(self.context))
@@ -27,6 +29,8 @@ class StatusState(State):
         self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         text = "Статус аккаунта: "
         # text += current_user_status

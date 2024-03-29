@@ -21,12 +21,16 @@ class MenuState(State):
         }
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         text = update.getMessage().text
         if text in self.nextStateDict.keys():
             self.context.setState(self.nextStateDict.get(text)(self.context))
             self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         text = "Главное меню"
         kb = [

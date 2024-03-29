@@ -27,6 +27,8 @@ class SearchState(State):
 
     def processUpdate(self, update: Update):
         # add relations to db: BLACKLIST, SKIPPED, FOLLOW
+        if not update.getMessage():
+            return
         message = update.getMessage()
         if message.text in self.nextStateDict.keys():
             self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
