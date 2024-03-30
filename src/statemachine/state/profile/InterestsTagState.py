@@ -7,7 +7,7 @@ from src.model import Tags as tags
 class InterestsTagState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.options = list(map(lambda x: self.context.getMessage(x), tags.interestsTags))
+        self.options = tags.interestsTags
         self.hasPoll = True
 
     def processUpdate(self, update: Update):
@@ -23,10 +23,11 @@ class InterestsTagState(State):
         self.hasPoll = False
 
     async def sendMessage(self, update: Update):
+        options = list(map(lambda x: self.context.getMessage(x), tags.interestsTags))
         if self.hasPoll:
             poll_info = await update.bot.send_poll(chat_id=update.getChatId(),
                                                    question=self.context.getMessage("interests_tag_text"),
-                                                   options=self.options,
+                                                   options=options,
                                                    is_anonymous=False,
                                                    allows_multiple_answers=True)
             self.context.user.active_poll_id = poll_info.poll.id

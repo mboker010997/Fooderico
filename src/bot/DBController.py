@@ -27,10 +27,11 @@ class DBController:
         self.cursor = self.connection.cursor()
 
         self.table_name = 'tele_meet_users'
-        self.deleteTable()
+        # self.deleteTable()
         self.tags_for_matching = '''
         preferences_tags
         restrictions_tags,
+        dietary,
         interests_tags'''
 
         self.users_table_columns = {
@@ -48,17 +49,17 @@ class DBController:
             "language_code": "VARCHAR(255)",
             "last_name": "VARCHAR(255)",
             "phone_number": "VARCHAR(255)",
-            "photo_file_ids": "VARCHAR(255)",
+            "photo_file_ids": "VARCHAR(1000)",
             "profile_name": "VARCHAR(255)",
             "state_class": "VARCHAR(255)",
             "status": "VARCHAR(255)",
             "username": "VARCHAR(255)",
             "food_preferance_and_goals": "VARCHAR(255)",
-            "restrictions_tags": "VARCHAR(255)",
-            "dietary": "VARCHAR(255)",
-            "interests_tags": "VARCHAR(255)",
+            "restrictions_tags": "VARCHAR(1000)",
+            "dietary": "VARCHAR(1000)",
+            "interests_tags": "VARCHAR(1000)",
             "others_interests": "VARCHAR(255)",
-            "preferences_tags": "VARCHAR(255)",
+            "preferences_tags": "VARCHAR(1000)",
         }
 
         self.relations_table_columns = {
@@ -141,8 +142,12 @@ class DBController:
                 setattr(user, key, user_info[key])
             if user.state_class is not None:
                 user.state_class = globals()[user.state_class]
+            if user.preferences_tags is not None:
+                user.preferences_tags = set(user.preferences_tags.split(","))
             if user.restrictions_tags is not None:
                 user.restrictions_tags = set(user.restrictions_tags.split(","))
+            if user.dietary is not None:
+                user.dietary = set(user.dietary.split(","))
             if user.interests_tags is not None:
                 user.interests_tags = set(user.interests_tags.split(","))
             if user.photo_file_ids is not None:
@@ -161,8 +166,12 @@ class DBController:
                 update_fields[column_name] = value
         if update_fields.get("state_class", None) is not None:
             update_fields["state_class"] = user.state_class.__name__
+        if update_fields.get("preferences_tags", None) is not None:
+            update_fields["preferences_tags"] = ",".join(list(user.preferences_tags))
         if update_fields.get("restrictions_tags", None) is not None:
             update_fields["restrictions_tags"] = ",".join(list(user.restrictions_tags))
+        if update_fields.get("dietary", None) is not None:
+            update_fields["dietary"] = ",".join(list(user.dietary))
         if update_fields.get("interests_tags", None) is not None:
             update_fields["interests_tags"] = ",".join(list(user.interests_tags))
         if update_fields.get("photo_file_ids", None) is not None:
