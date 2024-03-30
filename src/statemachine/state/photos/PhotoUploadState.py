@@ -45,5 +45,6 @@ class PhotoUploadState(State):
         )
         if self.is_error:
             await message.answer(self.text, reply_markup=keyboard)
-        await message.answer(self.text)
+        else:
+            await message.answer(self.text)
 
