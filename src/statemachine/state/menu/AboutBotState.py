@@ -11,6 +11,8 @@ class AboutBotState(State):
         pass
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         await message.answer("О боте...")
         self.context.setState(menu.MenuState(self.context))

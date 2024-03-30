@@ -1,4 +1,4 @@
-from src.bot.DBController import DBController
+from src import bot
 
 
 class UserRelation:
@@ -16,12 +16,19 @@ class UserRelation:
         }
 
     def add_relation(self):
-        DBController().insertQuery("tele_meet_relations",
-                                   f"{self.user_id}, {self.other_user_id}, {self.relation_to_db_alias[self.relation]}")
-        query = f"SELECT * FROM tele_meet_relations WHERE user_id = {self.other_user_id} AND other_user_id = {self.user_id} AND relation = {self.relation}"
-        other_user_rows = DBController().cursor.execute(query).fetchall()
-        if other_user_rows:
-            other_user_row = other_user_rows[-1]
-            other_relation = other_user_row[2]
-            return other_relation == "FOLLOW" and self.relation == "FOLLOW"
+        relation_info = {
+            "user_id": self.user_id,
+            "other_user_id": self.other_user_id,
+            "relation": self.relation_to_db_alias[self.relation],
+        }
+        bot.DBController().insertQuery("tele_meet_relations", relation_info)
+        if self.relation == self.search_like:
+            query = (f"SELECT * FROM tele_meet_relations WHERE user_id = {self.other_user_id} "
+                     f"AND other_user_id = {self.user_id} AND relation = 'FOLLOW'")
+            bot.DBController().cursor.execute(query)
+            other_user_rows = bot.DBController().cursor.fetchall()
+            if other_user_rows:
+                other_user_row = other_user_rows[-1]
+                other_relation = other_user_row[3]
+                return other_relation == "FOLLOW"
         return False

@@ -9,6 +9,8 @@ class AgeState(State):
         self.text = self.context.getMessage("age_text")
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         if message.text.isdigit() and (int(message.text) in range(1, 100)):
             self.context.user.age = int(message.text)
@@ -18,5 +20,7 @@ class AgeState(State):
             self.text = self.context.getMessage("age_parsing_error")
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         await message.answer(self.text)

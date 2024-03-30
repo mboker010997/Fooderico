@@ -10,6 +10,8 @@ class ShowProfileState(State):
         self.nextState = self
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         answer = update.getMessage().text
         if answer == self.context.getMessage("edit_profileBtn"):
             self.context.setState(profile.UsernameState(self.context))
@@ -19,6 +21,8 @@ class ShowProfileState(State):
             self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
         text = self.context.getMessage("show_profile_text")
         await message.answer(text)

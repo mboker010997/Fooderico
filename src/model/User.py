@@ -11,9 +11,10 @@ class User:
         self.language_code = None  # string
         self.last_name = None  # string
         self.phone_number = None  # string
-        self.photo_file_ids = None  # string set
+        self.photo_file_ids = None  # list of strings
         self.profile_name = None  # string
-        self.interests_tags = None  # string set
+        self.restrictions_tags = None
+        self.interests_tags = None  # string set ???
         self.state_class = None  # state class (exactly class, not instance)
         self.status = None  # enum Status
         self.username = None  # string
@@ -25,3 +26,4 @@ class User:
         self.dietary = None # string
         self.main_interests = None # string
         self.others_interests = None # string
+        self.preferences_tags = None # string

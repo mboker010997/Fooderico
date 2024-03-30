@@ -1,15 +1,20 @@
-from src.statemachine.state import InitialState
+from src import bot
+from src.statemachine.state import *
+from src import statemachine
 
-stateHolder = dict()  # todo(mboker0109) remove this in FOOD-38
+stateCacheHolder = dict()
 
 
 class StateUpdater:
     @staticmethod
-    def setState(chat_id, state):
-        # todo(mboker0109): write sql query in FOOD-38
-        stateHolder[chat_id] = state
-
-    @staticmethod
     def getState(chat_id):
-        # todo(mboker0109): write sql query in FOOD-38
-        return stateHolder.get(chat_id, InitialState())
+        context = stateCacheHolder.get(chat_id, None)
+        if context is None:
+            user = bot.DBController().getUserByChatId(chat_id)
+            stateClass = user.state_class
+            if stateClass is None:
+                return InitialState()
+            context = statemachine.Context(None, user)
+            context.state = stateClass(context)
+            stateCacheHolder[chat_id] = context
+        return context.state
