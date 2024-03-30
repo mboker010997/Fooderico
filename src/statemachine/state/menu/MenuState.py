@@ -12,12 +12,14 @@ class MenuState(State):
         self.profileBtn = "Посмотреть профиль"
         self.statusBtn = "Статус пользователя"
         self.aboutBtn = "О сервисе"
+        self.contactsBtn = "Последние действия"
         self.nextStateDict = {
             self.searchBtn: search.SearchState,
             self.photosBtn: photos.PhotosState,
             self.profileBtn: profile.ShowProfileState,
             self.statusBtn: menu.StatusState,
             self.aboutBtn: menu.AboutBotState,
+            self.contactsBtn: search.ContactsState
         }
 
     def processUpdate(self, update: Update):
@@ -39,6 +41,7 @@ class MenuState(State):
             [types.KeyboardButton(text=self.profileBtn)],
             [types.KeyboardButton(text=self.statusBtn)],
             [types.KeyboardButton(text=self.aboutBtn)],
+            [types.KeyboardButton(text=self.contactsBtn)]
         ]
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
