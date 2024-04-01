@@ -56,8 +56,6 @@ class SearchState(State):
         self.is_match = False
 
     async def sendMessage(self, update: Update):
-        # findUnknownUserBySimplePriority
-        # user is found, if not found go to menu
         message = update.getMessage()
         chatId = update.getChatId()
         # todo (Bakyt): (FOOD-10) - Uncomment this:
