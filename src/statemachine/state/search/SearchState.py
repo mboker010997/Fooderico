@@ -56,10 +56,22 @@ class SearchState(State):
         self.is_match = False
 
     async def sendMessage(self, update: Update):
-        # findUnknownUserBySimplePriority
-        # user is found, if not found go to menu
         message = update.getMessage()
         chatId = update.getChatId()
+        # todo (Bakyt): (FOOD-10) - Uncomment this:
+        # other_user = bot.DBController().KirillsTagsMatchingUser(chatId) # rename if it is necessary
+        # if other_user is None:
+        #     kb = [
+        #         [types.KeyboardButton(text=self.menu_text)],
+        #     ]
+        #     keyboard = types.ReplyKeyboardMarkup(
+        #         keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        #     )
+        #     await message.answer(self.context.getMessage("search_no_user_for_match"), reply_markup=keyboard)
+        #     return
+        # other_user = bot.DBController().getUser(other_user)
+
+        # todo (Bakyt): (FOOD-10) - Delete this:
         other_users = bot.DBController().tagsMatchingQueue(chatId)
         if other_users:
             other_user = other_users[0]
@@ -73,6 +85,8 @@ class SearchState(State):
             )
             await message.answer(self.context.getMessage("search_no_user_for_match"), reply_markup=keyboard)
             return
+        #
+
         photo_ids = other_user.photo_file_ids
         self.last_relation = UserRelation(self.context.user.id, other_user.id, None)
         if self.asked_more:
