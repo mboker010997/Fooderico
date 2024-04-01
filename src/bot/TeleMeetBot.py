@@ -6,7 +6,7 @@ from src.bot.Handler import Handler
 from src.bot.DBController import DBController
 import os
 from src.model.Localization import Localization
-
+from src.bot.middlewares import AlbumMiddleware
 
 class TelegramBot:
     def __init__(self):
@@ -25,6 +25,7 @@ if __name__ == '__main__':
         dbcontroller = DBController()
         Localization.loadInfo()
         bot = TelegramBot()
+        bot.dp.message.middleware(AlbumMiddleware())
         asyncio.run(bot.start_polling())
 
         if dbcontroller.connection:
