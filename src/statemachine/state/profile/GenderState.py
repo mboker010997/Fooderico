@@ -11,14 +11,17 @@ class GenderState(State):
     def processUpdate(self, update: model.Update):
         if not update.getMessage():
             return
+
         message = update.getMessage()
-        if message.text == self.context.getMessage("gender_M"):
-            gender = model.Gender.MALE
-        elif message.text == self.context.getMessage("gender_F"):
-            gender = model.Gender.FEMALE
-        else:
-            return
-        self.context.user.gender = gender
+        if self.context.user.gender is None or message.text != self.context.getMessage("username_skipBtn"):
+            if message.text == self.context.getMessage("gender_M"):
+                gender = model.Gender.MALE
+            elif message.text == self.context.getMessage("gender_F"):
+                gender = model.Gender.FEMALE
+            else:
+                return
+            self.context.user.gender = gender
+
         self.context.setState(profile.FoodPreferencesTagState(self.context))
         self.context.saveToDb()
 
@@ -26,11 +29,23 @@ class GenderState(State):
         if not update.getMessage():
             return
         message = update.getMessage()
-        kb = [
-            [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
-            [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
-        ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-        )
-        await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)
+
+        if self.context.user.gender:
+            kb = [
+                [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
+                [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
+                [types.KeyboardButton(text=self.context.getMessage("username_skipBtn"))],
+            ]
+            keyboard = types.ReplyKeyboardMarkup(
+                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
+            await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)
+        else:
+            kb = [
+                [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
+                [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
+            ]
+            keyboard = types.ReplyKeyboardMarkup(
+                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
+            await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)
