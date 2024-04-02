@@ -47,13 +47,33 @@ class SearchState(State):
                 self.is_match = True
 
     async def __notify_both(self, update: Update):
-        my_chat_id = bot.DBController().getUser(self.last_relation.user_id).chat_id
-        my_profile_name = bot.DBController().getUser(self.last_relation.user_id).profile_name
-        other_chat_id = bot.DBController().getUser(self.last_relation.other_user_id).chat_id
-        other_profile_name = bot.DBController().getUser(self.last_relation.other_user_id).profile_name
-        await update.bot.send_message(chat_id=my_chat_id, text="Вас лайкнул в ответ {}".format(other_profile_name))
-        await update.bot.send_message(chat_id=other_chat_id, text="Вас лайкнул в ответ {}".format(my_profile_name))
+
+        my_user = bot.DBController().getUser(self.last_relation.user_id)
+        other_user = bot.DBController().getUser(self.last_relation.other_user_id)
+
+        my_info, my_is_link = self.__generate_telegram_user_link(my_user.username, my_user.phone_number)
+        other_info, other_is_link = self.__generate_telegram_user_link(other_user.username, other_user.phone_number)
+
+        await self.__send_message(update, other_user.chat_id, my_user.photo_file_ids, my_user.profile_name, my_info, my_is_link)
+        await self.__send_message(update, my_user.chat_id, other_user.photo_file_ids, other_user.profile_name, other_info,
+                           other_is_link)
         self.is_match = False
+
+    async def __send_message(self, update, chat_id, photo_file_ids, profile_name, info, is_link):
+        text = "Вас лайкнул в ответ: {}\n".format(profile_name)
+        text += "Ссылка на этого пользователя - {}\n".format(
+            info) if is_link else "Номер этого пользователя - {}\n".format(info)
+        if photo_file_ids:
+            await update.bot.send_photo(chat_id=chat_id, photo=photo_file_ids[0], caption=text)
+        else:
+            await update.bot.send_message(chat_id=chat_id, text=text)
+
+
+    def __generate_telegram_user_link(self, username, phone_number):
+        if username:
+            return (f'https://t.me/{username}', True)
+        else:
+            return (phone_number, False)
 
     async def sendMessage(self, update: Update):
         message = update.getMessage()
