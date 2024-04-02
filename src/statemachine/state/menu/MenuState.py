@@ -44,6 +44,6 @@ class MenuState(State):
             [types.KeyboardButton(text=self.contactsBtn)]
         ]
         keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            keyboard=kb, resize_keyboard=True
         )
         await message.answer(text, reply_markup=keyboard)
