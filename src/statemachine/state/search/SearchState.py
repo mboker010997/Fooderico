@@ -1,7 +1,7 @@
 from src.statemachine import State
 from src.statemachine.state import menu
 from src.model.UserRelation import UserRelation
-from src.bot.DBController import DBController
+from src import bot
 from src.model import Update
 from aiogram import types
 from src.algo import similarity
@@ -27,6 +27,8 @@ class SearchState(State):
 
     def processUpdate(self, update: Update):
         # add relations to db: BLACKLIST, SKIPPED, FOLLOW
+        if not update.getMessage():
+            return
         message = update.getMessage()
         if message.text in self.nextStateDict.keys():
             self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
@@ -45,19 +47,67 @@ class SearchState(State):
                 self.is_match = True
 
     async def __notify_both(self, update: Update):
-        my_chat_id = DBController().getUser(self.last_relation.user_id).chat_id
-        my_profile_name = DBController().getUser(self.last_relation.user_id).profile_name
-        other_chat_id = DBController().getUser(self.last_relation.other_user_id).chat_id
-        other_profile_name = DBController().getUser(self.last_relation.other_user_id).profile_name
-        await update.bot.send_message(chat_id=my_chat_id, text="Вас лайкнул в ответ {}".format(other_profile_name))
-        await update.bot.send_message(chat_id=other_chat_id, text="Вас лайкнул в ответ {}".format(my_profile_name))
+
+        my_user = bot.DBController().getUser(self.last_relation.user_id)
+        other_user = bot.DBController().getUser(self.last_relation.other_user_id)
+
+        my_info, my_is_link = self.__generate_telegram_user_link(my_user.username, my_user.phone_number)
+        other_info, other_is_link = self.__generate_telegram_user_link(other_user.username, other_user.phone_number)
+
+        await self.__send_match(update, other_user.chat_id, my_user.photo_file_ids, my_user.profile_name, my_info, my_is_link)
+        await self.__send_match(update, my_user.chat_id, other_user.photo_file_ids, other_user.profile_name, other_info,
+                           other_is_link)
         self.is_match = False
 
+    @staticmethod
+    async def __send_match(update, chat_id, photo_file_ids, profile_name, info, is_link):
+        text = "Вас лайкнул в ответ: {}\n".format(profile_name)
+        text += "Ссылка на этого пользователя - {}\n".format(
+            info) if is_link else "Номер этого пользователя - {}\n".format(info)
+        if photo_file_ids:
+            await update.bot.send_photo(chat_id=chat_id, photo=photo_file_ids[0], caption=text)
+        else:
+            await update.bot.send_message(chat_id=chat_id, text=text)
+
+    @staticmethod
+    def __generate_telegram_user_link(username, phone_number):
+        if username:
+            return (f'https://t.me/{username}', True)
+        else:
+            return (phone_number, False)
+
     async def sendMessage(self, update: Update):
-        # findUnknownUserBySimplePriority
-        # user is found, if not found go to menu
         message = update.getMessage()
-        other_user = self.context.user # todo: call sql_query to get right user FOOD-38
+        chatId = update.getChatId()
+        # todo (Bakyt): (FOOD-10) - Uncomment this:
+        # other_user = bot.DBController().KirillsTagsMatchingUser(chatId) # rename if it is necessary
+        # if other_user is None:
+        #     kb = [
+        #         [types.KeyboardButton(text=self.menu_text)],
+        #     ]
+        #     keyboard = types.ReplyKeyboardMarkup(
+        #         keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        #     )
+        #     await message.answer(self.context.getMessage("search_no_user_for_match"), reply_markup=keyboard)
+        #     return
+        # other_user = bot.DBController().getUser(other_user)
+
+        # todo (Bakyt): (FOOD-10) - Delete this:
+        other_users = bot.DBController().tagsMatchingQueue(chatId)
+        if other_users:
+            other_user = other_users[0]
+            other_user = bot.DBController().getUser(other_user)
+        else:
+            kb = [
+                [types.KeyboardButton(text=self.menu_text)],
+            ]
+            keyboard = types.ReplyKeyboardMarkup(
+                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
+            await message.answer(self.context.getMessage("search_no_user_for_match"), reply_markup=keyboard)
+            return
+        #
+
         photo_ids = other_user.photo_file_ids
         self.last_relation = UserRelation(self.context.user.id, other_user.id, None)
         if self.asked_more:
@@ -69,11 +119,14 @@ class SearchState(State):
         if self.is_match:
             await self.__notify_both(update)
 
-
     async def __send_more_info(self, message, other_user, photo_ids):
-        restrictions = ', '.join(map(str, other_user.restrictions_tags))
-        interests = ', '.join(map(str, other_user.interests_tags))
-        text = f"Ограничения: {restrictions}\nИнтересы: {interests}"
+        func_tag_to_str = lambda x: self.context.getMessage(str(x))
+        preferences = ', '.join(map(func_tag_to_str, other_user.preferences_tags))
+        restrictions = ', '.join(map(func_tag_to_str, other_user.restrictions_tags))
+        diets = ', '.join(map(func_tag_to_str, other_user.dietary))
+        interests = ', '.join(map(func_tag_to_str, other_user.interests_tags))
+
+        text = f"Пищевые предпочтения{preferences}\nОграничения: {restrictions}\nДиета: {diets}\nИнтересы: {interests}"
         keyboard = self.__create_keyboard(for_more=True, photos_exist=(photo_ids and len(photo_ids) > 0))
         await message.answer(text=text, reply_markup=keyboard)
         self.asked_more = False

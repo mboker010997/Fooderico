@@ -3,6 +3,8 @@ from src.statemachine.State import State
 from aiogram import types
 from src.statemachine.state import profile
 from src.model import Update
+
+from geopy.distance import geodesic
 import requests
 
 
@@ -10,51 +12,46 @@ class GeoState(State):
     def __init__(self, context):
         super().__init__(context)
         self.text = "Передайте геолокацию или укажите город"
-        self.all_cities = ['Dolgoprudny', 'Paris', 'Moscow']
+        self.query_city = None
         self.counter = -1
         self.status = Status.INIT
 
     def processUpdate(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
+
+        if self.context.user.geolocation is not None and message.text == self.context.getMessage("geo_skipBtn"):
+            self.context.setState(profile.AboutState(self.context))
+            self.context.saveToDb()
+            return
+
         self.status = Status.INIT
         if message.location:
             geolocation = Geolocation(message.location.latitude, message.location.longitude)
             self.context.user.geolocation = geolocation
-
-            city = self.getCity(geolocation)
+            city = self.getCityByGeolocation(geolocation)
             if city:
                 self.context.user.city = city
                 self.context.setState(profile.AboutState(self.context))
             else:
-                self.text = "Город не определен. Пожалуйста, введите название города"
+                city = self.findNearestCity(geolocation)
+                if city:
+                    self.query_city = city
+                    self.text = f"{city} - это ваш город?"
+                    self.status = Status.CONFIRMATION
+                else:
+                    self.text = "Город не определен. Пожалуйста, введите название вашего города"
         elif message.text == "Передать геолокацию":
             self.text = "Ошибка геолокации. Попробуйте еще раз"
         elif message.text == "Да, это мой город":
-            city = self.all_cities[self.counter]
+            city = self.query_city
             self.context.user.city = city
-            latitude, longitude = self.getCoordinats(city)
-            if latitude:
-                geolocation = Geolocation(latitude, longitude)
-                self.context.user.geolocation = geolocation
-                self.context.setState(profile.AboutState(self.context))
-            else:
-                self.text = "Координаты города не найдены. Попробуйте еще раз"
+            self.context.setState(profile.AboutState(self.context))
         elif message.text == "Нет, это не мой город":
-            next_city = self.nextCity()
-            if not next_city:
-                self.text = "Весь список городов пройден. Попробуйте еще раз"
-                return
-            self.text = f"Города с таким названием нет, может вы имели в виду - {next_city}?"
-            self.status = Status.SORTTHROUGH
+            self.text = "Город не определен. Пожалуйста, введите название вашего города"
         else:
-            self.counter = -1
             city = message.text
-            if city not in self.all_cities:
-                self.sortCities(city)
-                nearest = self.nextCity()
-                self.text = f"Города с таким названием нет, может вы имели в виду - {nearest}?"
-                self.status = Status.SORTTHROUGH
-                return
             self.context.user.city = city
             latitude, longitude = self.getCoordinats(city)
             if latitude:
@@ -67,13 +64,26 @@ class GeoState(State):
 
     async def sendMessage(self, update: Update):
         chatId = update.getChatId()
-        kb = [
-            [types.KeyboardButton(
-                text="Передать геолокацию",
-                request_location=True,
-            )],
-        ]
-        if self.status == Status.SORTTHROUGH:
+
+        if self.context.user.geolocation is not None:
+            kb = [
+                [types.KeyboardButton(
+                    text="Передать геолокацию",
+                    request_location=True,
+                )],
+                [types.KeyboardButton(
+                    text=self.context.getMessage("geo_skipBtn")
+                )],
+            ]
+        else:
+            kb = [
+                [types.KeyboardButton(
+                    text="Передать геолокацию",
+                    request_location=True,
+                )],
+            ]
+
+        if self.status == Status.CONFIRMATION:
             kb.append([types.KeyboardButton(
                 text="Да, это мой город",
             )])
@@ -86,10 +96,10 @@ class GeoState(State):
         await update.bot.send_message(chat_id=chatId, text=self.text,
                                       reply_markup=keyboard)
 
-    def getCity(self, geolocation):
+    def getCityByGeolocation(self, geolocation):
         headers = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.7",
+            "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",
             "sec-ch-ua": "\"Brave\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
@@ -140,29 +150,38 @@ class GeoState(State):
             lat, lon = None, None
         return lat, lon
 
-    def nextCity(self):
-        if self.counter + 1 >= len(self.all_cities):
-            next_city = None
+    def searchNearbyFeatures(self, latitude, longitude, radius):
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        query = f"""
+        [out:json];
+        (
+          node(around:{radius},{latitude},{longitude})[place="city"];
+        );
+        out body;
+        """
+        params = {
+            "data": query
+        }
+        response = requests.get(overpass_url, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            return data["elements"]
         else:
-            self.counter += 1
-            next_city = self.all_cities[self.counter]
-        return next_city
+            return []
 
-    def sortCities(self, city):
-        def levenstein(word):
-            targetWord = city
-            n, m = len(word), len(targetWord)
-            if n > m:
-                word, targetWord = targetWord, word
-                n, m = m, n
-            current_row = range(n + 1)
-            for i in range(1, m + 1):
-                previous_row, current_row = current_row, [i] + [0] * n
-                for j in range(1, n + 1):
-                    add, delete, change = previous_row[j] + 1, current_row[j - 1] + 1, previous_row[j - 1]
-                    if word[j - 1] != targetWord[i - 1]:
-                        change += 1
-                    current_row[j] = min(add, delete, change)
-            return current_row[n]
-
-        self.all_cities = sorted(self.all_cities, key=levenstein)
+    def findNearestCity(self, geolocation):
+        lat = geolocation.latitude
+        lon = geolocation.longitude
+        for radius in range(50000, 150001, 50000):
+            nearest_cities = self.searchNearbyFeatures(lat, lon, radius)
+            if len(nearest_cities) == 0:
+                continue
+            best_city = nearest_cities[0]
+            best_city_dist = geodesic((lat, lon), (best_city['lat'], best_city['lon']), ellipsoid='WGS-84').m
+            for city in nearest_cities:
+                current = geodesic((lat, lon), (city['lat'], city['lon']), ellipsoid='WGS-84').m
+                if best_city_dist > current:
+                    best_city = city
+                    best_city_dist = current
+            return best_city['tags']['name']
+        return None

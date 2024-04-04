@@ -8,20 +8,30 @@ tele-meet-bot:
     #    Register
     register_text: "Добро пожаловать в TeleMeetBot для регистрации предоставьте контакт"
     register_regBtn: "Регистрация"
+    register_error: "Нажмите, пожалуйста, кнопку регистрации"
     #    Profile
     username_text: "Введите имя"
     username_skipBtn: "Оставить текущее"
+    age_skipBtn: "Оставить текущий"
     age_text: "Введите возраст"
     age_parsing_error: "Возраст должен быть числом от 1 до 99"
     gender_text: "Какой у вас пол?"
     gender_M: "Муж."
     gender_F: "Жен."
+    gender_skipBtn: "Оставить текущий"
     show_profile_text: "Ваш профиль"
-    show_profile_template: "{}, {}, {}\n{}\nИнтересы: {}\nОграничения: {}"  # name, age, city, info, interests, restrictions
+          # name, age, city, info, preferences, interests, dietary, restrictions
+    show_profile_template: "{}, {}, {}\n{}\nПищевые предпочтения: {}\nИнтересы: {}\nДиета: {}\nОграничения: {}"
     edit_profileBtn: "Редактировать"
     #    Restrictions
+    preferences_tag_text: "Пищевые предпочтения и цели?"
+    preferences_skipBtn: "Оставить текущие"
     restrictions_tag_text: "Какие у вас ограничения?"
-    interests_tag_text: "Какие у вас интересы?"
+    restrictions_skipBtn: "Оставить текущие"
+    diets_tag_text: "Вы соблюдаете диету?"
+    diets_skipBtn: "Оставить текущие"
+    interests_tag_text: "Основные интересы:"
+    interests_skipBtn: "Оставить текущие"
 
     #    TAGS
     tag_nothing_of_this: "Ничего из перечисленного"
@@ -66,8 +76,10 @@ tele-meet-bot:
     # Geolocation
     geo_text: "Передайте геолокацию или укажите город"
     geo_shareBtn: "Передать локацию"
+    geo_skipBtn: "Оставить текущий"
     # About
     about_text: "Напишите информацию о себе"
+    about_skipBtn: "Оставить текущую"
     #Menu
     menu_text: "Главное меню"
     menuBtn: "Вернуться в меню"
@@ -76,12 +88,13 @@ tele-meet-bot:
     menu_photosBtn: "Фотоальбом"
     menu_searchBtn: "Поиск"
     menu_aboutBtn: "О сервисе"
+    returned_into_menu: "Вы вернулись в меню"
     #Photots
     photos_text: "Меню Фотоальбом"
     photo_listBtn: "Список фотографий"
     photo_uploadBtn: "Загрузить фото"
     photo_upload_text: "Загрузить фото..."
-    photo_upload_error: "Загрузите фото, а не файл"
+    photo_upload_error: "Загрузите фото, а не файл. Если хотите выйти, то нажмите на кнопку Назад"
     photo_list_empty: "Пусто"
     # Status
     status_text: "Статус аккаунта"
@@ -99,6 +112,23 @@ tele-meet-bot:
     search_no_more_users: "Больше нет профилей"
     search_more: "Подробнее"
     search_view_photos: "Посмотреть фотоальбом"
+    search_no_user_for_match: "Больше нет пользователей"
     search_show_profile_template: "{}, {}, {}\n{}\nПроцент совпадения - {}%"
     # About bot
-    aboutBot_text: "О боте..."
+    aboutBot_text: |
+      <b>Fooderico</b> - это чат-бот, предназначенный для объединения людей с определенными пищевыми предпочтениями, такими как аллергии или диеты, с целью встреч, обмена рецептами и общения.
+      
+      Функциональность бота включает:
+
+      <b>Поиск</b>: Бот проводит поиск совпадений среди других пользователей, учитывая их пищевые предпочтения и интересы. При взаимном лайке каждому пользователю поступает уведомление о новом совпадении с возможностью перейти на профиль другого пользователя.
+      
+      <b>Фотоальбом</b>: Вы можете просматривать фотографии, загружать новые или удалять существующие.
+
+      <b>Посмотреть профиль</b>: Вы можете просматривать свой профиль и в случае необходимости редактировать его.
+
+      <b>Статус пользователя</b>: Можно активировать аккаунт, чтобы его видели другие пользователи при поиске, либо спрятать его.
+
+      <b>О сервисе</b>: Здесь содержится подробное описание функциональности бота.
+
+      <b>Последние действия</b>: Отображает список последних пользователей, которым вы поставили лайк или дизлайк.
+

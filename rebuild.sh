@@ -2,11 +2,20 @@
 
 docker-compose down
 
-IMAGE_ID=$(docker images -q python-dockerfile)
-
-if [ -n "$IMAGE_ID" ]; then
-    docker rmi -f $IMAGE_ID
+IMAGE_PGADMIN=$(docker images -q dpage/pgadmin4)
+if [ -n "$IMAGE_PGADMIN" ]; then
+    docker rmi -f $IMAGE_PGADMIN
 fi
 
-docker build -t python-dockerfile .
-docker-compose up -d
+IMAGE_ID_backend=$(docker images -q tele-meet-bot_backend)
+if [ -n "$IMAGE_ID_backend" ]; then
+    docker rmi -f $IMAGE_ID_backend
+fi
+
+IMAGE_ID_python=$(docker images -q python)
+if [ -n "$IMAGE_ID_python" ]; then
+    docker rmi -f $IMAGE_ID_python
+fi
+
+# docker-compose up -d
+docker-compose up

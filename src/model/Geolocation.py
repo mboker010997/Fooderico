@@ -11,4 +11,4 @@ class Geolocation:
 
 class Status(Enum):
     INIT = "Инициализация"
-    SORTTHROUGH = "Перебор городов"
+    CONFIRMATION = "Подтверждение города"

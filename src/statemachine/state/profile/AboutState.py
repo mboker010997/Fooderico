@@ -1,6 +1,7 @@
 from src.statemachine import State
 from src.model import Update
 from src.statemachine.state import menu
+from aiogram import types
 
 
 class AboutState(State):
@@ -8,10 +9,28 @@ class AboutState(State):
         super().__init__(context)
 
     def processUpdate(self, update: Update):
-        self.context.user.about = update.getMessage().text
+        if not update.getMessage():
+            return
+        message = update.getMessage()
+
+        if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
+            self.context.user.about = message.text
+
         self.context.setState(menu.MenuState(self.context))
         self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
+        if not update.getMessage():
+            return
         message = update.getMessage()
-        await message.answer(self.context.getMessage("about_text"))
+
+        if self.context.user.about is not None:
+            kb = [
+                [types.KeyboardButton(text=self.context.getMessage("about_skipBtn"))],
+            ]
+            keyboard = types.ReplyKeyboardMarkup(
+                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
+            await message.answer(self.context.getMessage("about_text"), reply_markup=keyboard)
+        else:
+            await message.answer(self.context.getMessage("about_text"), reply_markup=types.ReplyKeyboardRemove())
