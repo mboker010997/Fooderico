@@ -8,7 +8,7 @@ from aiogram import types
 class RestrictionsTagState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.options = tags.restrictionsTags
+        self.options = tags.restrictionsTags.copy()
         self.options.append(tags.nothing_tag)
         self.hasPoll = True
 
@@ -35,7 +35,7 @@ class RestrictionsTagState(State):
         self.hasPoll = False
 
     async def sendMessage(self, update: Update):
-        options = list(map(lambda x: self.context.getMessage(x), tags.restrictionsTags))
+        options = list(map(lambda x: self.context.getMessage(x), self.options))
 
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("restrictions_skipBtn"))],

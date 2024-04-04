@@ -44,7 +44,7 @@ class ShowProfileState(State):
         interests = tags.getReadableTagsDescription(self.context.user.interests_tags, self.context.bot_config)
 
         text = (self.context.getMessage("show_profile_template")
-                .format(name, age, city, info, preferences, interests, diets, restrictions))
+                .format(name, age, city, info, preferences, restrictions, diets, interests))
         if photo_ids:
             await message.answer_photo(photo=photo_ids[0], caption=text, reply_markup=keyboard)  # send only first photo
         else:

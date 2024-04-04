@@ -8,7 +8,7 @@ from aiogram import types
 class DietsTagState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.options = tags.dietsTags
+        self.options = tags.dietsTags.copy()
         self.options.append(tags.nothing_tag)
         self.hasPoll = True
 
@@ -34,7 +34,7 @@ class DietsTagState(State):
         self.hasPoll = False
 
     async def sendMessage(self, update: Update):
-        options = list(map(lambda x: self.context.getMessage(x), tags.dietsTags))
+        options = list(map(lambda x: self.context.getMessage(x), self.options))
 
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("diets_skipBtn"))],
