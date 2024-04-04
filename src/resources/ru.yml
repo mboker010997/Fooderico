@@ -20,8 +20,8 @@ tele-meet-bot:
     gender_F: "Женский"
     gender_skipBtn: "Оставить текущий"
     show_profile_text: "Ваш профиль"
-          # name, age, city, info, preferences, interests, dietary, restrictions
-    show_profile_template: "{}, {}, {}\n{}\nПищевые предпочтения: {}\nИнтересы: {}\nДиета: {}\nОграничения: {}"
+          # name, age, city, info, preferences, restrictions, dietary, interests
+    show_profile_template: "{}, {}, {}\n{}\nПищевые предпочтения: {}\nОграничения: {}\nДиета: {}\nИнтересы: {}"
     edit_profileBtn: "Редактировать"
     #    Restrictions
     preferences_tag_text: "Пищевые предпочтения и цели?"
@@ -105,6 +105,9 @@ tele-meet-bot:
     changeStatus_enableBtn: "Активировать"
     changeStatus_hideBtn: "Спрятать"
     changeStatus_disableBtn: "Отключить"
+    status_enabled_desc: "Теперь ваш аккаунт будут видеть другие пользователи"
+    status_hidden_desc: "Теперь ваш аккаунт не будут видеть другие пользователи"
+    status_disabled_desc: "Ваш аккаунт отключен и теперь вы не можете ставить лайки/дизлайки и не будете видны другим пользователям"
     # Search
     search_text: "Пользователь: "
     search_dislike: "Дизлайк"

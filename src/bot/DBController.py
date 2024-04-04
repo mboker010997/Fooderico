@@ -3,6 +3,7 @@ import re
 from config import *
 from src.model.User import User
 from src.statemachine.state import *
+from src import model
 
 
 class DBController:
@@ -155,6 +156,10 @@ class DBController:
                     user.photo_file_ids = user.photo_file_ids.split(",")
                 else:
                     user.photo_file_ids = list()
+            if user.status is not None:
+                user.status = model.Status(user.status)
+            if user.gender is not None:
+                user.gender = model.Gender(user.gender)
             return user
         else:
             return None
@@ -176,6 +181,10 @@ class DBController:
             update_fields["interests_tags"] = ",".join(list(user.interests_tags))
         if update_fields.get("photo_file_ids", None) is not None:
             update_fields["photo_file_ids"] = ",".join(user.photo_file_ids)
+        if update_fields.get("status", None) is not None:
+            update_fields["status"] = user.status.value
+        if update_fields.get("gender", None) is not None:
+            update_fields["gender"] = user.gender.value
         
         self.updateUserInformation(user.id, update_fields)
     
