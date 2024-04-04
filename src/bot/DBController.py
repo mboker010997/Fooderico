@@ -201,6 +201,15 @@ class DBController:
         if id is None:
             return User()
         return self.getUser(id)
+    
+    def getTags(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+        if id is None:
+            raise Exception("There is no current user in database")
+        
+        self.cursor.execute(f"SELECT {self.tags_for_matching} FROM {self.table_name} WHERE id={id}")
+        return self.cursor.fetchone()
+
 
     def matchOneTag(self, first_answers, second_answers):
         list_first_answers = re.split(', |,', first_answers)

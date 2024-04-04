@@ -12,19 +12,26 @@ tele-meet-bot:
     #    Profile
     username_text: "Введите имя"
     username_skipBtn: "Оставить текущее"
+    age_skipBtn: "Оставить текущий"
     age_text: "Введите возраст"
     age_parsing_error: "Возраст должен быть числом от 1 до 99"
     gender_text: "Какой у вас пол?"
     gender_M: "Мужской"
     gender_F: "Женский"
+    gender_skipBtn: "Оставить текущий"
     show_profile_text: "Ваш профиль"
-    show_profile_template: "{}, {}, {}\n{}\nИнтересы: {}\nОграничения: {}"  # name, age, city, info, interests, restrictions
+          # name, age, city, info, preferences, interests, dietary, restrictions
+    show_profile_template: "{}, {}, {}\n{}\nПищевые предпочтения: {}\nИнтересы: {}\nДиета: {}\nОграничения: {}"
     edit_profileBtn: "Редактировать"
     #    Restrictions
     preferences_tag_text: "Пищевые предпочтения и цели?"
+    preferences_skipBtn: "Оставить текущие"
     restrictions_tag_text: "Какие у вас ограничения?"
+    restrictions_skipBtn: "Оставить текущие"
     diets_tag_text: "Вы соблюдаете диету?"
+    diets_skipBtn: "Оставить текущие"
     interests_tag_text: "Основные интересы:"
+    interests_skipBtn: "Оставить текущие"
 
     #    TAGS
     tag_nothing_of_this: "Ничего из перечисленного"
@@ -69,8 +76,10 @@ tele-meet-bot:
     # Geolocation
     geo_text: "Передайте геолокацию или укажите город"
     geo_shareBtn: "Передать локацию"
+    geo_skipBtn: "Оставить текущий"
     # About
     about_text: "Напишите информацию о себе"
+    about_skipBtn: "Оставить текущую"
     #Menu
     menu_text: "Главное меню"
     menuBtn: "Вернуться в меню"

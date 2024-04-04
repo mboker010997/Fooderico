@@ -36,10 +36,14 @@ class ShowProfileState(State):
         age = self.context.user.age
         city = self.context.user.city
         info = self.context.user.about
-        restrictions = ', '.join(map(str, self.context.user.restrictions_tags))
-        interests = ', '.join(map(str, self.context.user.interests_tags))
+
+        func_tag_to_str = lambda x: self.context.getMessage(str(x))
+        preferences = ', '.join(map(func_tag_to_str, self.context.user.preferences_tags))
+        restrictions = ', '.join(map(func_tag_to_str, self.context.user.restrictions_tags))
+        diets = ', '.join(map(func_tag_to_str, self.context.user.dietary))
+        interests = ', '.join(map(func_tag_to_str, self.context.user.interests_tags))
         text = (self.context.getMessage("show_profile_template")
-                .format(name, age, city, info, interests, restrictions))
+                .format(name, age, city, info, preferences, interests, diets, restrictions))
         if photo_ids:
             await message.answer_photo(photo=photo_ids[0], caption=text, reply_markup=keyboard)  # send only first photo
         else:
