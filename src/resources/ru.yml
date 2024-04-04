@@ -6,7 +6,7 @@ tele-meet-bot:
   storageLocation: filestorage
   messages:
     #    Register
-    register_text: "Добро пожаловать в TeleMeetBot для регистрации предоставьте контакт"
+    register_text: "Добро пожаловать в TeleMeetBot! Для регистрации предоставьте контакт. Это необходимо для поиска собеседников"
     register_regBtn: "Регистрация"
     register_error: "Нажмите, пожалуйста, кнопку регистрации"
     #    Profile
@@ -15,8 +15,8 @@ tele-meet-bot:
     age_text: "Введите возраст"
     age_parsing_error: "Возраст должен быть числом от 1 до 99"
     gender_text: "Какой у вас пол?"
-    gender_M: "Муж."
-    gender_F: "Жен."
+    gender_M: "Мужской"
+    gender_F: "Женский"
     show_profile_text: "Ваш профиль"
     show_profile_template: "{}, {}, {}\n{}\nИнтересы: {}\nОграничения: {}"  # name, age, city, info, interests, restrictions
     edit_profileBtn: "Редактировать"
@@ -84,7 +84,7 @@ tele-meet-bot:
     photos_text: "Меню Фотоальбом"
     photo_listBtn: "Список фотографий"
     photo_uploadBtn: "Загрузить фото"
-    photo_upload_text: "Загрузить фото..."
+    photo_upload_text: "Прикрепите фотографию или несколько фотографий"
     photo_upload_error: "Загрузите фото, а не файл. Если хотите выйти, то нажмите на кнопку Назад"
     photo_list_empty: "Пусто"
     # Status
