@@ -16,7 +16,7 @@ class RegisterState(State):
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("register_regBtn"), request_contact=True)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
         await message.answer(self.context.getMessage("register_error" if self.is_error else "register_text"),
                              reply_markup=keyboard)
 

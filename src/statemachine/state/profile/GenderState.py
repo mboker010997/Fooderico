@@ -11,14 +11,17 @@ class GenderState(State):
     def processUpdate(self, update: model.Update):
         if not update.getMessage():
             return
+
         message = update.getMessage()
-        if message.text == self.context.getMessage("gender_M"):
-            gender = model.Gender.MALE
-        elif message.text == self.context.getMessage("gender_F"):
-            gender = model.Gender.FEMALE
-        else:
-            return
-        self.context.user.gender = gender
+        if self.context.user.gender is None or message.text != self.context.getMessage("gender_skipBtn"):
+            if message.text == self.context.getMessage("gender_M"):
+                gender = model.Gender.MALE
+            elif message.text == self.context.getMessage("gender_F"):
+                gender = model.Gender.FEMALE
+            else:
+                return
+            self.context.user.gender = gender
+
         self.context.setState(profile.FoodPreferencesTagState(self.context))
         self.context.saveToDb()
 
@@ -26,10 +29,14 @@ class GenderState(State):
         if not update.getMessage():
             return
         message = update.getMessage()
+
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
             [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
         ]
+        if self.context.user.gender is not None:
+            kb.append([types.KeyboardButton(text=self.context.getMessage("gender_skipBtn"))])
+
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
         )
