@@ -24,15 +24,17 @@ class PhotosState(State):
             return
         message = update.getMessage()
         photo_ids = self.context.user.photo_file_ids
-        if (message.text.startswith(PhotosState.DELETE_PHOTO_COMMAND)
-                and message.text[len(PhotosState.DELETE_PHOTO_COMMAND):].isdigit()):
-            photo_id = photo_ids[int(message.text[len(PhotosState.DELETE_PHOTO_COMMAND):])]
-            photo_ids.remove(photo_id)
-        elif (message.text.startswith(PhotosState.CHOOSE_MAIN_COMMAND)
-                and message.text[len(PhotosState.CHOOSE_MAIN_COMMAND):].isdigit()):
-            i, j = 0, int(message.text[len(PhotosState.CHOOSE_MAIN_COMMAND):])
-            photo_ids[i], photo_ids[j] = photo_ids[j], photo_ids[i]
-
+        if message.text:
+            num_for_del = message.text[len(PhotosState.DELETE_PHOTO_COMMAND):]
+            num_for_main = message.text[len(PhotosState.CHOOSE_MAIN_COMMAND):]
+            if (message.text.startswith(PhotosState.DELETE_PHOTO_COMMAND)
+                    and num_for_del.isdigit()) and int(num_for_del) < len(photo_ids):
+                photo_id = photo_ids[int(message.text[len(PhotosState.DELETE_PHOTO_COMMAND):])]
+                photo_ids.remove(photo_id)
+            elif (message.text.startswith(PhotosState.CHOOSE_MAIN_COMMAND)
+                    and num_for_main.isdigit()) and int(num_for_main) < len(photo_ids):
+                i, j = 0, int(message.text[len(PhotosState.CHOOSE_MAIN_COMMAND):])
+                photo_ids[i], photo_ids[j] = photo_ids[j], photo_ids[i]
         if update.getMessage().text in self.nextStateDict.keys():
             self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
         self.context.saveToDb()

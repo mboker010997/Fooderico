@@ -7,6 +7,7 @@ class Update:
     def __init__(self, bot: Bot, dp: Dispatcher):
         self.bot = bot
         self.dp = dp
+        self.album = None
 
     @abstractmethod
     def getChatId(self):

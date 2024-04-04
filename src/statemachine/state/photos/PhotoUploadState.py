@@ -23,7 +23,17 @@ class PhotoUploadState(State):
             self.is_error = False
             self.context.setState(photos.PhotosState(self.context))
             self.context.saveToDb()
-        if message.photo:
+
+        if update.album is not None:
+            for obj in update.album:
+                if obj.photo:
+                    file_id = obj.photo[-1].file_id
+                else:
+                    file_id = obj[obj.content_type].file_id
+                photo_ids.append(file_id)
+            self.context.setState(photos.PhotosState(self.context))
+            self.context.saveToDb()
+        elif message.photo:
             photo = message.photo[-1]
             photo_id = photo.file_id
             photo_ids.append(photo_id)
