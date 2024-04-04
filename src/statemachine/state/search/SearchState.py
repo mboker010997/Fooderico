@@ -2,7 +2,7 @@ from src.statemachine import State
 from src.statemachine.state import menu
 from src.model.UserRelation import UserRelation
 from src import bot
-from src.model import Update
+from src.model import Update, Tags as tags
 from aiogram import types
 from src.algo import similarity
 
@@ -120,11 +120,10 @@ class SearchState(State):
             await self.__notify_both(update)
 
     async def __send_more_info(self, message, other_user, photo_ids):
-        func_tag_to_str = lambda x: self.context.getMessage(str(x))
-        preferences = ', '.join(map(func_tag_to_str, other_user.preferences_tags))
-        restrictions = ', '.join(map(func_tag_to_str, other_user.restrictions_tags))
-        diets = ', '.join(map(func_tag_to_str, other_user.dietary))
-        interests = ', '.join(map(func_tag_to_str, other_user.interests_tags))
+        preferences = tags.getReadableTagsDescription(self.context.user.preferences_tags, self.context.bot_config)
+        restrictions = tags.getReadableTagsDescription(self.context.user.restrictions_tags, self.context.bot_config)
+        diets = tags.getReadableTagsDescription(self.context.user.dietary, self.context.bot_config)
+        interests = tags.getReadableTagsDescription(self.context.user.interests_tags, self.context.bot_config)
 
         text = f"Пищевые предпочтения{preferences}\nОграничения: {restrictions}\nДиета: {diets}\nИнтересы: {interests}"
         keyboard = self.__create_keyboard(for_more=True, photos_exist=(photo_ids and len(photo_ids) > 0))

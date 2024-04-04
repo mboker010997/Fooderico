@@ -17,5 +17,5 @@ if [ -n "$IMAGE_ID_python" ]; then
     docker rmi -f $IMAGE_ID_python
 fi
 
-# docker-compose up -d
-docker-compose up
+docker-compose up -d
+#docker-compose up

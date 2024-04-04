@@ -42,3 +42,11 @@ interestsTags = [
     "tag_films_series",
 ]
 
+nothing_tag = "tag_nothing_of_this"
+
+
+def getReadableTagsDescription(tags, config):
+    if tags is None or len(tags) == 0:
+        return config.getMessage("no_tags")
+    func_tag_to_str = lambda x: config.getMessage(str(x))
+    return ', '.join(map(func_tag_to_str, tags))

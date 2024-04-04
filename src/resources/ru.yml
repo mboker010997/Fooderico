@@ -35,6 +35,7 @@ tele-meet-bot:
 
     #    TAGS
     tag_nothing_of_this: "Ничего из перечисленного"
+    no_tags: "нет"
     tag_another: "Другие (далее напишу)"
     #    Preferences Tags
     tag_allergy_food_intolerance: "Аллергия и пищевая непереносимость"
