@@ -18,7 +18,8 @@ tele-meet-bot:
     gender_M: "Муж."
     gender_F: "Жен."
     show_profile_text: "Ваш профиль"
-    show_profile_template: "{}, {}, {}\n{}\nИнтересы: {}\nОграничения: {}"  # name, age, city, info, interests, restrictions
+          # name, age, city, info, preferences, interests, dietary, restrictions
+    show_profile_template: "{}, {}, {}\n{}\nПищевые предпочтения: {}\nИнтересы: {}\nДиета: {}\nОграничения: {}"
     edit_profileBtn: "Редактировать"
     #    Restrictions
     preferences_tag_text: "Пищевые предпочтения и цели?"

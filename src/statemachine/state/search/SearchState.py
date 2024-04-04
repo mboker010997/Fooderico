@@ -99,9 +99,13 @@ class SearchState(State):
             await self.__notify_both(update)
 
     async def __send_more_info(self, message, other_user, photo_ids):
-        restrictions = ', '.join(map(str, other_user.restrictions_tags))
-        interests = ', '.join(map(str, other_user.interests_tags))
-        text = f"Ограничения: {restrictions}\nИнтересы: {interests}"
+        func_tag_to_str = lambda x: self.context.getMessage(str(x))
+        preferences = ', '.join(map(func_tag_to_str, other_user.preferences_tags))
+        restrictions = ', '.join(map(func_tag_to_str, other_user.restrictions_tags))
+        diets = ', '.join(map(func_tag_to_str, other_user.dietary))
+        interests = ', '.join(map(func_tag_to_str, other_user.interests_tags))
+
+        text = f"Пищевые предпочтения{preferences}\nОграничения: {restrictions}\nДиета: {diets}\nИнтересы: {interests}"
         keyboard = self.__create_keyboard(for_more=True, photos_exist=(photo_ids and len(photo_ids) > 0))
         await message.answer(text=text, reply_markup=keyboard)
         self.asked_more = False
