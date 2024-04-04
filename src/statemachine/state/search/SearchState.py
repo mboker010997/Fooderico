@@ -54,12 +54,13 @@ class SearchState(State):
         my_info, my_is_link = self.__generate_telegram_user_link(my_user.username, my_user.phone_number)
         other_info, other_is_link = self.__generate_telegram_user_link(other_user.username, other_user.phone_number)
 
-        await self.__send_message(update, other_user.chat_id, my_user.photo_file_ids, my_user.profile_name, my_info, my_is_link)
-        await self.__send_message(update, my_user.chat_id, other_user.photo_file_ids, other_user.profile_name, other_info,
+        await self.__send_match(update, other_user.chat_id, my_user.photo_file_ids, my_user.profile_name, my_info, my_is_link)
+        await self.__send_match(update, my_user.chat_id, other_user.photo_file_ids, other_user.profile_name, other_info,
                            other_is_link)
         self.is_match = False
 
-    async def __send_message(self, update, chat_id, photo_file_ids, profile_name, info, is_link):
+    @staticmethod
+    async def __send_match(update, chat_id, photo_file_ids, profile_name, info, is_link):
         text = "Вас лайкнул в ответ: {}\n".format(profile_name)
         text += "Ссылка на этого пользователя - {}\n".format(
             info) if is_link else "Номер этого пользователя - {}\n".format(info)
@@ -68,8 +69,8 @@ class SearchState(State):
         else:
             await update.bot.send_message(chat_id=chat_id, text=text)
 
-
-    def __generate_telegram_user_link(self, username, phone_number):
+    @staticmethod
+    def __generate_telegram_user_link(username, phone_number):
         if username:
             return (f'https://t.me/{username}', True)
         else:
