@@ -2,6 +2,7 @@ from src.statemachine.State import State
 from src.model.Update import Update
 from aiogram import types
 from src.statemachine.state import menu, profile
+from src.model import Tags as tags
 
 
 class ShowProfileState(State):
@@ -37,11 +38,11 @@ class ShowProfileState(State):
         city = self.context.user.city
         info = self.context.user.about
 
-        func_tag_to_str = lambda x: self.context.getMessage(str(x))
-        preferences = ', '.join(map(func_tag_to_str, self.context.user.preferences_tags))
-        restrictions = ', '.join(map(func_tag_to_str, self.context.user.restrictions_tags))
-        diets = ', '.join(map(func_tag_to_str, self.context.user.dietary))
-        interests = ', '.join(map(func_tag_to_str, self.context.user.interests_tags))
+        preferences = tags.getReadableTagsDescription(self.context.user.preferences_tags, self.context.bot_config)
+        restrictions = tags.getReadableTagsDescription(self.context.user.restrictions_tags, self.context.bot_config)
+        diets = tags.getReadableTagsDescription(self.context.user.dietary, self.context.bot_config)
+        interests = tags.getReadableTagsDescription(self.context.user.interests_tags, self.context.bot_config)
+
         text = (self.context.getMessage("show_profile_template")
                 .format(name, age, city, info, preferences, interests, diets, restrictions))
         if photo_ids:

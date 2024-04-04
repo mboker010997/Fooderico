@@ -9,6 +9,7 @@ class DietsTagState(State):
     def __init__(self, context):
         super().__init__(context)
         self.options = tags.dietsTags
+        self.options.append(tags.nothing_tag)
         self.hasPoll = True
 
     def processUpdate(self, update: Update):
@@ -24,7 +25,10 @@ class DietsTagState(State):
         if poll_answer and int(poll_answer.poll_id) == (int(self.context.user.active_poll_id)):
             self.context.user.dietary = set()
             for option_id in poll_answer.option_ids:
-                self.context.user.dietary.add(self.options[option_id])
+                option_name = self.options[option_id]
+                if option_name == tags.nothing_tag:
+                    continue
+                self.context.user.dietary.add(option_name)
             self.context.setState(profile.InterestsTagState(self.context))
             self.context.saveToDb()
         self.hasPoll = False
