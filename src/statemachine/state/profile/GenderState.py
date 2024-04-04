@@ -13,7 +13,7 @@ class GenderState(State):
             return
 
         message = update.getMessage()
-        if self.context.user.gender is None or message.text != self.context.getMessage("username_skipBtn"):
+        if self.context.user.gender is None or message.text != self.context.getMessage("gender_skipBtn"):
             if message.text == self.context.getMessage("gender_M"):
                 gender = model.Gender.MALE
             elif message.text == self.context.getMessage("gender_F"):
@@ -30,22 +30,14 @@ class GenderState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.gender:
-            kb = [
-                [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
-                [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
-                [types.KeyboardButton(text=self.context.getMessage("username_skipBtn"))],
-            ]
-            keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-            )
-            await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)
-        else:
-            kb = [
-                [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
-                [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
-            ]
-            keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-            )
-            await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)
+        kb = [
+            [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
+            [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
+        ]
+        if self.context.user.gender is not None:
+            kb.append([types.KeyboardButton(text=self.context.getMessage("gender_skipBtn"))])
+
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        )
+        await message.answer(self.context.getMessage("gender_text"), reply_markup=keyboard)

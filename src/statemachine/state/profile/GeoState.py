@@ -21,7 +21,7 @@ class GeoState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.geolocation is not None and message.text == self.context.getMessage("username_skipBtn"):
+        if self.context.user.geolocation is not None and message.text == self.context.getMessage("geo_skipBtn"):
             self.context.setState(profile.AboutState(self.context))
             self.context.saveToDb()
             return
@@ -65,14 +65,14 @@ class GeoState(State):
     async def sendMessage(self, update: Update):
         chatId = update.getChatId()
 
-        if self.context.user.geolocation:
+        if self.context.user.geolocation is not None:
             kb = [
                 [types.KeyboardButton(
                     text="Передать геолокацию",
                     request_location=True,
                 )],
                 [types.KeyboardButton(
-                    text=self.context.getMessage("username_skipBtn")
+                    text=self.context.getMessage("geo_skipBtn")
                 )],
             ]
         else:

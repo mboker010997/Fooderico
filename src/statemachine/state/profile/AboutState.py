@@ -13,7 +13,7 @@ class AboutState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.about is None or message.text != self.context.getMessage("username_skipBtn"):
+        if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
             self.context.user.about = message.text
 
         self.context.setState(menu.MenuState(self.context))
@@ -24,9 +24,9 @@ class AboutState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.about:
+        if self.context.user.about is not None:
             kb = [
-                [types.KeyboardButton(text=self.context.getMessage("username_skipBtn"))],
+                [types.KeyboardButton(text=self.context.getMessage("about_skipBtn"))],
             ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True

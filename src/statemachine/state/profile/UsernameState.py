@@ -23,7 +23,7 @@ class UsernameState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.profile_name:
+        if self.context.user.profile_name is not None:
             kb = [
                 [types.KeyboardButton(text=self.context.getMessage("username_skipBtn"))],
             ]

@@ -14,7 +14,7 @@ class InterestsTagState(State):
     def processUpdate(self, update: Update):
         message = update.getMessage()
 
-        if self.context.user.interests_tags is not None and message is not None and message.text == self.context.getMessage("username_skipBtn"):
+        if self.context.user.interests_tags is not None and message is not None and message.text == self.context.getMessage("interests_skipBtn"):
             self.context.setState(profile.GeoState(self.context))
             self.context.saveToDb()
             self.hasPoll = False
@@ -33,29 +33,27 @@ class InterestsTagState(State):
     async def sendMessage(self, update: Update):
         options = list(map(lambda x: self.context.getMessage(x), tags.interestsTags))
 
-        if self.context.user.interests_tags:
-            kb = [
-                [types.KeyboardButton(text=self.context.getMessage("username_skipBtn"))],
-            ]
-            keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-            )
-            if self.hasPoll:
+        kb = [
+            [types.KeyboardButton(text=self.context.getMessage("interests_skipBtn"))],
+        ]
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        )
+
+        if self.hasPoll:
+            if self.context.user.interests_tags is not None:
                 poll_info = await update.bot.send_poll(chat_id=update.getChatId(),
                                                        question=self.context.getMessage("interests_tag_text"),
                                                        options=options,
                                                        is_anonymous=False,
                                                        allows_multiple_answers=True,
                                                        reply_markup=keyboard)
-                self.context.user.active_poll_id = poll_info.poll.id
-                self.context.saveToDb()
-        else:
-            if self.hasPoll:
+            else:
                 poll_info = await update.bot.send_poll(chat_id=update.getChatId(),
-                                                       question=self.context.getMessage("interests_tag_text"),
-                                                       options=options,
-                                                       is_anonymous=False,
-                                                       allows_multiple_answers=True,
-                                                       reply_markup=types.ReplyKeyboardRemove())
-                self.context.user.active_poll_id = poll_info.poll.id
-                self.context.saveToDb()
+                                                    question=self.context.getMessage("interests_tag_text"),
+                                                    options=options,
+                                                    is_anonymous=False,
+                                                    allows_multiple_answers=True,
+                                                    reply_markup=types.ReplyKeyboardRemove())
+            self.context.user.active_poll_id = poll_info.poll.id
+            self.context.saveToDb()
