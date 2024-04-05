@@ -12,12 +12,21 @@ class Context:
         
         self.bot_config = BotConfig(lang_code)
         self.state = state
+        self.nextState = None
 
     def setState(self, state):
         self.state = state
         # self.user.id = int(self.user.chat_id)
         self.user.state_class = state.__class__
         # model.StateUpdater.setState(self.user.chat_id, state)
+
+    def setNextState(self, state):
+        self.nextState = state
+
+    def getNextState(self):
+        nextState = self.nextState
+        self.nextState = None
+        return nextState
 
     def getMessage(self, text):
         return self.bot_config.getMessage(text)

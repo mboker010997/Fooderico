@@ -15,7 +15,7 @@ class MenuState(State):
         self.aboutBtn = "О сервисе"
         self.contactsBtn = "Последние действия"
         self.nextStateDict = {
-            self.searchBtn: search.SearchState,
+            self.searchBtn: profile.GeoState,  # suggest changing geo before search
             self.photosBtn: photos.PhotosState,
             self.profileBtn: profile.ShowProfileState,
             self.statusBtn: menu.StatusState,
@@ -32,6 +32,8 @@ class MenuState(State):
         message = update.getMessage()
         if message.text:
             if message.text in self.nextStateDict.keys():
+                if message.text == self.searchBtn:
+                    self.context.setNextState(search.SearchState)
                 self.context.setState(self.nextStateDict.get(message.text)(self.context))
                 self.context.saveToDb()
             elif message.text.startswith(
