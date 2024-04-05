@@ -53,9 +53,10 @@ class GeoState(State):
         else:
             city = message.text
             self.context.user.city = city
-            latitude, longitude = self.getCoordinats(city)
+            latitude, longitude, name = self.getCoordinats(city)
             if latitude:
                 geolocation = Geolocation(latitude, longitude)
+                self.context.user.city = name
                 self.context.user.geolocation = geolocation
                 self.context.setState(profile.AboutState(self.context))
             else:
@@ -145,10 +146,10 @@ class GeoState(State):
         response = requests.get(url, headers=headers)
         data = response.json()
         try:
-            lat, lon = data[0]['lat'], data[0]['lon']
+            lat, lon, name = data[0]['lat'], data[0]['lon'], data[0]['name']
         except Exception:
-            lat, lon = None, None
-        return lat, lon
+            lat, lon, name = None, None, None
+        return lat, lon, name
 
     def searchNearbyFeatures(self, latitude, longitude, radius):
         overpass_url = "https://overpass-api.de/api/interpreter"

@@ -22,7 +22,7 @@ services:
       DATABASE_URL: jdbc:postgresql://db:5432/telebot
       DATABASE_USER: postgres
       DATABASE_PASSWORD: root
-      TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
+      TOKEN: "6596354658:AAFdzArjTxSavONNU8Qdqv3BZB6MlyBE1Rw"
 
   #  DATABASES
   db:
@@ -39,7 +39,7 @@ services:
       PGDATA: /data/postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5433:5433"
 
   pg-admin:
     image: dpage/pgadmin4:8
