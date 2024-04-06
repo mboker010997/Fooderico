@@ -45,6 +45,8 @@ class MatchingClass:
     def deleteUsersRelations(self, id, list_of_users):
         list_of_relations = bot.DBController().getUserRelationsIds(id)
 
+        list_of_relations = [relations_id[0] for relations_id in list_of_relations]
+
         for user_id in list_of_users:
             if (list_of_relations is None or user_id not in list_of_relations) and user_id != id:
                 return user_id
