@@ -1,7 +1,8 @@
 from src.statemachine import State
 from src.model import Update
-from src.statemachine.state import menu
+from src.statemachine.state import profile
 from aiogram import types
+from src.bot import Matching
 
 
 class AboutState(State):
@@ -15,8 +16,9 @@ class AboutState(State):
 
         if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
             self.context.user.about = message.text
+            self.context.user.others_interests = Matching.MatchingClass().getOtherTags(message.text)
 
-        self.context.setState(menu.MenuState(self.context))
+        self.context.setState(profile.OtherInterests(self.context))
         self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
