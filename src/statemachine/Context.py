@@ -13,6 +13,7 @@ class Context:
         self.bot_config = BotConfig(lang_code)
         self.state = state
         self.sentMessage = None
+        self.nextState = None
 
     def setState(self, state):
         self.state = state
@@ -27,6 +28,14 @@ class Context:
         sentMessage = self.sentMessage
         self.sentMessage = None
         return sentMessage
+
+    def setNextState(self, state):
+        self.nextState = state
+
+    def getNextState(self):
+        nextState = self.nextState
+        self.nextState = None
+        return nextState
 
     def getMessage(self, text):
         return self.bot_config.getMessage(text)

@@ -22,7 +22,7 @@ class GeoState(State):
         message = update.getMessage()
 
         if self.context.user.geolocation is not None and message.text == self.context.getMessage("geo_skipBtn"):
-            self.context.setState(profile.AboutState(self.context))
+            self.setStateInContext()
             self.context.saveToDb()
             return
 
@@ -33,7 +33,7 @@ class GeoState(State):
             city = self.getCityByGeolocation(geolocation)
             if city:
                 self.context.user.city = city
-                self.context.setState(profile.AboutState(self.context))
+                self.setStateInContext()
             else:
                 city = self.findNearestCity(geolocation)
                 if city:
@@ -47,7 +47,7 @@ class GeoState(State):
         elif message.text == "Да, это мой город":
             city = self.query_city
             self.context.user.city = city
-            self.context.setState(profile.AboutState(self.context))
+            self.setStateInContext()
         elif message.text == "Нет, это не мой город":
             self.text = "Город не определен. Пожалуйста, введите название вашего города"
         else:
@@ -59,9 +59,16 @@ class GeoState(State):
                 self.context.user.city = name
                 self.context.user.geolocation = geolocation
                 self.context.setState(profile.AboutState(self.context))
+                self.setStateInContext()
             else:
                 self.text = "Координаты города не найдены. Попробуйте еще раз"
         self.context.saveToDb()
+
+    def setStateInContext(self):
+        nextState = self.context.getNextState()
+        if nextState is None:
+            nextState = profile.AboutState
+        self.context.setState(nextState(self.context))
 
     async def sendMessage(self, update: Update):
         chatId = update.getChatId()
