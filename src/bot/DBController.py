@@ -33,7 +33,8 @@ class DBController:
         preferences_tags
         restrictions_tags,
         dietary,
-        interests_tags'''
+        interests_tags,
+        others_interests'''
 
         self.users_table_columns = {
             "id": "SERIAL PRIMARY KEY",
@@ -59,7 +60,7 @@ class DBController:
             "restrictions_tags": "VARCHAR(1000)",
             "dietary": "VARCHAR(1000)",
             "interests_tags": "VARCHAR(1000)",
-            "others_interests": "VARCHAR(255)",
+            "others_interests": "VARCHAR(1000)",
             "preferences_tags": "VARCHAR(1000)",
         }
 
@@ -151,6 +152,8 @@ class DBController:
                 user.dietary = set(user.dietary.split(","))
             if user.interests_tags is not None:
                 user.interests_tags = set(user.interests_tags.split(","))
+            if user.others_interests is not None:
+                user.others_interests = " ".join(set(user.others_interests.split(",")))
             if user.photo_file_ids is not None:
                 if user.photo_file_ids != "":
                     user.photo_file_ids = user.photo_file_ids.split(",")
@@ -179,6 +182,8 @@ class DBController:
             update_fields["dietary"] = ",".join(list(user.dietary))
         if update_fields.get("interests_tags", None) is not None:
             update_fields["interests_tags"] = ",".join(list(user.interests_tags))
+        if update_fields.get("others_interests", None) is not None:
+            update_fields["others_interests"] = ",".join(user.others_interests.split())
         if update_fields.get("photo_file_ids", None) is not None:
             update_fields["photo_file_ids"] = ",".join(user.photo_file_ids)
         if update_fields.get("status", None) is not None:
@@ -211,12 +216,20 @@ class DBController:
             return User()
         return self.getUser(id)
     
-    def getTags(self, chat_id):
+    def getUserTags(self, chat_id):
         id = self.getIdByChatId(chat_id)
         if id is None:
             raise Exception("There is no current user in database")
         
-        self.cursor.execute(f"SELECT {self.tags_for_matching} FROM {self.table_name} WHERE id={id}")
+        self.cursor.execute(f"SELECT id, {self.tags_for_matching} FROM {self.table_name} WHERE id={id}")
+        return self.cursor.fetchone()
+
+    def getTags(self):
+        self.cursor.execute(f"SELECT id, {self.tags_for_matching} FROM {self.table_name}")
+        return self.cursor.fetchall()
+    
+    def getUserRelationsIds(self, id):
+        self.cursor.execute(f"SELECT other_user_id FROM tele_meet_relations WHERE user_id={id}")
         return self.cursor.fetchone()
 
 
