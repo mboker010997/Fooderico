@@ -75,6 +75,7 @@ class DBController:
 
     def deleteTable(self):
         self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
         self.connection.commit()
     
     def createTables(self):
@@ -230,7 +231,7 @@ class DBController:
     
     def getUserRelationsIds(self, id):
         self.cursor.execute(f"SELECT other_user_id FROM tele_meet_relations WHERE user_id={id}")
-        return self.cursor.fetchone()
+        return self.cursor.fetchall()
 
 
     def matchOneTag(self, first_answers, second_answers):

@@ -31,13 +31,14 @@ class OtherInterests(State):
         else:
             if message.text == self.addBtn:
                 self.state = "add"
+                self.is_updating = True
             elif message.text == self.deleteBtn:
                 self.state = "delete"
+                self.is_updating = True
             elif message.text == self.continueBtn:
                 self.context.setState(menu.MenuState(self.context))
                 self.context.saveToDb()
-
-            self.is_updating = True
+                self.is_updating = True
 
         
     async def sendMessage(self, update: Update):
