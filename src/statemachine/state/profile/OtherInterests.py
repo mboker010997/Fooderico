@@ -15,7 +15,7 @@ class OtherInterests(State):
     
 
     def updateTags(self, tags):
-        if (self.next == "add"):
+        if (self.state == "add"):
             self.context.user.others_interests += tags + " "
         else:
             self.context.user.others_interests = \
@@ -30,9 +30,9 @@ class OtherInterests(State):
             self.is_updating = False
         else:
             if message.text == self.addBtn:
-                self.next = "add"
+                self.state = "add"
             elif message.text == self.deleteBtn:
-                self.next = "delete"
+                self.state = "delete"
             elif message.text == self.continueBtn:
                 self.context.setState(menu.MenuState(self.context))
                 self.context.saveToDb()
@@ -53,9 +53,9 @@ class OtherInterests(State):
             keyboard=kb, resize_keyboard=True
         )
         if self.is_updating:
-            if self.next == "add":
+            if self.state == "add":
                 await message.answer(self.context.getMessage("add_interests"))
-            elif self.next == "delete":
+            elif self.state == "delete":
                 await message.answer(self.context.getMessage("delete_interests"))
         else:
             await message.answer("Ваши интересы: " + self.context.user.others_interests, reply_markup=keyboard)
