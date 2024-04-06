@@ -77,9 +77,10 @@ class SearchState(State):
             return (phone_number, False)
 
     async def sendMessage(self, update: Update):
+        if self.is_match:
+            await self.__notify_both(update)
         message = update.getMessage()
         chatId = update.getChatId()
-
         other_user = bot.MatchingClass().tagsMatchingQueue(chatId)
         if other_user is None:
             kb = [
@@ -100,8 +101,6 @@ class SearchState(State):
             await self.__send_photos(message, photo_ids)
         else:
             await self.__send_user_info(message, other_user, photo_ids)
-        if self.is_match:
-            await self.__notify_both(update)
 
     async def __send_more_info(self, message, other_user, photo_ids):
         preferences = tags.getReadableTagsDescription(self.context.user.preferences_tags, self.context.bot_config)
