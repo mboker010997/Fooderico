@@ -6,6 +6,7 @@ from typing import List
 from aiogram import F
 from aiogram.types import InputMediaPhoto, InputMedia, ContentType as CT, Message as mes
 
+
 class Handler:
     def __init__(self, bot: Bot, dp: Dispatcher):
         self.bot = bot
@@ -14,10 +15,16 @@ class Handler:
 
     async def update_handler(self, update: Update):
         chat_id = update.getChatId()
+        sentMessage = StateUpdater.getSentMessage(chat_id)
+        if sentMessage is not None:
+            await self.bot.delete_message(chat_id=sentMessage.chat.id, message_id=sentMessage.message_id)
+
         curState = StateUpdater.getState(chat_id)
         nextState = curState.goNextState(update)
         try:
-            await nextState.sendMessage(update)
+            newMessage = await nextState.sendMessage(update)
+            # print("newMessage", newMessage)
+            StateUpdater.setSentMessage(chat_id, newMessage)
         except Exception as exc:
             logging.error(exc)
 
@@ -37,7 +44,3 @@ class Handler:
         async def message_handler(message: mes):
             update = Message(self.bot, self.dp, message)
             await self.update_handler(update)
-
-
-
-

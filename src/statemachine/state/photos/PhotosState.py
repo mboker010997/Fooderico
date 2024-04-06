@@ -48,4 +48,6 @@ class PhotosState(State):
             [types.KeyboardButton(text=self.menuBtn)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
-        await update.bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
+        message = await update.bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
+        # print("sendMessage", message.message_id)
+        return message

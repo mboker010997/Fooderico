@@ -80,4 +80,4 @@ class MenuState(State):
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True
         )
-        await message.answer(text, reply_markup=keyboard)
+        return await message.answer(text, reply_markup=keyboard)
