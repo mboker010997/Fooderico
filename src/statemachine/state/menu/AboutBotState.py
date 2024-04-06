@@ -17,6 +17,7 @@ class AboutBotState(State):
         message = update.getMessage()
         await message.answer(self.context.getMessage("aboutBot_text"),
                              parse_mode=ParseMode.HTML)
-        await message.answer(self.context.getMessage("returned_into_menu"))
         self.context.setState(menu.MenuState(self.context))
         self.context.saveToDb()
+        menu_state = menu.MenuState(self.context)
+        await menu_state.sendMessage(update)
