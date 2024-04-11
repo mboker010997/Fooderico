@@ -26,7 +26,7 @@ class Handler:
             # print("newMessage", newMessage)
             StateUpdater.setSentMessage(chat_id, newMessage)
         except Exception as exc:
-            logging.error(exc)
+            logging.exception("Handler")
 
     def register_handlers(self):
         @self.dp.message(F.content_type.in_([CT.PHOTO]))

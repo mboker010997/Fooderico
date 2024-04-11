@@ -1,5 +1,7 @@
 from src import bot
 import re
+from src.algo.TagsExtraction import extractTagsFromText
+
 
 class MatchingClass:
     __initialized = False
@@ -12,6 +14,12 @@ class MatchingClass:
     def getOtherTags(self, text):
         # TODO need algorithm to get tags from text (smth like dataset)
         return ""
+
+    def getTagsFromAboutText(self, id):
+        user = bot.DBController().getUser(id)
+        about_text = user.about
+        lang_code = user.language_code
+        return ",".join(extractTagsFromText(about_text, lang_code))
 
     def matchOneTag(self, first_answers, second_answers):
         list_first_answers = re.split(', |,', first_answers)
@@ -30,6 +38,8 @@ class MatchingClass:
 
     def tagsMatchingQueue(self, chat_id):
         current_tags = bot.DBController().getUserTags(chat_id)
+        current_id = current_tags[0]
+        current_about_tags = self.getTagsFromAboutText(current_id)
 
         list_of_tags = bot.DBController().getTags()
 
@@ -38,7 +48,11 @@ class MatchingClass:
             count_matches = 0
             for tag_position in range(1, len(person_tags)):
                 count_matches += self.matchOneTag(person_tags[tag_position], current_tags[tag_position])
-            matching_queue.append((count_matches, person_tags[0]))
+
+            other_id = person_tags[0]
+            other_about_tags = self.getTagsFromAboutText(other_id)
+            count_matches += self.matchOneTag(current_about_tags, other_about_tags)
+            matching_queue.append((count_matches, other_id))
         matching_queue.sort(reverse=True)
         return self.deleteUsersRelations(bot.DBController().getIdByChatId(chat_id), [id for count_matches, id in matching_queue])
 
