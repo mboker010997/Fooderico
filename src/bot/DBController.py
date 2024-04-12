@@ -78,6 +78,19 @@ class DBController:
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
         self.connection.commit()
     
+    def deleteUser(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+
+        print(id)
+        self.cursor.execute(f"DELETE FROM {self.table_name} WHERE id={id}")
+        # print(self.cursor.fetchall())
+
+
+        self.cursor.execute(f"DELETE FROM tele_meet_relations WHERE user_id={id} or other_user_id={id}")
+        # print(self.cursor.fetchall())
+
+        self.connection.commit()
+    
     def createTables(self):
         self.createQuery("tele_meet_users", self.users_table_columns)
         self.createQuery("tele_meet_relations", self.relations_table_columns)
@@ -233,6 +246,9 @@ class DBController:
         self.cursor.execute(f"SELECT other_user_id FROM tele_meet_relations WHERE user_id={id}")
         return self.cursor.fetchall()
 
+    def getUserStatus(self, id):
+        self.cursor.execute(f"SELECT status FROM {self.table_name} WHERE id={id}")
+        return self.cursor.fetchone()
 
     def matchOneTag(self, first_answers, second_answers):
         list_first_answers = re.split(', |,', first_answers)
