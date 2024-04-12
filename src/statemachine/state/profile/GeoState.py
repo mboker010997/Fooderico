@@ -151,6 +151,8 @@ class GeoState(State):
         }
         url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
         response = requests.get(url, headers=headers)
+        # url = f"http://localhost:8091/search?format=json&city={city}"
+        # response = requests.get(url, headers=headers)
         data = response.json()
         try:
             lat, lon, name = data[0]['lat'], data[0]['lon'], data[0]['name']
