@@ -58,12 +58,8 @@ class MenuState(State):
                 if num is not None and 0 <= num < len(self.other_user_rows):
                     other_user_id = self.other_user_rows[num][2]
                     if command:
-                        relation_info = {
-                            "user_id": self.context.user.id,
-                            "other_user_id": other_user_id,
-                            "relation": command,
-                        }
-                        bot.DBController().insertQuery("tele_meet_relations", relation_info)
+                        bot.DBController().cursor.execute(
+                            f"UPDATE tele_meet_relations SET relation = '{command}' WHERE user_id = {self.context.user.id} AND other_user_id = {other_user_id};")
                     else:
                         bot.DBController().cursor.execute(
                             f"DELETE FROM tele_meet_relations WHERE user_id = {self.context.user.id} AND other_user_id = {other_user_id};")
