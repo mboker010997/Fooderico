@@ -1,5 +1,5 @@
 from src.statemachine import State
-from src.statemachine.state import search, photos, profile, menu
+from src.statemachine.state import search, photos, profile, menu, chat
 from src.model import Update
 from aiogram import types
 from src import bot
@@ -14,11 +14,13 @@ class MenuState(State):
         self.statusBtn = "Статус пользователя"
         self.aboutBtn = "О сервисе"
         self.contactsBtn = "Последние действия"
+        self.viewChatsBtn = context.getMessage("menu_view_chats")
         self.nextStateDict = {
             self.searchBtn: profile.GeoState,  # suggest changing geo before search
             self.photosBtn: photos.PhotosState,
             self.profileBtn: profile.ShowProfileState,
             self.statusBtn: menu.StatusState,
+            self.viewChatsBtn: chat.ChatListState,
             self.aboutBtn: menu.AboutBotState,
             self.contactsBtn: search.ContactsState
         }
@@ -74,6 +76,7 @@ class MenuState(State):
             [types.KeyboardButton(text=self.photosBtn)],
             [types.KeyboardButton(text=self.profileBtn)],
             [types.KeyboardButton(text=self.statusBtn)],
+            [types.KeyboardButton(text=self.viewChatsBtn)],
             [types.KeyboardButton(text=self.aboutBtn)],
             [types.KeyboardButton(text=self.contactsBtn)]
         ]
