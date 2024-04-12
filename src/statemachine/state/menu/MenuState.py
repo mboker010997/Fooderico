@@ -20,7 +20,7 @@ class MenuState(State):
             self.photosBtn: photos.PhotosState,
             self.profileBtn: profile.ShowProfileState,
             self.statusBtn: menu.StatusState,
-            self.viewChatsBtn: chat.ChatState,  # ChatListState
+            self.viewChatsBtn: chat.ChatListState,
             self.aboutBtn: menu.AboutBotState,
             self.contactsBtn: search.ContactsState
         }

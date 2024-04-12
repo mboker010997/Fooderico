@@ -10,22 +10,27 @@ class ChatListState(State):
         super().__init__(context)
 
     def processUpdate(self, update: Update):
+        print("in chat list")
+        pass
+
+    async def __switchContext(self, update: Update):
         self.context.setState(menu.MenuState(self.context))
         self.context.saveToDb()
+        await self.context.state.sendMessage(update)
 
     async def sendMessage(self, update: Update):
         if not update.getMessage():
             return
-        counter = 0
         message = update.getMessage()
 
         list_of_matches = bot.DBController().getUserRelationsIds(self.context.user.id)  ###
         list_of_user_ids = [user_id[0] for user_id in list_of_matches]
 
         if not list_of_user_ids:
-            await message.answer(self.context.getMessage("Список чатов пуст"))
+            await message.answer(self.context.getMessage("chat_no_match"))
         for user_id in list_of_user_ids:
             await self.__send_match(update, user_id, self.context.user.id)
+        await self.__switchContext(update)
 
     @staticmethod
     async def __send_match(update, from_user_id, to_user_id):
