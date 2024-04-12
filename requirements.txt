@@ -6,3 +6,5 @@ pyyml
 psycopg2-binary
 requests
 geopy
+nltk
+transformers
