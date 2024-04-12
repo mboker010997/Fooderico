@@ -20,6 +20,11 @@ class StateUpdater:
         return context.state
 
     @staticmethod
+    def getContext(chat_id) -> statemachine.Context:
+        context = stateCacheHolder.get(chat_id, None)
+        return context
+
+    @staticmethod
     def getSentMessage(chat_id):
         context = stateCacheHolder.get(chat_id, None)
         if context is None:
