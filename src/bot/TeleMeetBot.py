@@ -32,4 +32,4 @@ if __name__ == '__main__':
             dbcontroller.connection.commit()
             dbcontroller.connection.close()
     except Exception as _ex:
-        print(_ex)
+        logging.exception("Main (TeleMeetBot)")
