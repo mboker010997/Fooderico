@@ -96,6 +96,7 @@ tele-meet-bot:
     menu_photosBtn: "Фотоальбом"
     menu_searchBtn: "Поиск"
     menu_aboutBtn: "О сервисе"
+    menu_view_chats: "Посмотреть чаты"
     returned_into_menu: "Вы вернулись в меню"
     #Photots
     photos_text: "Меню Фотоальбом"
