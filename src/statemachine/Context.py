@@ -14,6 +14,7 @@ class Context:
         self.state = state
         self.sentMessage = None
         self.nextState = None
+        self.other_chat_id = None
 
     def setState(self, state):
         self.state = state

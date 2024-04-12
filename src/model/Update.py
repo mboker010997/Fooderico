@@ -19,6 +19,9 @@ class Update:
     def getPollAnswer(self) -> types.PollAnswer:
         pass
 
+    def getCallbackQuery(self) -> types.CallbackQuery:
+        pass
+
 
 class Message(Update):
     def __init__(self, bot: Bot, dp: Dispatcher, message: types.Message):
@@ -42,3 +45,15 @@ class PollAnswer(Update):
 
     def getPollAnswer(self) -> types.PollAnswer:
         return self.poll
+
+
+class CallbackQuery(Update):
+    def __init__(self, bot: Bot, dp: Dispatcher, callback_query: types.CallbackQuery):
+        super().__init__(bot, dp)
+        self.callback_query = callback_query
+
+    def getChatId(self):
+        return self.callback_query.from_user.id
+
+    def getCallbackQuery(self) -> types.CallbackQuery:
+        return self.callback_query
