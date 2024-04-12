@@ -129,9 +129,9 @@ class SearchState(State):
         age = other_user.age
         city = other_user.city
         info = other_user.about
-        other_tags = other_user.restrictions_tags.union(other_user.interests_tags)
-        my_tags = self.context.user.interests_tags.union(self.context.user.restrictions_tags)
-        similarity_percentage = similarity(other_tags, my_tags)
+        # other_tags = other_user.restrictions_tags.union(other_user.interests_tags)
+        # my_tags = self.context.user.interests_tags.union(self.context.user.restrictions_tags)
+        similarity_percentage = similarity(self.context.user, other_user, self.context)
         return (self.context.getMessage("search_show_profile_template")
                 .format(name, age, city, info, similarity_percentage))
 
