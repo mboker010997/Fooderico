@@ -27,6 +27,8 @@ class DBController:
         )
         self.cursor = self.connection.cursor()
 
+        self.max_others_tags = 20
+
         self.table_name = 'tele_meet_users'
         # self.deleteTable()
         self.tags_for_matching = '''
@@ -154,7 +156,7 @@ class DBController:
             if user.interests_tags is not None:
                 user.interests_tags = set(user.interests_tags.split(","))
             if user.others_interests is not None:
-                user.others_interests = " ".join(set(user.others_interests.split(",")))
+                user.others_interests = " ".join(user.others_interests.split(" "))
             if user.photo_file_ids is not None:
                 if user.photo_file_ids != "":
                     user.photo_file_ids = user.photo_file_ids.split(",")
@@ -184,7 +186,13 @@ class DBController:
         if update_fields.get("interests_tags", None) is not None:
             update_fields["interests_tags"] = ",".join(list(user.interests_tags))
         if update_fields.get("others_interests", None) is not None:
-            update_fields["others_interests"] = ",".join(user.others_interests.split())
+            tmp = []
+            user.others_interests = re.split(r'[ ,]+', user.others_interests)
+            for x in user.others_interests:
+                if x not in tmp and x != '':
+                    tmp.append(x)
+            user.others_interests = " ".join(tmp[:self.max_others_tags])
+            update_fields["others_interests"] = user.others_interests
         if update_fields.get("photo_file_ids", None) is not None:
             update_fields["photo_file_ids"] = ",".join(user.photo_file_ids)
         if update_fields.get("status", None) is not None:

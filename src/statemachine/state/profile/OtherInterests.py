@@ -1,8 +1,9 @@
 from src.statemachine import State
 from src.model import Update
+from src import bot
 from src.statemachine.state import menu
 from aiogram import types
-
+import re
 
 class OtherInterests(State):
     def __init__(self, context):
@@ -16,10 +17,11 @@ class OtherInterests(State):
 
     def updateTags(self, tags):
         if (self.state == "add"):
-            self.context.user.others_interests += tags + " "
+            self.context.user.others_interests += " " + tags
         else:
+            tmp = re.split(r'[ ,]+', tags)
             self.context.user.others_interests = \
-            ' '.join([tag for tag in self.context.user.others_interests.split() if tag not in tags.split()])
+            ' '.join([tag for tag in self.context.user.others_interests.split() if tag not in tmp])
 
     def processUpdate(self, update: Update):
         if not update.getMessage():
@@ -37,8 +39,8 @@ class OtherInterests(State):
                 self.is_updating = True
             elif message.text == self.continueBtn:
                 self.context.setState(menu.MenuState(self.context))
-                self.context.saveToDb()
                 self.is_updating = True
+        self.context.saveToDb()
 
         
     async def sendMessage(self, update: Update):
@@ -59,4 +61,4 @@ class OtherInterests(State):
             elif self.state == "delete":
                 await message.answer(self.context.getMessage("delete_interests"))
         else:
-            await message.answer("Ваши интересы: " + self.context.user.others_interests, reply_markup=keyboard)
+            await message.answer("Ваши интересы: " + bot.DBController().getUser(self.context.user.id).others_interests, reply_markup=keyboard)
