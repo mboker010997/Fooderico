@@ -15,7 +15,7 @@ class UsernameState(State):
         message = update.getMessage()
         if self.context.user.profile_name is None or message.text != self.context.getMessage("username_skipBtn"):
             self.context.user.profile_name = message.text
-        self.context.setState(profile.AgeState(self.context))
+        self.context.setState(profile.PhotoSelectionState(self.context))
         self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
