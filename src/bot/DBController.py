@@ -4,6 +4,7 @@ from config import *
 from src.model.User import User
 from src.statemachine.state import *
 from src import model
+import logging
 
 
 class DBController:
@@ -113,7 +114,7 @@ class DBController:
             else:
                 return None
         except Exception as exc:
-            print(f'Exception: {exc}')
+            logging.exception("getUserDict")
             return None
     
     def updateUserInformation(self, id, update_fields):
