@@ -124,7 +124,7 @@ tele-meet-bot:
     search_more: "Подробнее"
     search_view_photos: "Посмотреть фотоальбом"
     search_no_user_for_match: "Больше нет пользователей"
-    search_show_profile_template: "{}, {}, {}\n{}\nПроцент совпадения - {}%"
+    search_show_profile_template: "{}, {}, {}\n{}\nСовпадающие теги: {}"
     # About bot
     aboutBot_text: |
       <b>Fooderico</b> - это чат-бот, предназначенный для объединения людей с определенными пищевыми предпочтениями, такими как аллергии или диеты, с целью встреч, обмена рецептами и общения.
