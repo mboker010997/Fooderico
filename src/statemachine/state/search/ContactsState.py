@@ -15,6 +15,7 @@ class ContactsState(State):
             self.menu_text: menu.MenuState,
         }
         self.CHANGE_TO_LIKE_COMMAND = "/change_to_like_"
+        self.CHANGE_TO_SKIP_COMMAND = "/change_to_skip_"
         self.CHANGE_TO_DISLIKE_COMMAND = "/change_to_dislike_"
         self.REMOVE_RELATION_COMMAND = "/remove_"
 
@@ -32,8 +33,7 @@ class ContactsState(State):
         message = update.getMessage()
         my_chat_id = bot.DBController().getUser(self.context.user.id).chat_id
 
-        query = (f"SELECT * FROM tele_meet_relations WHERE user_id = {self.context.user.id} "
-                 f"AND relation != 'SKIPPED'")
+        query = (f"SELECT * FROM tele_meet_relations WHERE user_id = {self.context.user.id} ORDER BY id DESC LIMIT 1")
         bot.DBController().cursor.execute(query)
         self.other_user_rows = bot.DBController().cursor.fetchall()
         counter = 0
@@ -44,22 +44,27 @@ class ContactsState(State):
             other_profile_name = other_user.profile_name
 
             text = ""
-            command = ""
+            commands = []
             if other_relation == "FOLLOW":
                 text = "Вы лайкнули"
-                command = self.CHANGE_TO_DISLIKE_COMMAND
+                commands = [self.CHANGE_TO_DISLIKE_COMMAND, self.CHANGE_TO_SKIP_COMMAND, self.REMOVE_RELATION_COMMAND]
             elif other_relation == "BLACKLIST":
                 text = "Вы дизлайкнули"
-                command = self.CHANGE_TO_LIKE_COMMAND
+                commands = [self.CHANGE_TO_LIKE_COMMAND, self.CHANGE_TO_SKIP_COMMAND, self.REMOVE_RELATION_COMMAND]
+            elif other_relation == "SKIPPED":
+                text = "Вы пропустили"
+                commands = [self.CHANGE_TO_LIKE_COMMAND, self.CHANGE_TO_DISLIKE_COMMAND, self.REMOVE_RELATION_COMMAND]
             if other_user.photo_file_ids:
                 await message.answer_photo(photo=other_user.photo_file_ids[0],
                                            caption=f"{text}: {other_profile_name}\n"
-                                                   f"{command}{counter}\n"
-                                                   f"{self.REMOVE_RELATION_COMMAND}{counter}")
+                                                   f"{commands[0]}{counter}\n"
+                                                   f"{commands[1]}{counter}\n"
+                                                   f"{commands[2]}{counter}")
             else:
                 await update.bot.send_message(chat_id=my_chat_id,
                                               text=f"{text}: {other_profile_name}\n"
-                                                   f"{command}{counter}\n"
-                                                   f"{self.REMOVE_RELATION_COMMAND}{counter}")
+                                                   f"{commands[0]}{counter}\n"
+                                                   f"{commands[1]}{counter}\n"
+                                                   f"{commands[2]}{counter}")
             counter += 1
         await self.__switchContext(update)
