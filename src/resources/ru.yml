@@ -12,6 +12,8 @@ tele-meet-bot:
     #    Profile
     username_text: "Введите имя"
     username_skipBtn: "Оставить текущее"
+    photo_skipBtn: "Оставить текущее"
+    photo_text: "Загрузите основную фотографию профиля"
     age_skipBtn: "Оставить текущий"
     age_text: "Введите возраст"
     age_parsing_error: "Возраст должен быть числом от 1 до 99"
