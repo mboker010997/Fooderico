@@ -16,12 +16,17 @@ class UserRelation:
         }
 
     def add_relation(self):
-        relation_info = {
-            "user_id": self.user_id,
-            "other_user_id": self.other_user_id,
-            "relation": self.relation_to_db_alias[self.relation],
-        }
-        bot.DBController().insertQuery("tele_meet_relations", relation_info)
+        cursor = bot.DBController().cursor
+        cursor.execute(f"SELECT * FROM tele_meet_relations WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}")
+        existing_relation = cursor.fetchone()
+        if existing_relation:
+            cursor.execute(
+                f"UPDATE tele_meet_relations SET relation = '{self.relation_to_db_alias[self.relation]}' WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
+            )
+        else:
+            cursor.execute(
+                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation) VALUES ({self.user_id}, {self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
+            )
         if self.relation == self.search_like:
             query = (f"SELECT * FROM tele_meet_relations WHERE user_id = {self.other_user_id} "
                      f"AND other_user_id = {self.user_id} AND relation = 'FOLLOW'")
