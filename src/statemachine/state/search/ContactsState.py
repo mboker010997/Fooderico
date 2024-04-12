@@ -14,10 +14,6 @@ class ContactsState(State):
         self.nextStateDict = {
             self.menu_text: menu.MenuState,
         }
-        self.CHANGE_TO_LIKE_COMMAND = "/change_to_like_"
-        self.CHANGE_TO_SKIP_COMMAND = "/change_to_skip_"
-        self.CHANGE_TO_DISLIKE_COMMAND = "/change_to_dislike_"
-        self.REMOVE_RELATION_COMMAND = "/remove_"
 
     def processUpdate(self, update: Update):
         pass
@@ -43,28 +39,44 @@ class ContactsState(State):
             other_user = bot.DBController().getUser(other_user_id)
             other_profile_name = other_user.profile_name
 
+            buttons = []
             text = ""
-            commands = []
+
             if other_relation == "FOLLOW":
                 text = "Вы лайкнули"
-                commands = [self.CHANGE_TO_DISLIKE_COMMAND, self.CHANGE_TO_SKIP_COMMAND, self.REMOVE_RELATION_COMMAND]
+                buttons = [
+                    [types.InlineKeyboardButton(text='Изменить на дизлайк', callback_data=f"change_to_dislike_{counter}")],
+                    [types.InlineKeyboardButton(text='Изменить на пропуск', callback_data=f"change_to_skip_{counter}")],
+                    [types.InlineKeyboardButton(text='Удалить', callback_data=f"remove_{counter}")]
+                ]
             elif other_relation == "BLACKLIST":
                 text = "Вы дизлайкнули"
-                commands = [self.CHANGE_TO_LIKE_COMMAND, self.CHANGE_TO_SKIP_COMMAND, self.REMOVE_RELATION_COMMAND]
+                buttons = [
+                    [types.InlineKeyboardButton(text='Изменить на лайк', callback_data=f"change_to_like_{counter}")],
+                    [types.InlineKeyboardButton(text='Изменить на пропуск', callback_data=f"change_to_skip_{counter}")],
+                    [types.InlineKeyboardButton(text='Удалить', callback_data=f"remove_{counter}")]
+                ]
             elif other_relation == "SKIPPED":
                 text = "Вы пропустили"
-                commands = [self.CHANGE_TO_LIKE_COMMAND, self.CHANGE_TO_DISLIKE_COMMAND, self.REMOVE_RELATION_COMMAND]
+                buttons = [
+                    [types.InlineKeyboardButton(text='Изменить на лайк', callback_data=f"change_to_like_{counter}")],
+                    [types.InlineKeyboardButton(text='Изменить на дизлайк', callback_data=f"change_to_dislike_{counter}")],
+                    [types.InlineKeyboardButton(text='Удалить', callback_data=f"remove_{counter}")]
+                ]
+            keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+
             if other_user.photo_file_ids:
-                await message.answer_photo(photo=other_user.photo_file_ids[0],
-                                           caption=f"{text}: {other_profile_name}\n"
-                                                   f"{commands[0]}{counter}\n"
-                                                   f"{commands[1]}{counter}\n"
-                                                   f"{commands[2]}{counter}")
+                await message.answer_photo(
+                    photo=other_user.photo_file_ids[0],
+                    caption=f"{text}: {other_profile_name}",
+                    reply_markup=keyboard
+                )
             else:
-                await update.bot.send_message(chat_id=my_chat_id,
-                                              text=f"{text}: {other_profile_name}\n"
-                                                   f"{commands[0]}{counter}\n"
-                                                   f"{commands[1]}{counter}\n"
-                                                   f"{commands[2]}{counter}")
+                await update.bot.send_message(
+                    chat_id=my_chat_id,
+                    text=f"{text}: {other_profile_name}",
+                    reply_markup=keyboard
+                )
+
             counter += 1
         await self.__switchContext(update)
