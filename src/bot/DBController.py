@@ -28,6 +28,8 @@ class DBController:
         )
         self.cursor = self.connection.cursor()
 
+        self.max_others_tags = 20
+
         self.table_name = 'tele_meet_users'
         # self.deleteTable()
         self.tags_for_matching = '''
@@ -72,16 +74,37 @@ class DBController:
             "relation": "VARCHAR(20) NOT NULL",
         }
 
+        self.match_table_columns = {
+            "id": "SERIAL PRIMARY KEY",
+            "user_id": "BIGINT",
+            "other_user_id": "BIGINT",
+        }
+
         self.createTables()
 
     def deleteTable(self):
         self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_match")
+        self.connection.commit()
+    
+    def deleteUser(self, chat_id):
+        id = self.getIdByChatId(chat_id)
+
+        print(id)
+        self.cursor.execute(f"DELETE FROM {self.table_name} WHERE id={id}")
+        # print(self.cursor.fetchall())
+
+
+        self.cursor.execute(f"DELETE FROM tele_meet_relations WHERE user_id={id} or other_user_id={id}")
+        # print(self.cursor.fetchall())
+
         self.connection.commit()
     
     def createTables(self):
         self.createQuery("tele_meet_users", self.users_table_columns)
         self.createQuery("tele_meet_relations", self.relations_table_columns)
+        self.createQuery("tele_meet_match", self.match_table_columns)
 
     def selectQuery(self, table_name, args):
         self.cursor.execute(f"SELECT {args} FROM {table_name}")
@@ -155,7 +178,7 @@ class DBController:
             if user.interests_tags is not None:
                 user.interests_tags = set(user.interests_tags.split(","))
             if user.others_interests is not None:
-                user.others_interests = " ".join(set(user.others_interests.split(",")))
+                user.others_interests = " ".join(user.others_interests.split(" "))
             if user.photo_file_ids is not None:
                 if user.photo_file_ids != "":
                     user.photo_file_ids = user.photo_file_ids.split(",")
@@ -185,7 +208,13 @@ class DBController:
         if update_fields.get("interests_tags", None) is not None:
             update_fields["interests_tags"] = ",".join(list(user.interests_tags))
         if update_fields.get("others_interests", None) is not None:
-            update_fields["others_interests"] = ",".join(user.others_interests.split())
+            tmp = []
+            user.others_interests = re.split(r'[ ,]+', user.others_interests)
+            for x in user.others_interests:
+                if x not in tmp and x != '':
+                    tmp.append(x)
+            user.others_interests = " ".join(tmp[:self.max_others_tags])
+            update_fields["others_interests"] = user.others_interests
         if update_fields.get("photo_file_ids", None) is not None:
             update_fields["photo_file_ids"] = ",".join(user.photo_file_ids)
         if update_fields.get("status", None) is not None:
@@ -232,6 +261,14 @@ class DBController:
     
     def getUserRelationsIds(self, id):
         self.cursor.execute(f"SELECT other_user_id FROM tele_meet_relations WHERE user_id={id}")
+        return self.cursor.fetchall()
+
+    def getUserStatus(self, id):
+        self.cursor.execute(f"SELECT status FROM {self.table_name} WHERE id={id}")
+        return self.cursor.fetchone()
+
+    def getUserMatchesIds(self, id):
+        self.cursor.execute(f"SELECT other_user_id FROM tele_meet_match WHERE user_id={id}")
         return self.cursor.fetchall()
 
 

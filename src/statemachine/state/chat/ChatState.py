@@ -1,6 +1,7 @@
 from src.statemachine import State
 from src.model import Update
 from src import bot
+from aiogram import types
 from src.statemachine.state import menu
 from aiogram import types
 
@@ -19,6 +20,8 @@ class ChatState(State):
             self.share_contacts = True
 
     async def sendMessage(self, update: Update):
+        # if not update.getMessage():
+        #     return
         callback = update.getCallbackQuery()
 
         user = bot.DBController().getUserByChatId(update.getChatId())
@@ -36,7 +39,7 @@ class ChatState(State):
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
         )
-        await callback.message.answer(f"Вы попали в анонимный чат с {other_user.profile_name}", keyboard=keyboard)
+        await callback.message.answer(f"Вы попали в анонимный чат с {other_user.profile_name}", reply_markup=keyboard)
         await callback.answer()
 
     @staticmethod
