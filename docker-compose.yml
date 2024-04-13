@@ -24,7 +24,9 @@ services:
       DATABASE_URL: jdbc:postgresql://db:5432/telebot
       DATABASE_USER: postgres
       DATABASE_PASSWORD: root
-      TOKEN: "6596354658:AAFdzArjTxSavONNU8Qdqv3BZB6MlyBE1Rw"
+      TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
+#    networks:
+#      - proxynet
 
   #  DATABASES
   db:
@@ -41,7 +43,7 @@ services:
       PGDATA: /data/postgres
     restart: unless-stopped
     ports:
-      - "5433:5433"
+      - "5432:5432"
 
   pg-admin:
     image: dpage/pgadmin4:8
@@ -64,8 +66,14 @@ services:
       #      REPLICATION_URL: https://download.geofabrik.de/russia-updates/
       PBF_URL: https://download.geofabrik.de/europe/monaco-latest.osm.pbf
       REPLICATION_URL: https://download.geofabrik.de/europe/monaco-updates/
-    shm_size: 1gb
+#    shm_size: 1gb
+#    networks:
+#      - proxynet
 
 networks:
   default:
     name: nominatim
+
+#networks:
+#  proxynet:
+#    name: custom_network
