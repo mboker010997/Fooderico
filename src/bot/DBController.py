@@ -4,6 +4,7 @@ from config import *
 from src.model.User import User
 from src.statemachine.state import *
 from src import model
+import logging
 
 
 class DBController:
@@ -71,11 +72,18 @@ class DBController:
             "relation": "VARCHAR(20) NOT NULL",
         }
 
+        self.match_table_columns = {
+            "id": "SERIAL PRIMARY KEY",
+            "user_id": "BIGINT",
+            "other_user_id": "BIGINT",
+        }
+
         self.createTables()
 
     def deleteTable(self):
         self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_match")
         self.connection.commit()
     
     def deleteUser(self, chat_id):
@@ -94,6 +102,7 @@ class DBController:
     def createTables(self):
         self.createQuery("tele_meet_users", self.users_table_columns)
         self.createQuery("tele_meet_relations", self.relations_table_columns)
+        self.createQuery("tele_meet_match", self.match_table_columns)
 
     def selectQuery(self, table_name, args):
         self.cursor.execute(f"SELECT {args} FROM {table_name}")
@@ -126,7 +135,7 @@ class DBController:
             else:
                 return None
         except Exception as exc:
-            print(f'Exception: {exc}')
+            logging.exception("getUserDict")
             return None
     
     def updateUserInformation(self, id, update_fields):
@@ -249,6 +258,11 @@ class DBController:
     def getUserStatus(self, id):
         self.cursor.execute(f"SELECT status FROM {self.table_name} WHERE id={id}")
         return self.cursor.fetchone()
+
+    def getUserMatchesIds(self, id):
+        self.cursor.execute(f"SELECT other_user_id FROM tele_meet_match WHERE user_id={id}")
+        return self.cursor.fetchall()
+
 
     def matchOneTag(self, first_answers, second_answers):
         list_first_answers = re.split(', |,', first_answers)

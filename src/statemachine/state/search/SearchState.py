@@ -1,5 +1,5 @@
 from src.statemachine import State
-from src.statemachine.state import menu
+from src.statemachine.state import menu, chat
 from src.model.UserRelation import UserRelation
 from src import bot
 from src.model import Update, Tags as tags
@@ -47,27 +47,32 @@ class SearchState(State):
                 self.is_match = True
 
     async def __notify_both(self, update: Update):
-
         my_user = bot.DBController().getUser(self.last_relation.user_id)
         other_user = bot.DBController().getUser(self.last_relation.other_user_id)
 
-        my_info, my_is_link = self.__generate_telegram_user_link(my_user.username, my_user.phone_number)
-        other_info, other_is_link = self.__generate_telegram_user_link(other_user.username, other_user.phone_number)
-
-        await self.__send_match(update, other_user.chat_id, my_user.photo_file_ids, my_user.profile_name, my_info, my_is_link)
-        await self.__send_match(update, my_user.chat_id, other_user.photo_file_ids, other_user.profile_name, other_info,
-                           other_is_link)
+        await self.__send_match(update, my_user, other_user)
+        await self.__send_match(update, other_user, my_user)
         self.is_match = False
 
     @staticmethod
-    async def __send_match(update, chat_id, photo_file_ids, profile_name, info, is_link):
-        text = "Вас лайкнул в ответ: {}\n".format(profile_name)
-        text += "Ссылка на этого пользователя - {}\n".format(
-            info) if is_link else "Номер этого пользователя - {}\n".format(info)
-        if photo_file_ids:
-            await update.bot.send_photo(chat_id=chat_id, photo=photo_file_ids[0], caption=text)
+    async def __send_match(update, from_user, to_user):
+        text = f"Вас лайкнул в ответ: {from_user.profile_name}\n{from_user.about}"
+
+        send_contacts_button = types.InlineKeyboardButton(text='Анонимный чат',
+                                                          callback_data=f'go_anon_chat_{from_user.chat_id}')
+        send_contacts_keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+            [send_contacts_button]
+        ])
+
+        if from_user.photo_file_ids:
+            await update.bot.send_photo(chat_id=to_user.chat_id,
+                                        photo=from_user.photo_file_ids[0],
+                                        caption=text,
+                                        reply_markup=send_contacts_keyboard)
         else:
-            await update.bot.send_message(chat_id=chat_id, text=text)
+            await update.bot.send_message(chat_id=to_user.chat_id,
+                                          text=text,
+                                          reply_markup=send_contacts_keyboard)
 
     @staticmethod
     def __generate_telegram_user_link(username, phone_number):
@@ -124,9 +129,9 @@ class SearchState(State):
         age = other_user.age
         city = other_user.city
         info = other_user.about
-        other_tags = other_user.restrictions_tags.union(other_user.interests_tags)
-        my_tags = self.context.user.interests_tags.union(self.context.user.restrictions_tags)
-        similarity_percentage = similarity(other_tags, my_tags)
+        # other_tags = other_user.restrictions_tags.union(other_user.interests_tags)
+        # my_tags = self.context.user.interests_tags.union(self.context.user.restrictions_tags)
+        similarity_percentage = similarity(self.context.user, other_user, self.context)
         return (self.context.getMessage("search_show_profile_template")
                 .format(name, age, city, info, similarity_percentage))
 
