@@ -1,4 +1,5 @@
 from src import bot
+from src.model.Status import Status
 import re
 from src.algo.TagsExtraction import extractTagsFromText
 
@@ -62,6 +63,6 @@ class MatchingClass:
         list_of_relations = [relations_id[0] for relations_id in list_of_relations]
 
         for user_id in list_of_users:
-            if (list_of_relations is None or user_id not in list_of_relations) and user_id != id:
+            if (list_of_relations is None or user_id not in list_of_relations) and user_id != id and bot.DBController().getUserStatus(user_id)[0] == "status_enabled":
                 return user_id
         return None
