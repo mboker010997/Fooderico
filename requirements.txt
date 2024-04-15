@@ -8,3 +8,4 @@ requests
 geopy
 nltk
 transformers
+flake8
