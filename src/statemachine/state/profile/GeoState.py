@@ -1,4 +1,3 @@
-GeoState.py
 from src.model.Geolocation import Geolocation, Status
 from src.statemachine.State import State
 from aiogram import types
@@ -126,10 +125,9 @@ class GeoState(State):
         lat = geolocation.latitude
         lon = geolocation.longitude
         url = f"http://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
-        # url = f"http://nominatim:8080/reverse?format=json&lat={lat}&lon={lon}"
-        response = requests.get(url, headers=headers)
-        data = response.json()
         try:
+            response = requests.get(url, headers=headers)
+            data = response.json()
             city = data['address']['city']
         except Exception:
             city = None
@@ -154,12 +152,9 @@ class GeoState(State):
             "cookie": "_osm_totp_token=114327"
         }
         url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
-        # url = f"http://nominatim:8080/search?format=json&city={city}"
-        response = requests.get(url, headers=headers)
-        data = response.json()
-        print("OSM ", data)
         try:
-            print(data[0]['lat'], data[0]['lon'], data[0]['display_name'])
+            response = requests.get(url, headers=headers)
+            data = response.json()
             lat, lon = data[0]['lat'], data[0]['lon']
             name = data[0]['display_name'].split(',')[0]
         except Exception:

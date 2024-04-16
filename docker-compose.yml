@@ -1,7 +1,8 @@
 version: "3.7"
 
 volumes:
-  nominatim-data:
+  cache:
+    driver: local
 
 services:
   backend:
@@ -17,19 +18,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      nominatim:
-        condition: service_started
     environment:
       DATABASE_URL: jdbc:postgresql://db:5432/telebot
       DATABASE_USER: postgres
       DATABASE_PASSWORD: root
-      TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
+      TOKEN: "6596354658:AAFdzArjTxSavONNU8Qdqv3BZB6MlyBE1Rw"
 
   #  DATABASES
   db:
     image: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
       timeout: 30s
       retries: 5
@@ -50,18 +49,3 @@ services:
       PGADMIN_LISTEN_PORT: 5050
     ports:
       - "5050:5050"
-
-  nominatim:
-    container_name: nominatim
-    image: mediagis/nominatim:4.4
-    restart: always
-    ports:
-      - "8091:8080"
-    environment:
-#      PBF_URL: https://download.geofabrik.de/russia-latest.osm.pbf
-      PBF_URL: https://download.geofabrik.de/europe/monaco-latest.osm.pbf
-      FREEZE: true
-      IMPORT_STYLE: address
-    volumes:
-      - nominatim-data:/var/lib/postgresql/14/main
-    shm_size: 2gb
