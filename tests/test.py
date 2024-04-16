@@ -5,12 +5,13 @@ import unittest
 
 class TestCodeStyle(unittest.TestCase):
     def test_flake8_conformance(self):
-        project_dir = '.'
+        project_dir = '/src'
+        # project_dir = '.'
 
         python_files = []
         for root, dirs, files in os.walk(project_dir):
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith('py'):
                     python_files.append(os.path.join(root, file))
 
         all_errors = []
@@ -18,13 +19,14 @@ class TestCodeStyle(unittest.TestCase):
             result = subprocess.run(['flake8', python_file],
                                     capture_output=True, text=True)
             if result.returncode != 0:
-                all_errors.append(
+                error_message = (
                     f'Файл {python_file} не соответствует '
                     f'стандарту Flake8:\n{result.stdout}'
                 )
+                print(error_message)
+                all_errors.append(error_message)
 
-        if all_errors:
-            self.fail('\n'.join(all_errors))
+        self.assertEqual(len(all_errors), 0, '\n'.join(all_errors))
 
 
 if __name__ == '__main__':
