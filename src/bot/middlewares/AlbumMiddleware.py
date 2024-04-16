@@ -18,10 +18,10 @@ class AlbumMiddleware(BaseMiddleware):
         super().__init__()
 
     async def __call__(
-            self,
-            handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
-            message: Message,
-            data: dict[str, Any]
+        self,
+        handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
+        message: Message,
+        data: dict[str, Any],
     ) -> Any:
         if not message.media_group_id:
             await handler(message, data)
@@ -32,10 +32,10 @@ class AlbumMiddleware(BaseMiddleware):
             self.album_data[message.media_group_id] = [message]
             await asyncio.sleep(self.latency)
 
-            data['_is_last'] = True
+            data["_is_last"] = True
             data["album"] = self.album_data[message.media_group_id]
             await handler(message, data)
 
         if message.media_group_id and data.get("_is_last"):
             del self.album_data[message.media_group_id]
-            del data['_is_last']
+            del data["_is_last"]

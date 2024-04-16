@@ -13,7 +13,10 @@ class AgeState(State):
             return
 
         message = update.getMessage()
-        if self.context.user.age is None or message.text != self.context.getMessage("age_skipBtn"):
+        if (
+            self.context.user.age is None
+            or message.text != self.context.getMessage("age_skipBtn")
+        ):
             if message.text.isdigit() and (int(message.text) in range(1, 100)):
                 self.context.user.age = int(message.text)
             else:
@@ -30,11 +33,20 @@ class AgeState(State):
 
         if self.context.user.age is not None:
             kb = [
-                [types.KeyboardButton(text=self.context.getMessage("age_skipBtn"))],
+                [
+                    types.KeyboardButton(
+                        text=self.context.getMessage("age_skipBtn")
+                    )
+                ],
             ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
-            await message.answer(self.context.getMessage("age_text"), reply_markup=keyboard)
+            await message.answer(
+                self.context.getMessage("age_text"), reply_markup=keyboard
+            )
         else:
-            await message.answer(self.context.getMessage("age_text"), reply_markup=types.ReplyKeyboardRemove())
+            await message.answer(
+                self.context.getMessage("age_text"),
+                reply_markup=types.ReplyKeyboardRemove(),
+            )

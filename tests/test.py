@@ -6,12 +6,12 @@ import unittest
 class TestCodeStyle(unittest.TestCase):
     def test_flake8_conformance(self):
         project_dir = '/src'
-        # project_dir = '.'
+        # project_dir = '/home/alexey/prac/tele-meet-bot/src/bot'
 
         python_files = []
         for root, dirs, files in os.walk(project_dir):
             for file in files:
-                if file.endswith('py'):
+                if file.endswith('py') and file != '__init__.py':
                     python_files.append(os.path.join(root, file))
 
         all_errors = []

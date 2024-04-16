@@ -40,12 +40,26 @@ class StatusState(State):
             return
         message = update.getMessage()
         text = "Статус аккаунта: "
-        current_user_status = self.context.getMessage(self.context.user.status.value)
+        current_user_status = self.context.getMessage(
+            self.context.user.status.value
+        )
         text += current_user_status
         kb = [
-            [types.KeyboardButton(text=self.context.getMessage(self.enabled[1]))],
-            [types.KeyboardButton(text=self.context.getMessage(self.hidden[1]))],
-            [types.KeyboardButton(text=self.context.getMessage(self.disabled[1]))],
+            [
+                types.KeyboardButton(
+                    text=self.context.getMessage(self.enabled[1])
+                )
+            ],
+            [
+                types.KeyboardButton(
+                    text=self.context.getMessage(self.hidden[1])
+                )
+            ],
+            [
+                types.KeyboardButton(
+                    text=self.context.getMessage(self.disabled[1])
+                )
+            ],
             [types.KeyboardButton(text=self.context.getMessage("menuBtn"))],
         ]
         keyboard = types.ReplyKeyboardMarkup(
@@ -66,4 +80,3 @@ class StatusState(State):
             return
         await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
         await message.answer(description, reply_markup=keyboard)
-

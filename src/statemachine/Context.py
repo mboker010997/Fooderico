@@ -9,7 +9,7 @@ class Context:
         self.user = user
         if lang_code is None:
             lang_code = user.language_code
-        
+
         self.bot_config = BotConfig(lang_code)
         self.state = state
         self.sentMessage = None

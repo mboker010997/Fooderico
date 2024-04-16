@@ -8,6 +8,7 @@ import os
 from src.model.Localization import Localization
 from src.bot.middlewares import AlbumMiddleware
 
+
 class TelegramBot:
     def __init__(self):
         load_dotenv()
@@ -20,7 +21,7 @@ class TelegramBot:
         await self.dp.start_polling(self.bot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         dbcontroller = DBController()
         Localization.loadInfo()

@@ -21,9 +21,9 @@ class User:
         self.about = None  # string
         self.active_poll_id = None  # string
         self.chat_id = None  # string
-        self.food_preferance_and_goals = None # string
-        self.food_allergens = None # string
-        self.dietary = None # string
-        self.main_interests = None # string
-        self.others_interests = None # string
-        self.preferences_tags = None # string
+        self.food_preferance_and_goals = None  # string
+        self.food_allergens = None  # string
+        self.dietary = None  # string
+        self.main_interests = None  # string
+        self.others_interests = None  # string
+        self.preferences_tags = None  # string
