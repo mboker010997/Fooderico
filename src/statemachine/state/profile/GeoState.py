@@ -1,3 +1,4 @@
+GeoState.py
 from src.model.Geolocation import Geolocation, Status
 from src.statemachine.State import State
 from aiogram import types
@@ -104,7 +105,8 @@ class GeoState(State):
         await update.bot.send_message(chat_id=chatId, text=self.text,
                                       reply_markup=keyboard)
 
-    def getCityByGeolocation(self, geolocation):
+    @staticmethod
+    def getCityByGeolocation(geolocation):
         headers = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
@@ -124,6 +126,7 @@ class GeoState(State):
         lat = geolocation.latitude
         lon = geolocation.longitude
         url = f"http://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
+        # url = f"http://nominatim:8080/reverse?format=json&lat={lat}&lon={lon}"
         response = requests.get(url, headers=headers)
         data = response.json()
         try:
@@ -132,7 +135,8 @@ class GeoState(State):
             city = None
         return city
 
-    def getCoordinats(self, city):
+    @staticmethod
+    def getCoordinats(city):
         headers = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
@@ -150,17 +154,20 @@ class GeoState(State):
             "cookie": "_osm_totp_token=114327"
         }
         url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
+        # url = f"http://nominatim:8080/search?format=json&city={city}"
         response = requests.get(url, headers=headers)
-        # url = f"http://localhost:8091/search?format=json&city={city}"
-        # response = requests.get(url, headers=headers)
         data = response.json()
+        print("OSM ", data)
         try:
-            lat, lon, name = data[0]['lat'], data[0]['lon'], data[0]['name']
+            print(data[0]['lat'], data[0]['lon'], data[0]['display_name'])
+            lat, lon = data[0]['lat'], data[0]['lon']
+            name = data[0]['display_name'].split(',')[0]
         except Exception:
             lat, lon, name = None, None, None
         return lat, lon, name
 
-    def searchNearbyFeatures(self, latitude, longitude, radius):
+    @staticmethod
+    def searchNearbyFeatures(latitude, longitude, radius):
         overpass_url = "https://overpass-api.de/api/interpreter"
         query = f"""
         [out:json];
@@ -179,11 +186,12 @@ class GeoState(State):
         else:
             return []
 
-    def findNearestCity(self, geolocation):
+    @staticmethod
+    def findNearestCity(geolocation):
         lat = geolocation.latitude
         lon = geolocation.longitude
         for radius in range(50000, 150001, 50000):
-            nearest_cities = self.searchNearbyFeatures(lat, lon, radius)
+            nearest_cities = GeoState.searchNearbyFeatures(lat, lon, radius)
             if len(nearest_cities) == 0:
                 continue
             best_city = nearest_cities[0]

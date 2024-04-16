@@ -2,6 +2,11 @@
 
 docker-compose down
 
+#IMAGE_ID_nominatim=$(docker images -q mediagis/nominatim)
+#if [ -n "$IMAGE_ID_nominatim" ]; then
+#    docker rm -f $IMAGE_ID_nominatim
+#fi
+
 IMAGE_PGADMIN=$(docker images -q dpage/pgadmin4)
 if [ -n "$IMAGE_PGADMIN" ]; then
     docker rmi -f $IMAGE_PGADMIN
