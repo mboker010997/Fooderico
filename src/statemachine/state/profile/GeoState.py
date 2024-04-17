@@ -21,14 +21,19 @@ class GeoState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.geolocation is not None and message.text == self.context.getMessage("geo_skipBtn"):
+        if (
+            self.context.user.geolocation is not None
+            and message.text == self.context.getMessage("geo_skipBtn")
+        ):
             self.setStateInContext()
             self.context.saveToDb()
             return
 
         self.status = Status.INIT
         if message.location:
-            geolocation = Geolocation(message.location.latitude, message.location.longitude)
+            geolocation = Geolocation(
+                message.location.latitude, message.location.longitude
+            )
             self.context.user.geolocation = geolocation
             city = self.getCityByGeolocation(geolocation)
             if city:
@@ -75,34 +80,49 @@ class GeoState(State):
 
         if self.context.user.geolocation is not None:
             kb = [
-                [types.KeyboardButton(
-                    text="Передать геолокацию",
-                    request_location=True,
-                )],
-                [types.KeyboardButton(
-                    text=self.context.getMessage("geo_skipBtn")
-                )],
+                [
+                    types.KeyboardButton(
+                        text="Передать геолокацию",
+                        request_location=True,
+                    )
+                ],
+                [
+                    types.KeyboardButton(
+                        text=self.context.getMessage("geo_skipBtn")
+                    )
+                ],
             ]
         else:
             kb = [
-                [types.KeyboardButton(
-                    text="Передать геолокацию",
-                    request_location=True,
-                )],
+                [
+                    types.KeyboardButton(
+                        text="Передать геолокацию",
+                        request_location=True,
+                    )
+                ],
             ]
 
         if self.status == Status.CONFIRMATION:
-            kb.append([types.KeyboardButton(
-                text="Да, это мой город",
-            )])
-            kb.append([types.KeyboardButton(
-                text="Нет, это не мой город",
-            )])
+            kb.append(
+                [
+                    types.KeyboardButton(
+                        text="Да, это мой город",
+                    )
+                ]
+            )
+            kb.append(
+                [
+                    types.KeyboardButton(
+                        text="Нет, это не мой город",
+                    )
+                ]
+            )
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
         )
-        await update.bot.send_message(chat_id=chatId, text=self.text,
-                                      reply_markup=keyboard)
+        await update.bot.send_message(
+            chat_id=chatId, text=self.text, reply_markup=keyboard
+        )
 
     @staticmethod
     def getCityByGeolocation(geolocation):
@@ -111,16 +131,16 @@ class GeoState(State):
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",
-            "sec-ch-ua": "\"Brave\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
+            "sec-ch-ua": '"Brave";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
             "sec-ch-ua-mobile": "?1",
-            "sec-ch-ua-platform": "\"Android\"",
+            "sec-ch-ua-platform": '"Android"',
             "sec-fetch-dest": "document",
             "sec-fetch-mode": "navigate",
             "sec-fetch-site": "none",
             "sec-fetch-user": "?1",
             "sec-gpc": "1",
             "upgrade-insecure-requests": "1",
-            "cookie": "_osm_totp_token=114327"
+            "cookie": "_osm_totp_token=114327",
         }
         lat = geolocation.latitude
         lon = geolocation.longitude
@@ -140,16 +160,16 @@ class GeoState(State):
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",
-            "sec-ch-ua": "\"Brave\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
+            "sec-ch-ua": '"Brave";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
             "sec-ch-ua-mobile": "?1",
-            "sec-ch-ua-platform": "\"Android\"",
+            "sec-ch-ua-platform": '"Android"',
             "sec-fetch-dest": "document",
             "sec-fetch-mode": "navigate",
             "sec-fetch-site": "none",
             "sec-fetch-user": "?1",
             "sec-gpc": "1",
             "upgrade-insecure-requests": "1",
-            "cookie": "_osm_totp_token=114327"
+            "cookie": "_osm_totp_token=114327",
         }
         url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
         try:
@@ -171,9 +191,7 @@ class GeoState(State):
         );
         out body;
         """
-        params = {
-            "data": query
-        }
+        params = {"data": query}
         response = requests.get(overpass_url, params=params)
         if response.status_code == 200:
             data = response.json()
@@ -190,11 +208,17 @@ class GeoState(State):
             if len(nearest_cities) == 0:
                 continue
             best_city = nearest_cities[0]
-            best_city_dist = geodesic((lat, lon), (best_city['lat'], best_city['lon']), ellipsoid='WGS-84').m
+            best_city_dist = geodesic(
+                (lat, lon),
+                (best_city["lat"], best_city["lon"]),
+                ellipsoid="WGS-84",
+            ).m
             for city in nearest_cities:
-                current = geodesic((lat, lon), (city['lat'], city['lon']), ellipsoid='WGS-84').m
+                current = geodesic(
+                    (lat, lon), (city["lat"], city["lon"]), ellipsoid="WGS-84"
+                ).m
                 if best_city_dist > current:
                     best_city = city
                     best_city_dist = current
-            return best_city['tags']['name']
+            return best_city["tags"]["name"]
         return None

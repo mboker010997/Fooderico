@@ -5,6 +5,7 @@ from src.statemachine.state import menu
 from aiogram import types
 import re
 
+
 class OtherInterests(State):
     def __init__(self, context):
         super().__init__(context)
@@ -13,15 +14,19 @@ class OtherInterests(State):
         self.addBtn = self.context.getMessage("addBtn")
         self.deleteBtn = self.context.getMessage("deleteBtn")
         self.continueBtn = self.context.getMessage("continueBtn")
-    
 
     def updateTags(self, tags):
-        if (self.state == "add"):
+        if self.state == "add":
             self.context.user.others_interests += " " + tags
         else:
-            tmp = re.split(r'[ ,]+', tags)
-            self.context.user.others_interests = \
-            ' '.join([tag for tag in self.context.user.others_interests.split() if tag not in tmp])
+            tmp = re.split(r"[ ,]+", tags)
+            self.context.user.others_interests = " ".join(
+                [
+                    tag
+                    for tag in self.context.user.others_interests.split()
+                    if tag not in tmp
+                ]
+            )
 
     def processUpdate(self, update: Update):
         if not update.getMessage():
@@ -42,7 +47,6 @@ class OtherInterests(State):
                 self.is_updating = True
         self.context.saveToDb()
 
-        
     async def sendMessage(self, update: Update):
         if not update.getMessage():
             return
@@ -50,15 +54,25 @@ class OtherInterests(State):
         kb = [
             [types.KeyboardButton(text=self.context.getMessage("addBtn"))],
             [types.KeyboardButton(text=self.context.getMessage("deleteBtn"))],
-            [types.KeyboardButton(text=self.context.getMessage("continueBtn"))],
+            [
+                types.KeyboardButton(
+                    text=self.context.getMessage("continueBtn")
+                )
+            ],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
         if self.is_updating:
             if self.state == "add":
                 await message.answer(self.context.getMessage("add_interests"))
             elif self.state == "delete":
-                await message.answer(self.context.getMessage("delete_interests"))
+                await message.answer(
+                    self.context.getMessage("delete_interests")
+                )
         else:
-            await message.answer("Ваши интересы: " + bot.DBController().getUser(self.context.user.id).others_interests, reply_markup=keyboard)
+            await message.answer(
+                "Ваши интересы: "
+                + bot.DBController()
+                .getUser(self.context.user.id)
+                .others_interests,
+                reply_markup=keyboard,
+            )

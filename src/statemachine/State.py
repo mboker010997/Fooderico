@@ -7,7 +7,7 @@ class State:
     def __init__(self, context=None):
         self.nextState = self
         self.context = context
-    
+
     @abstractmethod
     def processUpdate(self, update: Update):
         pass
@@ -22,4 +22,3 @@ class State:
         except Exception as exc:
             logging.exception(exc)
         return self.context.state
-    

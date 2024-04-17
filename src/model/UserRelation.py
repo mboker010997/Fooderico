@@ -12,13 +12,14 @@ class UserRelation:
         self.relation_to_db_alias = {
             self.search_dislike: "BLACKLIST",
             self.search_skip: "SKIPPED",
-            self.search_like: "FOLLOW"
+            self.search_like: "FOLLOW",
         }
 
     def add_relation(self):
         cursor = bot.DBController().cursor
         cursor.execute(
-            f"SELECT * FROM tele_meet_relations WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}")
+            f"SELECT * FROM tele_meet_relations WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
+        )
         existing_relation = cursor.fetchone()
         if existing_relation:
             cursor.execute(
@@ -29,8 +30,10 @@ class UserRelation:
                 f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation) VALUES ({self.user_id}, {self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
             )
         if self.relation == self.search_like:
-            query = (f"SELECT * FROM tele_meet_relations WHERE user_id = {self.other_user_id} "
-                     f"AND other_user_id = {self.user_id} AND relation = 'FOLLOW'")
+            query = (
+                f"SELECT * FROM tele_meet_relations WHERE user_id = {self.other_user_id} "
+                f"AND other_user_id = {self.user_id} AND relation = 'FOLLOW'"
+            )
             bot.DBController().cursor.execute(query)
             other_user_rows = bot.DBController().cursor.fetchall()
             if other_user_rows:
@@ -44,7 +47,8 @@ class UserRelation:
     def match_select_one(self):
         cursor = bot.DBController().cursor
         cursor.execute(
-            f"SELECT * FROM tele_meet_match WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}")
+            f"SELECT * FROM tele_meet_match WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
+        )
         return cursor.fetchone()
 
     def add_match(self):
@@ -52,15 +56,19 @@ class UserRelation:
         if not existing_match:
             cursor = bot.DBController().cursor
             cursor.execute(
-                f"INSERT INTO tele_meet_match (user_id, other_user_id) VALUES ({self.user_id}, {self.other_user_id})")
+                f"INSERT INTO tele_meet_match (user_id, other_user_id) VALUES ({self.user_id}, {self.other_user_id})"
+            )
             cursor.execute(
-                f"INSERT INTO tele_meet_match (user_id, other_user_id) VALUES ({self.other_user_id}, {self.user_id})")
+                f"INSERT INTO tele_meet_match (user_id, other_user_id) VALUES ({self.other_user_id}, {self.user_id})"
+            )
 
     def remove_match(self):
         existing_match = self.match_select_one()
         if existing_match:
             cursor = bot.DBController().cursor
             cursor.execute(
-                f"DELETE FROM tele_meet_match WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id})")
+                f"DELETE FROM tele_meet_match WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id})"
+            )
             cursor.execute(
-                f"DELETE FROM tele_meet_match WHERE user_id = {self.other_user_id} AND other_user_id = {self.user_id})")
+                f"DELETE FROM tele_meet_match WHERE user_id = {self.other_user_id} AND other_user_id = {self.user_id})"
+            )

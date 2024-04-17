@@ -5,7 +5,6 @@ from aiogram import types
 
 
 class PhotoUploadState(State):
-
     def __init__(self, context):
         super().__init__(context)
         self.text = self.context.getMessage("photo_upload_text")
@@ -57,4 +56,3 @@ class PhotoUploadState(State):
             await message.answer(self.text, reply_markup=keyboard)
         else:
             await message.answer(self.text)
-

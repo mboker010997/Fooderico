@@ -22,7 +22,7 @@ class MenuState(State):
             self.statusBtn: menu.StatusState,
             self.viewChatsBtn: chat.ChatListState,
             self.aboutBtn: menu.AboutBotState,
-            self.contactsBtn: search.ContactsState
+            self.contactsBtn: search.ContactsState,
         }
 
     def processUpdate(self, update: Update):
@@ -33,7 +33,9 @@ class MenuState(State):
             if message.text in self.nextStateDict.keys():
                 if message.text == self.searchBtn:
                     self.context.setNextState(search.SearchState)
-                self.context.setState(self.nextStateDict.get(message.text)(self.context))
+                self.context.setState(
+                    self.nextStateDict.get(message.text)(self.context)
+                )
                 self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
@@ -48,9 +50,7 @@ class MenuState(State):
             [types.KeyboardButton(text=self.statusBtn)],
             [types.KeyboardButton(text=self.viewChatsBtn)],
             [types.KeyboardButton(text=self.aboutBtn)],
-            [types.KeyboardButton(text=self.contactsBtn)]
+            [types.KeyboardButton(text=self.contactsBtn)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
         return await message.answer(text, reply_markup=keyboard)

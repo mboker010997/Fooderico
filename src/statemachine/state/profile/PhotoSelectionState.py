@@ -13,7 +13,10 @@ class PhotoSelectionState(State):
         if not update.getMessage():
             return
         message = update.getMessage()
-        if self.context.user.photo_file_ids is None or message.text != self.context.getMessage("photo_skipBtn"):
+        if (
+            self.context.user.photo_file_ids is None
+            or message.text != self.context.getMessage("photo_skipBtn")
+        ):
             self.context.user.photo_file_ids = list()
             photo_ids = self.context.user.photo_file_ids
             if update.album is not None:
@@ -34,7 +37,6 @@ class PhotoSelectionState(State):
         self.context.setState(profile.AgeState(self.context))
         self.context.saveToDb()
 
-
     async def sendMessage(self, update: Update):
         if not update.getMessage():
             return
@@ -45,11 +47,20 @@ class PhotoSelectionState(State):
 
         if self.context.user.photo_file_ids is not None:
             kb = [
-                [types.KeyboardButton(text=self.context.getMessage("photo_skipBtn"))],
+                [
+                    types.KeyboardButton(
+                        text=self.context.getMessage("photo_skipBtn")
+                    )
+                ],
             ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
-            await message.answer(self.context.getMessage("photo_text"), reply_markup=keyboard)
+            await message.answer(
+                self.context.getMessage("photo_text"), reply_markup=keyboard
+            )
         else:
-            await message.answer(self.context.getMessage("photo_text"), reply_markup=types.ReplyKeyboardRemove())
+            await message.answer(
+                self.context.getMessage("photo_text"),
+                reply_markup=types.ReplyKeyboardRemove(),
+            )

@@ -15,7 +15,11 @@ class PhotoListState(State):
     async def __switchContext(self, update: model.Update):
         self.context.setState(PhotosState(self.context))
         print("In context: ", self.context.state)
-        print("In holder: ", model.StateUpdater.getState(update.getChatId()), update.getChatId())
+        print(
+            "In holder: ",
+            model.StateUpdater.getState(update.getChatId()),
+            update.getChatId(),
+        )
         self.context.saveToDb()
         await self.context.state.sendMessage(update)
 
@@ -34,9 +38,16 @@ class PhotoListState(State):
                 await message.answer_photo(photo=photo_id)
                 counter += 1
                 continue
-            delete_button = types.InlineKeyboardButton(text='Удалить', callback_data=f"delete_photo_{counter}")
-            choose_main_button = types.InlineKeyboardButton(text='Выбрать главной', callback_data=f"choose_main_photo_{counter}")
-            keyboard = types.InlineKeyboardMarkup(inline_keyboard=[[choose_main_button, delete_button]])
+            delete_button = types.InlineKeyboardButton(
+                text="Удалить", callback_data=f"delete_photo_{counter}"
+            )
+            choose_main_button = types.InlineKeyboardButton(
+                text="Выбрать главной",
+                callback_data=f"choose_main_photo_{counter}",
+            )
+            keyboard = types.InlineKeyboardMarkup(
+                inline_keyboard=[[choose_main_button, delete_button]]
+            )
             await message.answer_photo(photo=photo_id, reply_markup=keyboard)
             counter += 1
         await self.__switchContext(update)

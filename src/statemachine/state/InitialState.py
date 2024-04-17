@@ -22,7 +22,7 @@ class InitialState(State):
         # self.context.user.id = int(update.getChatId())  # remove this later
         self.context.user.chat_id = update.getChatId()
         self.context.user.language_code = lang_code
-        self.context.user.username = message.from_user.username # check this
+        self.context.user.username = message.from_user.username  # check this
 
         self.context.setState(RegisterState(self.context))
         self.context.saveToDb()

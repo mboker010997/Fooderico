@@ -48,7 +48,9 @@ class PollAnswer(Update):
 
 
 class CallbackQuery(Update):
-    def __init__(self, bot: Bot, dp: Dispatcher, callback_query: types.CallbackQuery):
+    def __init__(
+        self, bot: Bot, dp: Dispatcher, callback_query: types.CallbackQuery
+    ):
         super().__init__(bot, dp)
         self.callback_query = callback_query
 
