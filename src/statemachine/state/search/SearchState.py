@@ -1,5 +1,5 @@
 from src.statemachine import State
-from src.statemachine.state import menu, chat
+from src.statemachine.state import menu
 from src.model.UserRelation import UserRelation
 from src import bot
 from src.model import Update, Tags as tags
@@ -23,6 +23,7 @@ class SearchState(State):
         self.asked_more = False
         self.last_relation = None
         self.is_match = False
+
         self.nextStateDict = {
             self.menu_text: menu.MenuState,
         }
@@ -32,6 +33,7 @@ class SearchState(State):
         if not update.getMessage():
             return
         message = update.getMessage()
+
         if message.text in self.nextStateDict.keys():
             self.context.setState(
                 self.nextStateDict[update.getMessage().text](self.context)
@@ -106,9 +108,8 @@ class SearchState(State):
         chatId = update.getChatId()
         other_user = bot.MatchingClass().tagsMatchingQueue(chatId)
         if other_user is None:
-            kb = [
-                [types.KeyboardButton(text=self.menu_text)],
-            ]
+            kb = [[types.KeyboardButton(text=self.menu_text)],
+                  ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
@@ -117,6 +118,7 @@ class SearchState(State):
                 reply_markup=keyboard,
             )
             return
+
         other_user = bot.DBController().getUser(other_user)
 
         photo_ids = other_user.photo_file_ids
@@ -144,7 +146,8 @@ class SearchState(State):
             self.context.user.interests_tags, self.context.bot_config
         )
 
-        text = f"Пищевые предпочтения{preferences}\nОграничения: {restrictions}\nДиета: {diets}\nИнтересы: {interests}"
+        text = (f"Пищевые предпочтения{preferences}\nОграничения: "
+                f"{restrictions}\nДиета: {diets}\nИнтересы: {interests}")
         keyboard = self.__create_keyboard(
             for_more=True, photos_exist=(photo_ids and len(photo_ids) > 0)
         )

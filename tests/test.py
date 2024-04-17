@@ -6,7 +6,7 @@ import unittest
 class TestCodeStyle(unittest.TestCase):
     def test_flake8_conformance(self):
         project_dir = '/src'
-        # project_dir = '/home/alexey/prac/tele-meet-bot/src/bot'
+        project_dir = '/home/alexey/prac/tele-meet-bot/src/statemachine/state/search'
 
         python_files = []
         for root, dirs, files in os.walk(project_dir):
@@ -20,10 +20,9 @@ class TestCodeStyle(unittest.TestCase):
                                     capture_output=True, text=True)
             if result.returncode != 0:
                 error_message = (
-                    f'Файл {python_file} не соответствует '
-                    f'стандарту Flake8:\n{result.stdout}'
+                    f'File {python_file} does not conform '
+                    f'to the Flake8 standard:\n{result.stdout}'
                 )
-                print(error_message)
                 all_errors.append(error_message)
 
         self.assertEqual(len(all_errors), 0, '\n'.join(all_errors))

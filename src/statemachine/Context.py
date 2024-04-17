@@ -1,4 +1,3 @@
-from src import model
 from src.model.User import User
 from src.model.BotConfig import BotConfig
 from src import bot

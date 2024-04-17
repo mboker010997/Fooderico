@@ -2,21 +2,21 @@ from src.statemachine import State
 from src.statemachine.state import search, photos, profile, menu, chat
 from src.model import Update
 from aiogram import types
-from src import bot
 
 
 class MenuState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.searchBtn = "Поиск"
-        self.photosBtn = "Фотоальбом"
-        self.profileBtn = "Посмотреть профиль"
-        self.statusBtn = "Статус пользователя"
-        self.aboutBtn = "О сервисе"
-        self.contactsBtn = "Последние действия"
+        self.searchBtn = context.getMessage("menu_searchBtn")
+        self.photosBtn = context.getMessage("menu_photosBtn")
+        self.profileBtn = context.getMessage("menu_profileBtn")
+        self.statusBtn = context.getMessage("menu_statusBtn")
+        self.aboutBtn = context.getMessage("menu_aboutBtn")
+        self.contactsBtn = context.getMessage("menu_recentActions")
         self.viewChatsBtn = context.getMessage("menu_view_chats")
+
         self.nextStateDict = {
-            self.searchBtn: profile.GeoState,  # suggest changing geo before search
+            self.searchBtn: profile.GeoState,
             self.photosBtn: photos.PhotosState,
             self.profileBtn: profile.ShowProfileState,
             self.statusBtn: menu.StatusState,
