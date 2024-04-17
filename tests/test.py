@@ -6,7 +6,6 @@ import unittest
 class TestCodeStyle(unittest.TestCase):
     def test_flake8_conformance(self):
         project_dir = '/src'
-        project_dir = '/home/alexey/prac/tele-meet-bot/src/statemachine/state/search'
 
         python_files = []
         for root, dirs, files in os.walk(project_dir):
