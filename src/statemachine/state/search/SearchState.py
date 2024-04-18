@@ -28,7 +28,7 @@ class SearchState(State):
             self.menu_text: menu.MenuState,
         }
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         # add relations to db: BLACKLIST, SKIPPED, FOLLOW
         if not update.getMessage():
             return

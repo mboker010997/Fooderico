@@ -25,7 +25,7 @@ class MenuState(State):
             self.contactsBtn: search.ContactsState,
         }
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()

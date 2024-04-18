@@ -1,4 +1,4 @@
-from aiogram import Dispatcher, Bot, types
+from aiogram import types
 from src.model import Update, Message, PollAnswer, CallbackQuery
 import logging
 from src.model import StateUpdater
@@ -13,9 +13,11 @@ from src import bot
 
 
 class Handler:
-    def __init__(self, bot: Bot, dp: Dispatcher):
-        self.bot = bot
-        self.dp = dp
+    def __init__(self, telebot: bot.TelegramBot):
+        self.bot = telebot.bot
+        self.dp = telebot.dp
+        self.message_storage = telebot.message_storage
+        self.telebot = telebot
         self.register_handlers()
 
     async def update_handler(self, update: Update):
@@ -27,7 +29,7 @@ class Handler:
             )
 
         curState = StateUpdater.getState(chat_id)
-        nextState = curState.goNextState(update)
+        nextState = await curState.goNextState(update)
         try:
             newMessage = await nextState.sendMessage(update)
             StateUpdater.setSentMessage(chat_id, newMessage)
@@ -38,24 +40,24 @@ class Handler:
     def register_handlers(self):
         @self.dp.message(F.content_type.in_([CT.PHOTO]))
         async def handle_albums(message: mes, album: List[mes] = None):
-            update = Message(self.bot, self.dp, message)
+            update = Message(self.telebot, message)
             update.album = album
             await self.update_handler(update)
 
         @self.dp.poll_answer()
         async def poll_answer_handler(poll: types.PollAnswer):
-            update = PollAnswer(self.bot, self.dp, poll)
+            update = PollAnswer(self.telebot, poll)
             await self.update_handler(update)
 
         @self.dp.message()
         async def message_handler(message: mes):
-            update = Message(self.bot, self.dp, message)
+            update = Message(self.telebot, message)
             await self.update_handler(update)
 
         @self.dp.callback_query(F.data.startswith("go_anon_chat_"))
         async def transition_to_anon_chat(callback: types.CallbackQuery):
             chat_id = callback.from_user.id
-            update = CallbackQuery(self.bot, self.dp, callback)
+            update = CallbackQuery(self.telebot, callback)
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return
@@ -71,7 +73,7 @@ class Handler:
         @self.dp.callback_query(F.data.startswith("delete_photo_"))
         async def delete_photo_handler(callback: types.CallbackQuery):
             chat_id = callback.from_user.id
-            update = CallbackQuery(self.bot, self.dp, callback)
+            update = CallbackQuery(self.telebot, callback)
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return
@@ -89,7 +91,7 @@ class Handler:
         @self.dp.callback_query(F.data.startswith("choose_main_photo_"))
         async def main_photo_handler(callback: types.CallbackQuery):
             chat_id = callback.from_user.id
-            update = CallbackQuery(self.bot, self.dp, callback)
+            update = CallbackQuery(self.telebot, callback)
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return
@@ -107,7 +109,7 @@ class Handler:
 
         async def relation_handler(callback: types.CallbackQuery, relation):
             chat_id = callback.from_user.id
-            update = CallbackQuery(self.bot, self.dp, callback)
+            update = CallbackQuery(self.telebot, callback)
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return
@@ -154,7 +156,7 @@ class Handler:
             callback: types.CallbackQuery,
         ):
             chat_id = callback.from_user.id
-            update = CallbackQuery(self.bot, self.dp, callback)
+            update = CallbackQuery(self.telebot, callback)
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return

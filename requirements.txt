@@ -1,6 +1,5 @@
 aiogram==3.4.1
 asyncio
-multi-rake
 python-dotenv
 pyyml
 psycopg2-binary

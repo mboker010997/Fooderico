@@ -16,7 +16,7 @@ class GeoState(State):
         self.counter = -1
         self.status = Status.INIT
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()

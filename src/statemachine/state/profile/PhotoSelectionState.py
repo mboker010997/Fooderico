@@ -9,7 +9,7 @@ class PhotoSelectionState(State):
         super().__init__(context)
         self.is_error = False
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()

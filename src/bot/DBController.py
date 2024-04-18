@@ -1,7 +1,7 @@
 import psycopg2
 import re
 from config import *
-from src.model.User import User
+from src import model
 from src.statemachine.state import *
 from src import model
 import logging
@@ -192,7 +192,7 @@ class DBController:
     def getUser(self, id):
         user_info = self.getUserDict(id)
         if user_info:
-            user = User()
+            user = model.User()
             for key in user_info:
                 setattr(user, key, user_info[key])
             if user.state_class is not None:
@@ -284,7 +284,7 @@ class DBController:
         id = self.getIdByChatId(chat_id)
 
         if id is None:
-            return User()
+            return model.User()
         return self.getUser(id)
 
     def getUserTags(self, chat_id):

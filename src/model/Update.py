@@ -4,9 +4,10 @@ from abc import abstractmethod
 
 
 class Update:
-    def __init__(self, bot: Bot, dp: Dispatcher):
-        self.bot = bot
-        self.dp = dp
+    def __init__(self, telebot):
+        self.bot = telebot.bot
+        self.dp = telebot.dp
+        self.message_storage = telebot.message_storage
         self.album = None
 
     @abstractmethod
@@ -24,8 +25,8 @@ class Update:
 
 
 class Message(Update):
-    def __init__(self, bot: Bot, dp: Dispatcher, message: types.Message):
-        super().__init__(bot, dp)
+    def __init__(self, telebot, message: types.Message):
+        super().__init__(telebot)
         self.message = message
 
     def getChatId(self):
@@ -36,8 +37,8 @@ class Message(Update):
 
 
 class PollAnswer(Update):
-    def __init__(self, bot: Bot, dp: Dispatcher, poll: types.PollAnswer):
-        super().__init__(bot, dp)
+    def __init__(self, telebot, poll: types.PollAnswer):
+        super().__init__(telebot)
         self.poll = poll
 
     def getChatId(self):
@@ -49,9 +50,9 @@ class PollAnswer(Update):
 
 class CallbackQuery(Update):
     def __init__(
-        self, bot: Bot, dp: Dispatcher, callback_query: types.CallbackQuery
+        self, telebot, callback_query: types.CallbackQuery
     ):
-        super().__init__(bot, dp)
+        super().__init__(telebot)
         self.callback_query = callback_query
 
     def getChatId(self):

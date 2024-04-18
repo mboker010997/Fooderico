@@ -11,7 +11,7 @@ class PhotoUploadState(State):
         self.exit_command = "/exit"
         self.is_error = False
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
