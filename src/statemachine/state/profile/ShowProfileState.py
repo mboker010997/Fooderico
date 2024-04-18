@@ -2,7 +2,7 @@ from src.statemachine.State import State
 from src.model.Update import Update
 from aiogram import types
 from src.statemachine.state import menu, profile
-from src.model import Tags as tags
+from src.model import Tags as TagsModel
 
 
 class ShowProfileState(State):
@@ -27,16 +27,12 @@ class ShowProfileState(State):
         message = update.getMessage()
         text = self.context.get_message("show_profile_text")
         await message.answer(text)
-        kb = [
-            [
-                types.KeyboardButton(
-                    text=self.context.get_message("edit_profileBtn")
-                )
-            ],
+        buttons = [
+            [types.KeyboardButton(text=self.context.get_message("edit_profileBtn"))],
             [types.KeyboardButton(text=self.context.get_message("menuBtn"))],
         ]
         keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
         )
         photo_ids = self.context.user.photo_file_ids
         name = self.context.user.profile_name
@@ -44,16 +40,16 @@ class ShowProfileState(State):
         city = self.context.user.city
         info = self.context.user.about
 
-        preferences = tags.getReadableTagsDescription(
+        preferences = TagsModel.getReadableTagsDescription(
             self.context.user.preferences_tags, self.context.bot_config
         )
-        restrictions = tags.getReadableTagsDescription(
+        restrictions = TagsModel.getReadableTagsDescription(
             self.context.user.restrictions_tags, self.context.bot_config
         )
-        diets = tags.getReadableTagsDescription(
+        diets = TagsModel.getReadableTagsDescription(
             self.context.user.dietary, self.context.bot_config
         )
-        interests = tags.getReadableTagsDescription(
+        interests = TagsModel.getReadableTagsDescription(
             self.context.user.interests_tags, self.context.bot_config
         )
 

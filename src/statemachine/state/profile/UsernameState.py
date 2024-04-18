@@ -13,10 +13,7 @@ class UsernameState(State):
             return
 
         message = update.getMessage()
-        if (
-            self.context.user.profile_name is None
-            or message.text != self.context.get_message("username_skipBtn")
-        ):
+        if self.context.user.profile_name is None or message.text != self.context.get_message("username_skipBtn"):
             self.context.user.profile_name = message.text
         self.context.set_state(profile.PhotoSelectionState(self.context))
         self.context.save_to_db()
@@ -27,15 +24,11 @@ class UsernameState(State):
         message = update.getMessage()
 
         if self.context.user.profile_name is not None:
-            kb = [
-                [
-                    types.KeyboardButton(
-                        text=self.context.get_message("username_skipBtn")
-                    )
-                ],
+            buttons = [
+                [types.KeyboardButton(text=self.context.get_message("username_skipBtn"))],
             ]
             keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+                keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
             )
             await message.answer(
                 self.context.get_message("username_text"), reply_markup=keyboard

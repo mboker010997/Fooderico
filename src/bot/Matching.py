@@ -1,7 +1,7 @@
 from src import bot
 from src.model.Status import Status
 import re
-from src.algo.TagsExtraction import extractTagsFromText
+from src.algo.TagsExtraction import extract_tags_from_text
 
 
 class MatchingClass:
@@ -20,7 +20,7 @@ class MatchingClass:
         user = bot.DBController().getUser(id)
         about_text = user.about
         lang_code = user.language_code
-        return ",".join(extractTagsFromText(about_text, lang_code))
+        return ",".join(extract_tags_from_text(about_text, lang_code))
 
     def matchOneTag(self, first_answers, second_answers):
         list_first_answers = re.split(", |,", first_answers)

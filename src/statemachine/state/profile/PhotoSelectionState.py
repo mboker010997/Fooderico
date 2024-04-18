@@ -13,10 +13,7 @@ class PhotoSelectionState(State):
         if not update.getMessage():
             return
         message = update.getMessage()
-        if (
-            self.context.user.photo_file_ids is None
-            or message.text != self.context.get_message("photo_skipBtn")
-        ):
+        if self.context.user.photo_file_ids is None or message.text != self.context.get_message("photo_skipBtn"):
             self.context.user.photo_file_ids = list()
             photo_ids = self.context.user.photo_file_ids
             if update.album is not None:
@@ -46,15 +43,11 @@ class PhotoSelectionState(State):
             return
 
         if self.context.user.photo_file_ids is not None:
-            kb = [
-                [
-                    types.KeyboardButton(
-                        text=self.context.get_message("photo_skipBtn")
-                    )
-                ],
+            buttons = [
+                [types.KeyboardButton(text=self.context.get_message("photo_skipBtn"))],
             ]
             keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+                keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
             )
             await message.answer(
                 self.context.get_message("photo_text"), reply_markup=keyboard

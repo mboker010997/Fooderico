@@ -7,16 +7,14 @@ from aiogram import types
 class AgeState(State):
     def __init__(self, context):
         super().__init__(context)
+        self.text = self.context.get_message("age_text")
 
     async def process_update(self, update: Update):
         if not update.getMessage():
             return
 
         message = update.getMessage()
-        if (
-            self.context.user.age is None
-            or message.text != self.context.get_message("age_skipBtn")
-        ):
+        if self.context.user.age is None or message.text != self.context.get_message("age_skipBtn"):
             if message.text.isdigit() and (int(message.text) in range(1, 100)):
                 self.context.user.age = int(message.text)
             else:
@@ -32,21 +30,12 @@ class AgeState(State):
         message = update.getMessage()
 
         if self.context.user.age is not None:
-            kb = [
-                [
-                    types.KeyboardButton(
-                        text=self.context.get_message("age_skipBtn")
-                    )
-                ],
+            buttons = [
+                [types.KeyboardButton(text=self.context.get_message("age_skipBtn"))],
             ]
             keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+                keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
             )
-            await message.answer(
-                self.context.get_message("age_text"), reply_markup=keyboard
-            )
+            await message.answer(self.text, reply_markup=keyboard)
         else:
-            await message.answer(
-                self.context.get_message("age_text"),
-                reply_markup=types.ReplyKeyboardRemove(),
-            )
+            await message.answer(self.text, reply_markup=types.ReplyKeyboardRemove())

@@ -1,15 +1,15 @@
 from src.statemachine import State
 from src.statemachine.state import profile
 from src.model import Update
-from src.model import Tags as tags
+from src.model import Tags as TagsModel
 from aiogram import types
 
 
 class InterestsTagState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.options = tags.interestsTags.copy()
-        self.options.append(tags.nothing_tag)
+        self.options = TagsModel.interestsTags.copy()
+        self.options.append(TagsModel.nothing_tag)
         self.hasPoll = True
 
     async def process_update(self, update: Update):
@@ -26,13 +26,11 @@ class InterestsTagState(State):
             return
 
         poll_answer = update.getPollAnswer()
-        if poll_answer and int(poll_answer.poll_id) == (
-            int(self.context.user.active_poll_id)
-        ):
+        if poll_answer and int(poll_answer.poll_id) == int(self.context.user.active_poll_id):
             self.context.user.interests_tags = set()
             for option_id in poll_answer.option_ids:
                 option_name = self.options[option_id]
-                if option_name == tags.nothing_tag:
+                if option_name == TagsModel.nothing_tag:
                     continue
                 self.context.user.interests_tags.add(option_name)
             self.context.user.active_poll_id = None
@@ -43,15 +41,11 @@ class InterestsTagState(State):
     async def send_message(self, update: Update):
         options = list(map(lambda x: self.context.get_message(x), self.options))
 
-        kb = [
-            [
-                types.KeyboardButton(
-                    text=self.context.get_message("interests_skipBtn")
-                )
-            ],
+        buttons = [
+            [types.KeyboardButton(text=self.context.get_message("interests_skipBtn"))],
         ]
         keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
         )
 
         if self.hasPoll:

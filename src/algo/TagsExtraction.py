@@ -1,4 +1,4 @@
-# from multi_rake import Rake
+from multi_rake import Rake
 
 train_text = (
     "У меня аллергия на молоко. Люблю играть в футбол. Ищу собесдника."
@@ -6,12 +6,11 @@ train_text = (
 )
 
 
-def extractTagsFromText(text, lang_code):
-    # rake = Rake(
-    #     max_words=1,
-    #     language_code=lang_code,
-    # )
-    # keywords = rake.apply(text, text_for_stopwords=train_text)[:10]
-    # tags = [tag[0] for tag in keywords]
-    # return tags
-    return []
+def extract_tags_from_text(text, lang_code):
+    rake = Rake(
+        max_words=1,
+        language_code=lang_code,
+    )
+    keywords = rake.apply(text, text_for_stopwords=train_text)[:10]
+    tags = [tag[0] for tag in keywords]
+    return tags

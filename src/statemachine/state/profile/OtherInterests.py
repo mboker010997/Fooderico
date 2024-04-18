@@ -15,7 +15,7 @@ class OtherInterests(State):
         self.deleteBtn = self.context.get_message("deleteBtn")
         self.continueBtn = self.context.get_message("continueBtn")
 
-    def updateTags(self, tags):
+    def update_tags(self, tags):
         if self.state == "add":
             self.context.user.others_interests += " " + tags
         else:
@@ -33,7 +33,7 @@ class OtherInterests(State):
             return
         message = update.getMessage()
         if self.is_updating:
-            self.updateTags(message.text)
+            self.update_tags(message.text)
             self.is_updating = False
         else:
             if message.text == self.addBtn:
@@ -51,28 +51,19 @@ class OtherInterests(State):
         if not update.getMessage():
             return
         message = update.getMessage()
-        kb = [
+        buttons = [
             [types.KeyboardButton(text=self.context.get_message("addBtn"))],
             [types.KeyboardButton(text=self.context.get_message("deleteBtn"))],
-            [
-                types.KeyboardButton(
-                    text=self.context.get_message("continueBtn")
-                )
-            ],
+            [types.KeyboardButton(text=self.context.get_message("continueBtn"))],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         if self.is_updating:
             if self.state == "add":
                 await message.answer(self.context.get_message("add_interests"))
             elif self.state == "delete":
-                await message.answer(
-                    self.context.get_message("delete_interests")
-                )
+                await message.answer(self.context.get_message("delete_interests"))
         else:
             await message.answer(
-                "Ваши интересы: "
-                + bot.DBController()
-                .getUser(self.context.user.id)
-                .others_interests,
+                "Ваши интересы: " + bot.DBController().getUser(self.context.user.id).others_interests,
                 reply_markup=keyboard,
             )

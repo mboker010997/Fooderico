@@ -13,10 +13,7 @@ class GenderState(State):
             return
 
         message = update.getMessage()
-        if (
-            self.context.user.gender is None
-            or message.text != self.context.get_message("gender_skipBtn")
-        ):
+        if self.context.user.gender is None or message.text != self.context.get_message("gender_skipBtn"):
             if message.text == self.context.get_message("gender_M"):
                 gender = model.Gender.MALE
             elif message.text == self.context.get_message("gender_F"):
@@ -33,21 +30,17 @@ class GenderState(State):
             return
         message = update.getMessage()
 
-        kb = [
+        buttons = [
             [types.KeyboardButton(text=self.context.get_message("gender_M"))],
             [types.KeyboardButton(text=self.context.get_message("gender_F"))],
         ]
         if self.context.user.gender is not None:
-            kb.append(
-                [
-                    types.KeyboardButton(
-                        text=self.context.get_message("gender_skipBtn")
-                    )
-                ]
+            buttons.append(
+                [types.KeyboardButton(text=self.context.get_message("gender_skipBtn"))]
             )
 
         keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
         )
         await message.answer(
             self.context.get_message("gender_text"), reply_markup=keyboard
