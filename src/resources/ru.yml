@@ -114,6 +114,9 @@ tele-meet-bot:
     photo_upload_text: "Прикрепите фотографию или несколько фотографий"
     photo_upload_error: "Загрузите фото, а не файл. Если хотите выйти, то нажмите на кнопку Назад"
     photo_list_empty: "Пусто"
+    photo_back: "Назад"
+    photo_choose: "Выбрать главной"
+    photo_delete: "Удалить"
     # Status
     status_text: "Статус аккаунта"
     status_enabled: "Активен"
