@@ -9,24 +9,24 @@ class AboutState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
 
         if (
             self.context.user.about is None
-            or message.text != self.context.getMessage("about_skipBtn")
+            or message.text != self.context.get_message("about_skipBtn")
         ):
             self.context.user.about = message.text
             self.context.user.others_interests = (
                 Matching.MatchingClass().getOtherTags(message.text)
             )
 
-        self.context.setState(profile.OtherInterests(self.context))
-        self.context.saveToDb()
+        self.context.set_state(profile.OtherInterests(self.context))
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -35,7 +35,7 @@ class AboutState(State):
             kb = [
                 [
                     types.KeyboardButton(
-                        text=self.context.getMessage("about_skipBtn")
+                        text=self.context.get_message("about_skipBtn")
                     )
                 ],
             ]
@@ -43,10 +43,10 @@ class AboutState(State):
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
             await message.answer(
-                self.context.getMessage("about_text"), reply_markup=keyboard
+                self.context.get_message("about_text"), reply_markup=keyboard
             )
         else:
             await message.answer(
-                self.context.getMessage("about_text"),
+                self.context.get_message("about_text"),
                 reply_markup=types.ReplyKeyboardRemove(),
             )

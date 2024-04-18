@@ -33,6 +33,6 @@ def similarity(user, other_user, context):
                 if user_tag == over_user_tag:
                     tags.append(over_user_tag)
 
-    tags = [context.getMessage(t) for t in tags]
+    tags = [context.get_message(t) for t in tags]
 
     return ", ".join(tags)

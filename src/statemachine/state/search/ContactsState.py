@@ -8,20 +8,20 @@ from aiogram import types
 class ContactsState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.menu_text = self.context.getMessage("menu_text")
+        self.menu_text = self.context.get_message("menu_text")
         self.nextStateDict = {
             self.menu_text: menu.MenuState,
         }
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         pass
 
     async def __switchContext(self, update: Update):
-        self.context.setState(menu.MenuState(self.context))
-        self.context.saveToDb()
-        await self.context.state.sendMessage(update)
+        self.context.set_state(menu.MenuState(self.context))
+        self.context.save_to_db()
+        await self.context.state.send_message(update)
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -45,64 +45,52 @@ class ContactsState(State):
             text = ""
 
             if other_relation == "FOLLOW":
-                text = self.context.getMessage("contacts_you_have_liked")
+                text = self.context.get_message("contacts_you_have_liked")
                 buttons = [[
                         types.InlineKeyboardButton(
-                            text=self.context.getMessage(
-                                "contacts_change_to_dislike"
-                            ),
+                            text=self.context.get_message("contacts_change_to_dislike"),
                             callback_data=f"change_to_dislike_{counter}",
                         )],
                     [types.InlineKeyboardButton(
-                            text=self.context.getMessage(
-                                "contacts_change_to_skip"
-                            ),
+                            text=self.context.get_message("contacts_change_to_skip"),
                             callback_data=f"change_to_skip_{counter}",
                         )],
                     [types.InlineKeyboardButton(
-                            text=self.context.getMessage("contacts_remove"),
+                            text=self.context.get_message("contacts_remove"),
                             callback_data=f"remove_{counter}"
                         )],
                 ]
 
             elif other_relation == "BLACKLIST":
-                text = self.context.getMessage("contacts_you_have_disliked")
+                text = self.context.get_message("contacts_you_have_disliked")
                 buttons = [[
                         types.InlineKeyboardButton(
-                            text=self.context.getMessage(
-                                "contacts_change_to_like"
-                            ),
+                            text=self.context.get_message("contacts_change_to_like"),
                             callback_data=f"change_to_like_{counter}",
                         )],
                     [types.InlineKeyboardButton(
-                            text=self.context.getMessage(
-                                "contacts_change_to_skip"
-                            ),
+                            text=self.context.get_message("contacts_change_to_skip"),
                             callback_data=f"change_to_skip_{counter}",
                         )],
                     [types.InlineKeyboardButton(
-                            text=self.context.getMessage("contacts_remove"),
+                            text=self.context.get_message("contacts_remove"),
                             callback_data=f"remove_{counter}"
                         )],
                 ]
 
             elif other_relation == "SKIPPED":
-                text = self.context.getMessage("contacts_you_have_skiped")
+                text = self.context.get_message("contacts_you_have_skiped")
                 buttons = [[
                         types.InlineKeyboardButton(
-                            text=self.context.getMessage(
-                                "contacts_change_to_like"
-                            ),
+                            text=self.context.get_message("contacts_change_to_like"),
                             callback_data=f"change_to_like_{counter}",
                         )],
                     [types.InlineKeyboardButton(
-                            text=self.context.getMessage(
-                                "contacts_change_to_dislike"
-                            ),
+                            text=self.context.get_message("contacts_change_to_dislike"),
                             callback_data=f"change_to_dislike_{counter}",
                         )],
                     [types.InlineKeyboardButton(
-                            text=self.context.getMessage("contacts_remove"),
+                            text=self.context.get_message("contacts_remove"),
                             callback_data=f"remove_{counter}"
                         )],
                 ]

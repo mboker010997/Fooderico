@@ -29,9 +29,9 @@ class Handler:
             )
 
         curState = StateUpdater.getState(chat_id)
-        nextState = await curState.goNextState(update)
+        nextState = await curState.go_next_state(update)
         try:
-            newMessage = await nextState.sendMessage(update)
+            newMessage = await nextState.send_message(update)
             StateUpdater.setSentMessage(chat_id, newMessage)
         except Exception as exc:
             logging.exception("Handler")
@@ -65,10 +65,10 @@ class Handler:
             expected_prefix = "go_anon_chat_"
             other_chat_id = int(callback.data[len(expected_prefix) :])
             context.other_chat_id = other_chat_id
-            context.setState(chat.ChatState(context))
-            context.saveToDb()
+            context.set_state(chat.ChatState(context))
+            context.save_to_db()
 
-            await context.state.sendMessage(update)
+            await context.state.send_message(update)
 
         @self.dp.callback_query(F.data.startswith("delete_photo_"))
         async def delete_photo_handler(callback: types.CallbackQuery):
@@ -84,8 +84,8 @@ class Handler:
             photo_ids = user.photo_file_ids
             photo_id = photo_ids[int(idx)]
             photo_ids.remove(photo_id)
-            context.saveToDb()
-            await context.state.sendMessage(update)
+            context.save_to_db()
+            await context.state.send_message(update)
             await callback.answer()
 
         @self.dp.callback_query(F.data.startswith("choose_main_photo_"))
@@ -103,8 +103,8 @@ class Handler:
             photo_ids = user.photo_file_ids
             i, j = 0, int(idx)
             photo_ids[i], photo_ids[j] = photo_ids[j], photo_ids[i]
-            context.saveToDb()
-            await context.state.sendMessage(update)
+            context.save_to_db()
+            await context.state.send_message(update)
             await callback.answer()
 
         async def relation_handler(callback: types.CallbackQuery, relation):
@@ -129,8 +129,8 @@ class Handler:
                 f"WHERE"
                 f"user_id = {user.id} AND other_user_id = {other_user_id};"
             )
-            context.saveToDb()
-            await context.state.sendMessage(update)
+            context.save_to_db()
+            await context.state.send_message(update)
             await callback.answer()
 
         @self.dp.callback_query(F.data.startswith("change_to_like_"))
@@ -174,6 +174,6 @@ class Handler:
                 f"DELETE FROM tele_meet_relations WHERE"
                 f"user_id = {user.id} AND other_user_id = {other_user_id};"
             )
-            context.saveToDb()
-            await context.state.sendMessage(update)
+            context.save_to_db()
+            await context.state.send_message(update)
             await callback.answer()

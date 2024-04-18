@@ -11,9 +11,9 @@ class OtherInterests(State):
         super().__init__(context)
         self.state = None
         self.is_updating = False
-        self.addBtn = self.context.getMessage("addBtn")
-        self.deleteBtn = self.context.getMessage("deleteBtn")
-        self.continueBtn = self.context.getMessage("continueBtn")
+        self.addBtn = self.context.get_message("addBtn")
+        self.deleteBtn = self.context.get_message("deleteBtn")
+        self.continueBtn = self.context.get_message("continueBtn")
 
     def updateTags(self, tags):
         if self.state == "add":
@@ -28,7 +28,7 @@ class OtherInterests(State):
                 ]
             )
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -43,30 +43,30 @@ class OtherInterests(State):
                 self.state = "delete"
                 self.is_updating = True
             elif message.text == self.continueBtn:
-                self.context.setState(menu.MenuState(self.context))
+                self.context.set_state(menu.MenuState(self.context))
                 self.is_updating = True
-        self.context.saveToDb()
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
         kb = [
-            [types.KeyboardButton(text=self.context.getMessage("addBtn"))],
-            [types.KeyboardButton(text=self.context.getMessage("deleteBtn"))],
+            [types.KeyboardButton(text=self.context.get_message("addBtn"))],
+            [types.KeyboardButton(text=self.context.get_message("deleteBtn"))],
             [
                 types.KeyboardButton(
-                    text=self.context.getMessage("continueBtn")
+                    text=self.context.get_message("continueBtn")
                 )
             ],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
         if self.is_updating:
             if self.state == "add":
-                await message.answer(self.context.getMessage("add_interests"))
+                await message.answer(self.context.get_message("add_interests"))
             elif self.state == "delete":
                 await message.answer(
-                    self.context.getMessage("delete_interests")
+                    self.context.get_message("delete_interests")
                 )
         else:
             await message.answer(

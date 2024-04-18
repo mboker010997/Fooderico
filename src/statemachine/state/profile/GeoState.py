@@ -16,17 +16,17 @@ class GeoState(State):
         self.counter = -1
         self.status = Status.INIT
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
 
         if (
             self.context.user.geolocation is not None
-            and message.text == self.context.getMessage("geo_skipBtn")
+            and message.text == self.context.get_message("geo_skipBtn")
         ):
             self.setStateInContext()
-            self.context.saveToDb()
+            self.context.save_to_db()
             return
 
         self.status = Status.INIT
@@ -63,19 +63,19 @@ class GeoState(State):
                 geolocation = Geolocation(latitude, longitude)
                 self.context.user.city = name
                 self.context.user.geolocation = geolocation
-                self.context.setState(profile.AboutState(self.context))
+                self.context.set_state(profile.AboutState(self.context))
                 self.setStateInContext()
             else:
                 self.text = "Координаты города не найдены. Попробуйте еще раз"
-        self.context.saveToDb()
+        self.context.save_to_db()
 
     def setStateInContext(self):
-        nextState = self.context.getNextState()
+        nextState = self.context.get_next_state()
         if nextState is None:
             nextState = profile.AboutState
-        self.context.setState(nextState(self.context))
+        self.context.set_state(nextState(self.context))
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         chatId = update.getChatId()
 
         if self.context.user.geolocation is not None:
@@ -88,7 +88,7 @@ class GeoState(State):
                 ],
                 [
                     types.KeyboardButton(
-                        text=self.context.getMessage("geo_skipBtn")
+                        text=self.context.get_message("geo_skipBtn")
                     )
                 ],
             ]

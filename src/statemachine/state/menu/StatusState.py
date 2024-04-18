@@ -14,41 +14,39 @@ class StatusState(State):
         self.hidden = ["status_hidden", "changeStatus_hideBtn"]
         self.disabled = ["status_disabled", "changeStatus_disableBtn"]
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         text = update.getMessage().text
-        if text == self.context.getMessage("menuBtn"):
-            self.context.setState(menu.MenuState(self.context))
-        elif text == self.context.getMessage(self.enabled[1]):
+        if text == self.context.get_message("menuBtn"):
+            self.context.set_state(menu.MenuState(self.context))
+        elif text == self.context.get_message(self.enabled[1]):
             self.context.user.status = model.Status.ENABLED
-        elif text == self.context.getMessage(self.hidden[1]):
+        elif text == self.context.get_message(self.hidden[1]):
             self.context.user.status = model.Status.HIDDEN
-        elif text == self.context.getMessage(self.disabled[1]):
+        elif text == self.context.get_message(self.disabled[1]):
             self.context.user.status = model.Status.DISABLED
-        self.context.saveToDb()
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
 
         message = update.getMessage()
         text = "Статус аккаунта: "
-        current_user_status = self.context.getMessage(
-            self.context.user.status.value
-        )
+        current_user_status = self.context.get_message(self.context.user.status.value)
 
         text += current_user_status
         kb = [[types.KeyboardButton(
-                    text=self.context.getMessage(self.enabled[1]))],
+                    text=self.context.get_message(self.enabled[1]))],
               [types.KeyboardButton(
-                    text=self.context.getMessage(self.hidden[1])
+                    text=self.context.get_message(self.hidden[1])
                 )],
               [types.KeyboardButton(
-                    text=self.context.getMessage(self.disabled[1])
+                    text=self.context.get_message(self.disabled[1])
                 )],
               [types.KeyboardButton(
-                  text=self.context.getMessage("menuBtn"))],
+                  text=self.context.get_message("menuBtn"))],
               ]
 
         keyboard = types.ReplyKeyboardMarkup(
@@ -56,11 +54,11 @@ class StatusState(State):
         )
 
         if self.context.user.status == model.Status.ENABLED:
-            description = self.context.getMessage("status_enabled_desc")
+            description = self.context.get_message("status_enabled_desc")
         elif self.context.user.status == model.Status.HIDDEN:
-            description = self.context.getMessage("status_hidden_desc")
+            description = self.context.get_message("status_hidden_desc")
         elif self.context.user.status == model.Status.DISABLED:
-            description = self.context.getMessage("status_disabled_desc")
+            description = self.context.get_message("status_disabled_desc")
         else:
             logging.error(f"no such user status : {self.context.user.status}")
             return

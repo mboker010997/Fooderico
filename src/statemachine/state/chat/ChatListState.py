@@ -9,16 +9,16 @@ class ChatListState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         print("in chat list")
         pass
 
     async def __switchContext(self, update: Update):
-        self.context.setState(menu.MenuState(self.context))
-        self.context.saveToDb()
-        await self.context.state.sendMessage(update)
+        self.context.set_state(menu.MenuState(self.context))
+        self.context.save_to_db()
+        await self.context.state.send_message(update)
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -29,7 +29,7 @@ class ChatListState(State):
         list_of_user_ids = [user_id[0] for user_id in list_of_matches]
 
         if not list_of_user_ids:
-            await message.answer(self.context.getMessage("chat_no_match"))
+            await message.answer(self.context.get_message("chat_no_match"))
         for user_id in list_of_user_ids:
             await self.__send_match(update, user_id, self.context.user.id)
         await self.__switchContext(update)
