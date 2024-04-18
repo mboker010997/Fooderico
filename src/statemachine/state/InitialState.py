@@ -12,7 +12,7 @@ class InitialState(State):
     async def sendMessage(self, update: Update):
         pass
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()

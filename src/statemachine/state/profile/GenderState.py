@@ -8,7 +8,7 @@ class GenderState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    def processUpdate(self, update: model.Update):
+    async def processUpdate(self, update: model.Update):
         if not update.getMessage():
             return
 

@@ -11,27 +11,58 @@ class ChatState(State):
         super().__init__(context)
         self.other_chat_id = self.context.other_chat_id
         self.share_contacts = False
+        self.first_entered = True
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
+        self.first_entered = False
         if update.getMessage().text == "Выйти из чата":
+            await update.message_storage.close(update.getChatId(), self.other_chat_id)
             self.context.setState(menu.MenuState(self.context))
             self.context.saveToDb()
         elif update.getMessage().text == "Поделиться контактами":
             self.share_contacts = True
+        else:
+            message = update.getMessage()
+            if message is not None:
+                self.text = message.text
 
     async def sendMessage(self, update: Update):
         # if not update.getMessage():
         #     return
-        callback = update.getCallbackQuery()
 
+        callback = update.getCallbackQuery()
+        chat_id = update.getChatId()
         user = bot.DBController().getUserByChatId(update.getChatId())
         other_user = bot.DBController().getUserByChatId(self.other_chat_id)
+        if self.first_entered:
+            kb = [
+                [types.KeyboardButton(text="Выйти из чата")],
+                [types.KeyboardButton(text="Поделиться контактами")],
+            ]
+            keyboard = types.ReplyKeyboardMarkup(
+                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            )
+            await callback.message.answer(
+                f"Вы попали в анонимный чат с {other_user.profile_name}",
+                reply_markup=keyboard,
+            )
+            await update.message_storage.open(chat_id, self.other_chat_id)
+            delayed_messages = await update.message_storage.dump_messages(self.other_chat_id, chat_id)
+            for message in delayed_messages:
+                await callback.message.answer(message)
+        else:
+            is_closed = await update.message_storage.is_closed(self.other_chat_id, chat_id)
+            if is_closed:
+                await update.message_storage.put_message(chat_id, self.other_chat_id, self.text)
+            else:
+                await update.bot.send_message(chat_id=self.other_chat_id, text=self.text)
+
         if self.share_contacts:
             self.share_contacts = False
             my_info, my_is_link = self.__generate_telegram_user_link(
                 user.username, user.phone_number
             )
-            text = "С вами поделились контактамт: {}\n".format(
+            text = "С вами поделились контактами: {}\n".format(
                 user.profile_name
             )
             text += (
@@ -42,18 +73,8 @@ class ChatState(State):
             await update.bot.send_message(
                 chat_id=self.other_chat_id, text=text
             )
-        kb = [
-            [types.KeyboardButton(text="Выйти из чата")],
-            [types.KeyboardButton(text="Поделиться контактами")],
-        ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-        )
-        await callback.message.answer(
-            f"Вы попали в анонимный чат с {other_user.profile_name}",
-            reply_markup=keyboard,
-        )
-        await callback.answer()
+        if callback is not None:
+            await callback.answer()
 
     @staticmethod
     def __generate_telegram_user_link(username, phone_number):

@@ -9,7 +9,7 @@ class AboutState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()

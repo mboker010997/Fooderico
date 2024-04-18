@@ -13,7 +13,7 @@ class ContactsState(State):
             self.menu_text: menu.MenuState,
         }
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         pass
 
     async def __switchContext(self, update: Update):

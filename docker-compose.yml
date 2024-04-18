@@ -22,7 +22,8 @@ services:
       DATABASE_URL: jdbc:postgresql://db:5432/telebot
       DATABASE_USER: postgres
       DATABASE_PASSWORD: root
-      TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
+#      TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
+      TOKEN: "6707853441:AAFRWBH_2vDOuhV3IRf6iC1T6GFs6qX5jVg"
 #    networks:
 #      - proxynet
 

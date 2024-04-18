@@ -4,4 +4,5 @@ from src.model.Update import Update, Message, PollAnswer, CallbackQuery
 from src.model.Status import Status
 from src.model.Gender import Gender
 from src.model.UserRelation import UserRelation
+from src.model.Localization import Localization
 from src.model.Tags import *

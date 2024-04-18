@@ -31,7 +31,7 @@ class RegisterState(State):
             reply_markup=keyboard,
         )
 
-    def processUpdate(self, update: model.Update):
+    async def processUpdate(self, update: model.Update):
         if not update.getMessage():
             return
         message = update.getMessage()

@@ -28,7 +28,7 @@ class OtherInterests(State):
                 ]
             )
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()

@@ -9,16 +9,16 @@ class State:
         self.context = context
 
     @abstractmethod
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         pass
 
     @abstractmethod
     async def sendMessage(self, update: Update):
         pass
 
-    def goNextState(self, update: Update):
+    async def goNextState(self, update: Update):
         try:
-            self.processUpdate(update)
+            await self.processUpdate(update)
         except Exception as exc:
             logging.exception(exc)
         return self.context.state

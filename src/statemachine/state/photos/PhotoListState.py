@@ -8,7 +8,7 @@ class PhotoListState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    def processUpdate(self, update: model.Update):
+    async def processUpdate(self, update: model.Update):
         print("in photo list")
         pass
 

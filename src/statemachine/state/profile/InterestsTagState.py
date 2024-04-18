@@ -12,7 +12,7 @@ class InterestsTagState(State):
         self.options.append(tags.nothing_tag)
         self.hasPoll = True
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         message = update.getMessage()
 
         if (

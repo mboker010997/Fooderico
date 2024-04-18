@@ -2,11 +2,11 @@ import asyncio
 import logging
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
-from src.bot.Handler import Handler
-from src.bot.DBController import DBController
+from src import bot
 import os
-from src.model.Localization import Localization
+from src.model import Localization
 from src.bot.middlewares import AlbumMiddleware
+import src.model.chat as chat_model
 
 
 class TelegramBot:
@@ -14,7 +14,8 @@ class TelegramBot:
         load_dotenv()
         self.bot = Bot(os.getenv("TOKEN"))
         self.dp = Dispatcher()
-        self.handler = Handler(self.bot, self.dp)
+        self.message_storage = chat_model.MessageStorage()
+        self.handler = bot.Handler(self)
         logging.basicConfig(level=logging.INFO)
 
     async def start_polling(self):
@@ -23,7 +24,7 @@ class TelegramBot:
 
 if __name__ == "__main__":
     try:
-        dbcontroller = DBController()
+        dbcontroller = bot.DBController()
         Localization.loadInfo()
         bot = TelegramBot()
         bot.dp.message.middleware(AlbumMiddleware())

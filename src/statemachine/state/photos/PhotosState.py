@@ -16,7 +16,7 @@ class PhotosState(State):
             self.menuBtn: menu.MenuState,
         }
 
-    def processUpdate(self, update: Update):
+    async def processUpdate(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
