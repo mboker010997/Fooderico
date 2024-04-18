@@ -8,17 +8,18 @@ class PhotoUploadState(State):
     def __init__(self, context):
         super().__init__(context)
         self.text = self.context.get_message("photo_upload_text")
-        self.exit_command = "/exit"
         self.is_error = False
 
     async def process_update(self, update: Update):
         if not update.getMessage():
             return
-        message = update.getMessage()
+
         if self.context.user.photo_file_ids is None:
             self.context.user.photo_file_ids = list()
         photo_ids = self.context.user.photo_file_ids
-        if self.is_error and message.text == "Назад":
+
+        message = update.getMessage()
+        if self.is_error and message.text == self.context.get_message("photo_back"):
             self.is_error = False
             self.context.set_state(photos.PhotosState(self.context))
             self.context.save_to_db()
@@ -45,13 +46,13 @@ class PhotoUploadState(State):
     async def send_message(self, update: Update):
         if not update.getMessage():
             return
-        message = update.getMessage()
-        kb = [
-            [types.KeyboardButton(text="Назад")],
+
+        buttons = [
+            [types.KeyboardButton(text=self.context.get_message("photo_back"))],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
+
+        message = update.getMessage()
         if self.is_error:
             await message.answer(self.text, reply_markup=keyboard)
         else:
