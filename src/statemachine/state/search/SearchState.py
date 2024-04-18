@@ -10,15 +10,13 @@ from src.algo import similarity
 class SearchState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.menu_text = self.context.getMessage("menu_text")
-        self.search_dislike = self.context.getMessage("search_dislike")
-        self.search_skip = self.context.getMessage("search_skip")
-        self.search_like = self.context.getMessage("search_like")
-        self.search_no_more_users = self.context.getMessage(
-            "search_no_more_users"
-        )
-        self.search_more = self.context.getMessage("search_more")
-        self.search_view_photos = self.context.getMessage("search_view_photos")
+        self.menu_text = self.context.get_message("menu_text")
+        self.search_dislike = self.context.get_message("search_dislike")
+        self.search_skip = self.context.get_message("search_skip")
+        self.search_like = self.context.get_message("search_like")
+        self.search_no_more_users = self.context.get_message("search_no_more_users")
+        self.search_more = self.context.get_message("search_more")
+        self.search_view_photos = self.context.get_message("search_view_photos")
         self.asked_view_photos = False
         self.asked_more = False
         self.last_relation = None
@@ -28,17 +26,15 @@ class SearchState(State):
             self.menu_text: menu.MenuState,
         }
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         # add relations to db: BLACKLIST, SKIPPED, FOLLOW
         if not update.getMessage():
             return
         message = update.getMessage()
 
         if message.text in self.nextStateDict.keys():
-            self.context.setState(
-                self.nextStateDict[update.getMessage().text](self.context)
-            )
-            self.context.saveToDb()
+            self.context.set_state(self.nextStateDict[update.getMessage().text](self.context))
+            self.context.save_to_db()
             self.asked_more = False
             self.asked_view_photos = False
         elif message.text == self.search_more:
@@ -101,7 +97,7 @@ class SearchState(State):
         else:
             return (phone_number, False)
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if self.is_match:
             await self.__notify_both(update)
         message = update.getMessage()
@@ -114,7 +110,7 @@ class SearchState(State):
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
             await message.answer(
-                self.context.getMessage("search_no_user_for_match"),
+                self.context.get_message("search_no_user_for_match"),
                 reply_markup=keyboard,
             )
             return
@@ -170,7 +166,7 @@ class SearchState(State):
         similarity_percentage = similarity(
             self.context.user, other_user, self.context
         )
-        return self.context.getMessage("search_show_profile_template").format(
+        return self.context.get_message("search_show_profile_template").format(
             name, age, city, info, similarity_percentage
         )
 

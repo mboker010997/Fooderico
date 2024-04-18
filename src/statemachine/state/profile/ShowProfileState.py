@@ -10,26 +10,26 @@ class ShowProfileState(State):
         super().__init__(context)
         self.nextState = self
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         answer = update.getMessage().text
-        if answer == self.context.getMessage("edit_profileBtn"):
-            self.context.setState(profile.UsernameState(self.context))
-            self.context.saveToDb()
-        elif answer == self.context.getMessage("menuBtn"):
-            self.context.setState(menu.MenuState(self.context))
-            self.context.saveToDb()
+        if answer == self.context.get_message("edit_profileBtn"):
+            self.context.set_state(profile.UsernameState(self.context))
+            self.context.save_to_db()
+        elif answer == self.context.get_message("menuBtn"):
+            self.context.set_state(menu.MenuState(self.context))
+            self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
-        text = self.context.getMessage("show_profile_text")
+        text = self.context.get_message("show_profile_text")
         await message.answer(text)
         buttons = [
-            [types.KeyboardButton(text=self.context.getMessage("edit_profileBtn"))],
-            [types.KeyboardButton(text=self.context.getMessage("menuBtn"))],
+            [types.KeyboardButton(text=self.context.get_message("edit_profileBtn"))],
+            [types.KeyboardButton(text=self.context.get_message("menuBtn"))],
         ]
         keyboard = types.ReplyKeyboardMarkup(
             keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
@@ -53,7 +53,7 @@ class ShowProfileState(State):
             self.context.user.interests_tags, self.context.bot_config
         )
 
-        text = self.context.getMessage("show_profile_template").format(
+        text = self.context.get_message("show_profile_template").format(
             name, age, city, info, preferences, restrictions, diets, interests
         )
         if photo_ids:

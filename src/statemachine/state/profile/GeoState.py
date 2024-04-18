@@ -16,17 +16,17 @@ class GeoState(State):
         self.counter = -1
         self.status = Status.INIT
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
 
         if (
             self.context.user.geolocation is not None
-            and message.text == self.context.getMessage("geo_skipBtn")
+            and message.text == self.context.get_message("geo_skipBtn")
         ):
             self.set_state_in_context()
-            self.context.saveToDb()
+            self.context.save_to_db()
             return
 
         self.status = Status.INIT
@@ -63,25 +63,25 @@ class GeoState(State):
                 geolocation = Geolocation(latitude, longitude)
                 self.context.user.city = name
                 self.context.user.geolocation = geolocation
-                self.context.setState(profile.AboutState(self.context))
+                self.context.set_state(profile.AboutState(self.context))
                 self.set_state_in_context()
             else:
                 self.text = "Координаты города не найдены. Попробуйте еще раз"
-        self.context.saveToDb()
+        self.context.save_to_db()
 
     def set_state_in_context(self):
-        next_state = self.context.getNextState()
+        next_state = self.context.get_next_state()
         if next_state is None:
             next_state = profile.AboutState
         self.context.setState(next_state(self.context))
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         chat_id = update.getChatId()
 
         if self.context.user.geolocation is not None:
             buttons = [
                 [types.KeyboardButton(text="Передать геолокацию", request_location=True)],
-                [types.KeyboardButton(text=self.context.getMessage("geo_skipBtn"))],
+                [types.KeyboardButton(text=self.context.get_message("geo_skipBtn"))],
             ]
         else:
             buttons = [

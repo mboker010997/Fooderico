@@ -9,10 +9,10 @@ class InitialState(State):
         super().__init__()
         self.context = context
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         pass
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -24,5 +24,5 @@ class InitialState(State):
         self.context.user.language_code = lang_code
         self.context.user.username = message.from_user.username  # check this
 
-        self.context.setState(RegisterState(self.context))
-        self.context.saveToDb()
+        self.context.set_state(RegisterState(self.context))
+        self.context.save_to_db()

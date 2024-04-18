@@ -7,31 +7,31 @@ from aiogram import types
 class AgeState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.text = self.context.getMessage("age_text")
+        self.text = self.context.get_message("age_text")
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
 
         message = update.getMessage()
-        if self.context.user.age is None or message.text != self.context.getMessage("age_skipBtn"):
+        if self.context.user.age is None or message.text != self.context.get_message("age_skipBtn"):
             if message.text.isdigit() and (int(message.text) in range(1, 100)):
                 self.context.user.age = int(message.text)
             else:
-                self.text = self.context.getMessage("age_parsing_error")
+                self.text = self.context.get_message("age_parsing_error")
                 return
 
-        self.context.setState(profile.GenderState(self.context))
-        self.context.saveToDb()
+        self.context.set_state(profile.GenderState(self.context))
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
 
         if self.context.user.age is not None:
             buttons = [
-                [types.KeyboardButton(text=self.context.getMessage("age_skipBtn"))],
+                [types.KeyboardButton(text=self.context.get_message("age_skipBtn"))],
             ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=buttons, resize_keyboard=True, one_time_keyboard=True

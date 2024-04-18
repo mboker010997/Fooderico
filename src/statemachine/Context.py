@@ -11,34 +11,32 @@ class Context:
 
         self.bot_config = BotConfig(lang_code)
         self.state = state
-        self.sentMessage = None
-        self.nextState = None
+        self.sent_message = None
+        self.next_state = None
         self.other_chat_id = None
 
-    def setState(self, state):
+    def set_state(self, state):
         self.state = state
-        # self.user.id = int(self.user.chat_id)
         self.user.state_class = state.__class__
-        # model.StateUpdater.setState(self.user.chat_id, state)
 
-    def setSentMessage(self, message):
-        self.sentMessage = message
+    def set_sent_message(self, message):
+        self.sent_message = message
 
-    def getSentMessage(self):
-        sentMessage = self.sentMessage
-        self.sentMessage = None
-        return sentMessage
+    def get_sent_message(self):
+        sent_message = self.sent_message
+        self.sent_message = None
+        return sent_message
 
-    def setNextState(self, state):
-        self.nextState = state
+    def set_next_state(self, state):
+        self.next_state = state
 
-    def getNextState(self):
-        nextState = self.nextState
-        self.nextState = None
-        return nextState
+    def get_next_state(self):
+        next_state = self.next_state
+        self.next_state = None
+        return next_state
 
-    def getMessage(self, text):
+    def get_message(self, text):
         return self.bot_config.getMessage(text)
 
-    def saveToDb(self):
+    def save_to_db(self):
         bot.DBController().setUser(self.user)

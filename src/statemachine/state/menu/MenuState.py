@@ -7,13 +7,13 @@ from aiogram import types
 class MenuState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.searchBtn = context.getMessage("menu_searchBtn")
-        self.photosBtn = context.getMessage("menu_photosBtn")
-        self.profileBtn = context.getMessage("menu_profileBtn")
-        self.statusBtn = context.getMessage("menu_statusBtn")
-        self.aboutBtn = context.getMessage("menu_aboutBtn")
-        self.contactsBtn = context.getMessage("menu_recentActions")
-        self.viewChatsBtn = context.getMessage("menu_view_chats")
+        self.searchBtn = context.get_message("menu_searchBtn")
+        self.photosBtn = context.get_message("menu_photosBtn")
+        self.profileBtn = context.get_message("menu_profileBtn")
+        self.statusBtn = context.get_message("menu_statusBtn")
+        self.aboutBtn = context.get_message("menu_aboutBtn")
+        self.contactsBtn = context.get_message("menu_recentActions")
+        self.viewChatsBtn = context.get_message("menu_view_chats")
 
         self.nextStateDict = {
             self.searchBtn: profile.GeoState,
@@ -25,20 +25,18 @@ class MenuState(State):
             self.contactsBtn: search.ContactsState,
         }
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
         if message.text:
             if message.text in self.nextStateDict.keys():
                 if message.text == self.searchBtn:
-                    self.context.setNextState(search.SearchState)
-                self.context.setState(
-                    self.nextStateDict.get(message.text)(self.context)
-                )
-                self.context.saveToDb()
+                    self.context.set_next_state(search.SearchState)
+                self.context.set_state(self.nextStateDict.get(message.text)(self.context))
+                self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
