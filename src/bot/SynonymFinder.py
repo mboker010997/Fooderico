@@ -4,10 +4,12 @@ from transformers import pipeline
 
 class SynonymFinder:
     def __init__(self):
-        self.translator = pipeline("translation", model="Helsinki-NLP/opus-mt-ru-en")
+        self.translator = pipeline(
+            "translation", model="Helsinki-NLP/opus-mt-ru-en"
+        )
 
     def to_english(self, text):
-        return self.translator(text, max_length=40)[0]['translation_text']
+        return self.translator(text, max_length=40)[0]["translation_text"]
 
     def are_synonyms(self, word1, word2):
         synonyms = []

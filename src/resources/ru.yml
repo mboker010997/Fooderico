@@ -88,7 +88,7 @@ tele-meet-bot:
     # About
     about_text: "Напишите информацию о себе"
     about_skipBtn: "Оставить текущую"
-    #Menu
+    # Menu
     menu_text: "Главное меню"
     menuBtn: "Вернуться в меню"
     menu_profileBtn: "Посмотреть профиль"
@@ -96,9 +96,18 @@ tele-meet-bot:
     menu_photosBtn: "Фотоальбом"
     menu_searchBtn: "Поиск"
     menu_aboutBtn: "О сервисе"
+    menu_recentActions: "Последние действия"
     menu_view_chats: "Посмотреть чаты"
     returned_into_menu: "Вы вернулись в меню"
-    #Photots
+     # Contacts
+    contacts_you_have_liked: "Вы лайкнули"
+    contacts_change_to_dislike: "Изменить на дизлайк"
+    contacts_change_to_skip: "Изменить на пропуск"
+    contacts_remove: "Удалить"
+    contacts_you_have_disliked: "Вы дизлайкнули"
+    contacts_change_to_like: "Изменить на лайк"
+    contacts_you_have_skiped: "Вы пропустили"    
+    # Photots
     photos_text: "Меню Фотоальбом"
     photo_listBtn: "Список фотографий"
     photo_uploadBtn: "Загрузить фото"

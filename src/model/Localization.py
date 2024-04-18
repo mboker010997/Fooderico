@@ -1,8 +1,8 @@
 import yaml
 
 lang_dict = dict()
-langs = ['ru']
-default_lang = 'ru'
+langs = ["ru"]
+default_lang = "ru"
 
 
 class Localization:

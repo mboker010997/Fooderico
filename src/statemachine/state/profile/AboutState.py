@@ -14,9 +14,14 @@ class AboutState(State):
             return
         message = update.getMessage()
 
-        if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
+        if (
+            self.context.user.about is None
+            or message.text != self.context.getMessage("about_skipBtn")
+        ):
             self.context.user.about = message.text
-            self.context.user.others_interests = Matching.MatchingClass().getOtherTags(message.text)
+            self.context.user.others_interests = (
+                Matching.MatchingClass().getOtherTags(message.text)
+            )
 
         self.context.setState(profile.OtherInterests(self.context))
         self.context.saveToDb()
@@ -28,11 +33,20 @@ class AboutState(State):
 
         if self.context.user.about is not None:
             kb = [
-                [types.KeyboardButton(text=self.context.getMessage("about_skipBtn"))],
+                [
+                    types.KeyboardButton(
+                        text=self.context.getMessage("about_skipBtn")
+                    )
+                ],
             ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
-            await message.answer(self.context.getMessage("about_text"), reply_markup=keyboard)
+            await message.answer(
+                self.context.getMessage("about_text"), reply_markup=keyboard
+            )
         else:
-            await message.answer(self.context.getMessage("about_text"), reply_markup=types.ReplyKeyboardRemove())
+            await message.answer(
+                self.context.getMessage("about_text"),
+                reply_markup=types.ReplyKeyboardRemove(),
+            )

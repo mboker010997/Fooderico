@@ -2,27 +2,27 @@ from src.statemachine import State
 from src.statemachine.state import search, photos, profile, menu, chat
 from src.model import Update
 from aiogram import types
-from src import bot
 
 
 class MenuState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.searchBtn = "Поиск"
-        self.photosBtn = "Фотоальбом"
-        self.profileBtn = "Посмотреть профиль"
-        self.statusBtn = "Статус пользователя"
-        self.aboutBtn = "О сервисе"
-        self.contactsBtn = "Последние действия"
+        self.searchBtn = context.getMessage("menu_searchBtn")
+        self.photosBtn = context.getMessage("menu_photosBtn")
+        self.profileBtn = context.getMessage("menu_profileBtn")
+        self.statusBtn = context.getMessage("menu_statusBtn")
+        self.aboutBtn = context.getMessage("menu_aboutBtn")
+        self.contactsBtn = context.getMessage("menu_recentActions")
         self.viewChatsBtn = context.getMessage("menu_view_chats")
+
         self.nextStateDict = {
-            self.searchBtn: profile.GeoState,  # suggest changing geo before search
+            self.searchBtn: profile.GeoState,
             self.photosBtn: photos.PhotosState,
             self.profileBtn: profile.ShowProfileState,
             self.statusBtn: menu.StatusState,
             self.viewChatsBtn: chat.ChatListState,
             self.aboutBtn: menu.AboutBotState,
-            self.contactsBtn: search.ContactsState
+            self.contactsBtn: search.ContactsState,
         }
 
     def processUpdate(self, update: Update):
@@ -33,7 +33,9 @@ class MenuState(State):
             if message.text in self.nextStateDict.keys():
                 if message.text == self.searchBtn:
                     self.context.setNextState(search.SearchState)
-                self.context.setState(self.nextStateDict.get(message.text)(self.context))
+                self.context.setState(
+                    self.nextStateDict.get(message.text)(self.context)
+                )
                 self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
@@ -48,9 +50,7 @@ class MenuState(State):
             [types.KeyboardButton(text=self.statusBtn)],
             [types.KeyboardButton(text=self.viewChatsBtn)],
             [types.KeyboardButton(text=self.aboutBtn)],
-            [types.KeyboardButton(text=self.contactsBtn)]
+            [types.KeyboardButton(text=self.contactsBtn)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
         return await message.answer(text, reply_markup=keyboard)

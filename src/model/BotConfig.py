@@ -8,4 +8,6 @@ class BotConfig:
             self.lang_code = default_lang
 
     def getMessage(self, text):
-        return lang_dict[self.lang_code]["tele-meet-bot"]["messages"].get(text, "")
+        return lang_dict[self.lang_code]["tele-meet-bot"]["messages"].get(
+            text, ""
+        )

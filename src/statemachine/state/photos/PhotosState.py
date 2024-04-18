@@ -21,7 +21,9 @@ class PhotosState(State):
             return
         message = update.getMessage()
         if message.text and message.text in self.nextStateDict.keys():
-            self.context.setState(self.nextStateDict[update.getMessage().text](self.context))
+            self.context.setState(
+                self.nextStateDict[update.getMessage().text](self.context)
+            )
         self.context.saveToDb()
 
     async def sendMessage(self, update: Update):
@@ -32,6 +34,10 @@ class PhotosState(State):
             [types.KeyboardButton(text=self.photo_uploadBtn)],
             [types.KeyboardButton(text=self.menuBtn)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
-        message = await update.bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+        )
+        message = await update.bot.send_message(
+            chat_id=chat_id, text=text, reply_markup=keyboard
+        )
         return message

@@ -4,7 +4,10 @@ import logging
 from src.model import StateUpdater
 from typing import List
 from aiogram import F
-from aiogram.types import InputMediaPhoto, InputMedia, ContentType as CT, Message as mes
+from aiogram.types import (
+    ContentType as CT,
+    Message as mes,
+)
 from src.statemachine.state import chat
 from src import bot
 
@@ -19,7 +22,9 @@ class Handler:
         chat_id = update.getChatId()
         sentMessage = StateUpdater.getSentMessage(chat_id)
         if sentMessage is not None:
-            await self.bot.delete_message(chat_id=sentMessage.chat.id, message_id=sentMessage.message_id)
+            await self.bot.delete_message(
+                chat_id=sentMessage.chat.id, message_id=sentMessage.message_id
+            )
 
         curState = StateUpdater.getState(chat_id)
         nextState = curState.goNextState(update)
@@ -28,6 +33,7 @@ class Handler:
             StateUpdater.setSentMessage(chat_id, newMessage)
         except Exception as exc:
             logging.exception("Handler")
+            logging.exception(exc)
 
     def register_handlers(self):
         @self.dp.message(F.content_type.in_([CT.PHOTO]))
@@ -55,7 +61,7 @@ class Handler:
                 return
 
             expected_prefix = "go_anon_chat_"
-            other_chat_id = int(callback.data[len(expected_prefix):])
+            other_chat_id = int(callback.data[len(expected_prefix) :])
             context.other_chat_id = other_chat_id
             context.setState(chat.ChatState(context))
             context.saveToDb()
@@ -70,7 +76,7 @@ class Handler:
             if context is None:
                 return
             print(callback.data)
-            parts = callback.data.split('_')
+            parts = callback.data.split("_")
             idx = parts[2]
             user = context.user
             photo_ids = user.photo_file_ids
@@ -89,7 +95,7 @@ class Handler:
                 return
 
             print(callback.data)
-            parts = callback.data.split('_')
+            parts = callback.data.split("_")
             idx = parts[3]
             user = context.user
             photo_ids = user.photo_file_ids
@@ -105,49 +111,67 @@ class Handler:
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return
-            parts = callback.data.split('_')
+            parts = callback.data.split("_")
             idx = parts[3]
             user = context.user
-            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
+            query = (
+                f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
+            )
             bot.DBController().cursor.execute(query)
             self.other_user_rows = bot.DBController().cursor.fetchall()
             num = int(idx)
             other_user_id = self.other_user_rows[num][2]
             bot.DBController().cursor.execute(
-                f"UPDATE tele_meet_relations SET relation = '{relation}' WHERE user_id = {user.id} AND other_user_id = {other_user_id};")
+                f"UPDATE tele_meet_relations"
+                f"SET relation = '{relation}'"
+                f"WHERE"
+                f"user_id = {user.id} AND other_user_id = {other_user_id};"
+            )
             context.saveToDb()
             await context.state.sendMessage(update)
             await callback.answer()
 
         @self.dp.callback_query(F.data.startswith("change_to_like_"))
-        async def change_to_like_callback_handler(callback: types.CallbackQuery):
+        async def change_to_like_callback_handler(
+            callback: types.CallbackQuery,
+        ):
             await relation_handler(callback, "FOLLOW")
 
         @self.dp.callback_query(F.data.startswith("change_to_skip_"))
-        async def change_to_skip_callback_handler(callback: types.CallbackQuery):
+        async def change_to_skip_callback_handler(
+            callback: types.CallbackQuery,
+        ):
             await relation_handler(callback, "SKIPPED")
 
         @self.dp.callback_query(F.data.startswith("change_to_dislike_"))
-        async def change_to_dislike_callback_handler(callback: types.CallbackQuery):
+        async def change_to_dislike_callback_handler(
+            callback: types.CallbackQuery,
+        ):
             await relation_handler(callback, "BLACKLIST")
 
         @self.dp.callback_query(F.data.startswith("remove_"))
-        async def remove_relation_callback_handler(callback: types.CallbackQuery):
+        async def remove_relation_callback_handler(
+            callback: types.CallbackQuery,
+        ):
             chat_id = callback.from_user.id
             update = CallbackQuery(self.bot, self.dp, callback)
             context = StateUpdater.getContext(chat_id)
             if context is None:
                 return
-            parts = callback.data.split('_')
+            parts = callback.data.split("_")
             idx = parts[1]
             user = context.user
-            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
+            query = (
+                f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
+            )
             bot.DBController().cursor.execute(query)
             self.other_user_rows = bot.DBController().cursor.fetchall()
             num = int(idx)
             other_user_id = self.other_user_rows[num][2]
             bot.DBController().cursor.execute(
-                f"DELETE FROM tele_meet_relations WHERE user_id = {user.id} AND other_user_id = {other_user_id};")
+                f"DELETE FROM tele_meet_relations WHERE"
+                f"user_id = {user.id} AND other_user_id = {other_user_id};"
+            )
             context.saveToDb()
             await context.state.sendMessage(update)
             await callback.answer()

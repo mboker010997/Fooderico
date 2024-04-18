@@ -10,4 +10,12 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["python", "-u", "src/bot/TeleMeetBot.py"]
+ARG RUN_TESTS=False
+
+CMD if [ "$RUN_TESTS" = "True" ]; then \
+        python tests/test.py; \
+    else \
+        python -u src/bot/TeleMeetBot.py; \
+    fi
+
+# CMD ["python", "-u", "src/bot/TeleMeetBot.py"]
