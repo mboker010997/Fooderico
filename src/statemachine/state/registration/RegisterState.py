@@ -9,28 +9,6 @@ class RegisterState(State):
         super().__init__(context)
         self.is_error = False
 
-    async def sendMessage(self, update: model.Update):
-        if not update.getMessage():
-            return
-        message = update.getMessage()
-        kb = [
-            [
-                types.KeyboardButton(
-                    text=self.context.getMessage("register_regBtn"),
-                    request_contact=True,
-                )
-            ],
-        ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-        )
-        await message.answer(
-            self.context.getMessage(
-                "register_error" if self.is_error else "register_text"
-            ),
-            reply_markup=keyboard,
-        )
-
     async def processUpdate(self, update: model.Update):
         if not update.getMessage():
             return
@@ -46,3 +24,20 @@ class RegisterState(State):
         self.context.user = user
         self.context.setState(UsernameState(self.context))
         self.context.saveToDb()
+
+    async def sendMessage(self, update: model.Update):
+        if not update.getMessage():
+            return
+        message = update.getMessage()
+        buttons = [
+            [types.KeyboardButton(text=self.context.getMessage("register_regBtn"), request_contact=True)],
+        ]
+        keyboard = types.ReplyKeyboardMarkup(
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
+        )
+        await message.answer(
+            self.context.getMessage(
+                "register_error" if self.is_error else "register_text"
+            ),
+            reply_markup=keyboard,
+        )

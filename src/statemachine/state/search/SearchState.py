@@ -186,27 +186,34 @@ class SearchState(State):
         else:
             await message.answer(text=text, reply_markup=keyboard)
 
-    def __create_keyboard(
-        self,
-        for_more=False,
-        for_photos=False,
-        for_info=False,
-        photos_exist=False,
-    ):
-        kb = [
-            [types.KeyboardButton(text=self.search_dislike)],
-            [types.KeyboardButton(text=self.search_skip)],
-            [types.KeyboardButton(text=self.search_like)],
-            [types.KeyboardButton(text=self.menu_text)],
+    def __create_keyboard(self, for_more=False, for_photos=False, for_info=False, photos_exist=False):
+        buttons = [
+            [
+                types.KeyboardButton(text=self.search_like),
+                types.KeyboardButton(text=self.search_dislike),
+            ],
+            [
+                types.KeyboardButton(text=self.search_skip)
+            ],
         ]
+
+        buttons_last_row = []
         if for_more and photos_exist:
-            kb.append([types.KeyboardButton(text=self.search_view_photos)])
+            buttons_last_row.append(types.KeyboardButton(text=self.search_view_photos))
         if for_photos:
-            kb.append([types.KeyboardButton(text=self.search_more)])
+            buttons_last_row.append(types.KeyboardButton(text=self.search_more))
         if for_info:
-            kb.append([types.KeyboardButton(text=self.search_more)])
+            buttons_last_row.append(types.KeyboardButton(text=self.search_more))
             if photos_exist:
-                kb.append([types.KeyboardButton(text=self.search_view_photos)])
+                buttons_last_row.append(types.KeyboardButton(text=self.search_view_photos))
+
+        if buttons_last_row:
+            buttons.append(buttons_last_row)
+
+        buttons.append(
+            [types.KeyboardButton(text=self.menu_text)],
+        )
+
         return types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
         )

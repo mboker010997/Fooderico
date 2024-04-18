@@ -25,7 +25,7 @@ class GeoState(State):
             self.context.user.geolocation is not None
             and message.text == self.context.getMessage("geo_skipBtn")
         ):
-            self.setStateInContext()
+            self.set_state_in_context()
             self.context.saveToDb()
             return
 
@@ -35,12 +35,12 @@ class GeoState(State):
                 message.location.latitude, message.location.longitude
             )
             self.context.user.geolocation = geolocation
-            city = self.getCityByGeolocation(geolocation)
+            city = self.get_city_by_geolocation(geolocation)
             if city:
                 self.context.user.city = city
-                self.setStateInContext()
+                self.set_state_in_context()
             else:
-                city = self.findNearestCity(geolocation)
+                city = self.find_nearest_city(geolocation)
                 if city:
                     self.query_city = city
                     self.text = f"{city} - это ваш город?"
@@ -52,82 +52,60 @@ class GeoState(State):
         elif message.text == "Да, это мой город":
             city = self.query_city
             self.context.user.city = city
-            self.setStateInContext()
+            self.set_state_in_context()
         elif message.text == "Нет, это не мой город":
             self.text = "Город не определен. Пожалуйста, введите название вашего города"
         else:
             city = message.text
             self.context.user.city = city
-            latitude, longitude, name = self.getCoordinats(city)
+            latitude, longitude, name = self.get_coordinats(city)
             if latitude:
                 geolocation = Geolocation(latitude, longitude)
                 self.context.user.city = name
                 self.context.user.geolocation = geolocation
                 self.context.setState(profile.AboutState(self.context))
-                self.setStateInContext()
+                self.set_state_in_context()
             else:
                 self.text = "Координаты города не найдены. Попробуйте еще раз"
         self.context.saveToDb()
 
-    def setStateInContext(self):
-        nextState = self.context.getNextState()
-        if nextState is None:
-            nextState = profile.AboutState
-        self.context.setState(nextState(self.context))
+    def set_state_in_context(self):
+        next_state = self.context.getNextState()
+        if next_state is None:
+            next_state = profile.AboutState
+        self.context.setState(next_state(self.context))
 
     async def sendMessage(self, update: Update):
-        chatId = update.getChatId()
+        chat_id = update.getChatId()
 
         if self.context.user.geolocation is not None:
-            kb = [
-                [
-                    types.KeyboardButton(
-                        text="Передать геолокацию",
-                        request_location=True,
-                    )
-                ],
-                [
-                    types.KeyboardButton(
-                        text=self.context.getMessage("geo_skipBtn")
-                    )
-                ],
+            buttons = [
+                [types.KeyboardButton(text="Передать геолокацию", request_location=True)],
+                [types.KeyboardButton(text=self.context.getMessage("geo_skipBtn"))],
             ]
         else:
-            kb = [
-                [
-                    types.KeyboardButton(
-                        text="Передать геолокацию",
-                        request_location=True,
-                    )
-                ],
+            buttons = [
+                [types.KeyboardButton(text="Передать геолокацию", request_location=True)],
             ]
 
         if self.status == Status.CONFIRMATION:
-            kb.append(
-                [
-                    types.KeyboardButton(
-                        text="Да, это мой город",
-                    )
-                ]
+            buttons.append(
+                [types.KeyboardButton(text="Да, это мой город")]
             )
-            kb.append(
-                [
-                    types.KeyboardButton(
-                        text="Нет, это не мой город",
-                    )
-                ]
+            buttons.append(
+                [types.KeyboardButton(text="Нет, это не мой город")]
             )
         keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
         )
         await update.bot.send_message(
-            chat_id=chatId, text=self.text, reply_markup=keyboard
+            chat_id=chat_id, text=self.text, reply_markup=keyboard
         )
 
     @staticmethod
-    def getCityByGeolocation(geolocation):
+    def get_city_by_geolocation(geolocation):
         headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",  # nopep8
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",
@@ -154,9 +132,9 @@ class GeoState(State):
         return city
 
     @staticmethod
-    def getCoordinats(city):
+    def get_coordinats(city):
         headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",  # nopep8
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",
@@ -172,10 +150,6 @@ class GeoState(State):
             "cookie": "_osm_totp_token=114327",
         }
         url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
-        response = requests.get(url, headers=headers)
-        # url = f"http://localhost:8091/search?format=json&city={city}"
-        # response = requests.get(url, headers=headers)
-        data = response.json()
         try:
             response = requests.get(url, headers=headers)
             data = response.json()
@@ -186,7 +160,7 @@ class GeoState(State):
         return lat, lon, name
 
     @staticmethod
-    def searchNearbyFeatures(latitude, longitude, radius):
+    def search_near_by_features(latitude, longitude, radius):
         overpass_url = "https://overpass-api.de/api/interpreter"
         query = f"""
         [out:json];
@@ -204,11 +178,11 @@ class GeoState(State):
             return []
 
     @staticmethod
-    def findNearestCity(geolocation):
+    def find_nearest_city(geolocation):
         lat = geolocation.latitude
         lon = geolocation.longitude
         for radius in range(50000, 150001, 50000):
-            nearest_cities = GeoState.searchNearbyFeatures(lat, lon, radius)
+            nearest_cities = GeoState.search_near_by_features(lat, lon, radius)
             if len(nearest_cities) == 0:
                 continue
             best_city = nearest_cities[0]

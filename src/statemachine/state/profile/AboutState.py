@@ -14,10 +14,7 @@ class AboutState(State):
             return
         message = update.getMessage()
 
-        if (
-            self.context.user.about is None
-            or message.text != self.context.getMessage("about_skipBtn")
-        ):
+        if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
             self.context.user.about = message.text
             self.context.user.others_interests = (
                 Matching.MatchingClass().getOtherTags(message.text)
@@ -32,19 +29,13 @@ class AboutState(State):
         message = update.getMessage()
 
         if self.context.user.about is not None:
-            kb = [
-                [
-                    types.KeyboardButton(
-                        text=self.context.getMessage("about_skipBtn")
-                    )
-                ],
+            buttons = [
+                [types.KeyboardButton(text=self.context.getMessage("about_skipBtn"))],
             ]
             keyboard = types.ReplyKeyboardMarkup(
-                keyboard=kb, resize_keyboard=True, one_time_keyboard=True
+                keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
             )
-            await message.answer(
-                self.context.getMessage("about_text"), reply_markup=keyboard
-            )
+            await message.answer(self.context.getMessage("about_text"), reply_markup=keyboard)
         else:
             await message.answer(
                 self.context.getMessage("about_text"),
