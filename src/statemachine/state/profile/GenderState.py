@@ -8,40 +8,40 @@ class GenderState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    async def processUpdate(self, update: model.Update):
+    async def process_update(self, update: model.Update):
         if not update.getMessage():
             return
 
         message = update.getMessage()
         if (
             self.context.user.gender is None
-            or message.text != self.context.getMessage("gender_skipBtn")
+            or message.text != self.context.get_message("gender_skipBtn")
         ):
-            if message.text == self.context.getMessage("gender_M"):
+            if message.text == self.context.get_message("gender_M"):
                 gender = model.Gender.MALE
-            elif message.text == self.context.getMessage("gender_F"):
+            elif message.text == self.context.get_message("gender_F"):
                 gender = model.Gender.FEMALE
             else:
                 return
             self.context.user.gender = gender
 
-        self.context.setState(profile.FoodPreferencesTagState(self.context))
-        self.context.saveToDb()
+        self.context.set_state(profile.FoodPreferencesTagState(self.context))
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: model.Update):
+    async def send_message(self, update: model.Update):
         if not update.getMessage():
             return
         message = update.getMessage()
 
         kb = [
-            [types.KeyboardButton(text=self.context.getMessage("gender_M"))],
-            [types.KeyboardButton(text=self.context.getMessage("gender_F"))],
+            [types.KeyboardButton(text=self.context.get_message("gender_M"))],
+            [types.KeyboardButton(text=self.context.get_message("gender_F"))],
         ]
         if self.context.user.gender is not None:
             kb.append(
                 [
                     types.KeyboardButton(
-                        text=self.context.getMessage("gender_skipBtn")
+                        text=self.context.get_message("gender_skipBtn")
                     )
                 ]
             )
@@ -50,5 +50,5 @@ class GenderState(State):
             keyboard=kb, resize_keyboard=True, one_time_keyboard=True
         )
         await message.answer(
-            self.context.getMessage("gender_text"), reply_markup=keyboard
+            self.context.get_message("gender_text"), reply_markup=keyboard
         )

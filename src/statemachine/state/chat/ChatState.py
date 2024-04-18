@@ -13,12 +13,12 @@ class ChatState(State):
         self.share_contacts = False
         self.first_entered = True
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         self.first_entered = False
         if update.getMessage().text == "Выйти из чата":
             await update.message_storage.close(update.getChatId(), self.other_chat_id)
-            self.context.setState(menu.MenuState(self.context))
-            self.context.saveToDb()
+            self.context.set_state(menu.MenuState(self.context))
+            self.context.save_to_db()
         elif update.getMessage().text == "Поделиться контактами":
             self.share_contacts = True
         else:
@@ -26,7 +26,7 @@ class ChatState(State):
             if message is not None:
                 self.text = message.text
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         # if not update.getMessage():
         #     return
 

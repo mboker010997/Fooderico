@@ -5,20 +5,20 @@ from src.model import Update
 
 class State:
     def __init__(self, context=None):
-        self.nextState = self
+        self.next_state = self
         self.context = context
 
     @abstractmethod
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         pass
 
     @abstractmethod
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         pass
 
-    async def goNextState(self, update: Update):
+    async def go_next_state(self, update: Update):
         try:
-            await self.processUpdate(update)
+            await self.process_update(update)
         except Exception as exc:
             logging.exception(exc)
         return self.context.state

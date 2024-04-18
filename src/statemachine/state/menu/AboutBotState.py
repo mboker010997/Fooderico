@@ -8,19 +8,19 @@ class AboutBotState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         pass
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
 
         message = update.getMessage()
         await message.answer(
-            self.context.getMessage("aboutBot_text"), parse_mode=ParseMode.HTML
+            self.context.get_message("aboutBot_text"), parse_mode=ParseMode.HTML
         )
 
-        self.context.setState(menu.MenuState(self.context))
-        self.context.saveToDb()
+        self.context.set_state(menu.MenuState(self.context))
+        self.context.save_to_db()
         menu_state = menu.MenuState(self.context)
-        await menu_state.sendMessage(update)
+        await menu_state.send_message(update)

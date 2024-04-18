@@ -8,25 +8,25 @@ class AgeState(State):
     def __init__(self, context):
         super().__init__(context)
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
 
         message = update.getMessage()
         if (
             self.context.user.age is None
-            or message.text != self.context.getMessage("age_skipBtn")
+            or message.text != self.context.get_message("age_skipBtn")
         ):
             if message.text.isdigit() and (int(message.text) in range(1, 100)):
                 self.context.user.age = int(message.text)
             else:
-                self.text = self.context.getMessage("age_parsing_error")
+                self.text = self.context.get_message("age_parsing_error")
                 return
 
-        self.context.setState(profile.GenderState(self.context))
-        self.context.saveToDb()
+        self.context.set_state(profile.GenderState(self.context))
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -35,7 +35,7 @@ class AgeState(State):
             kb = [
                 [
                     types.KeyboardButton(
-                        text=self.context.getMessage("age_skipBtn")
+                        text=self.context.get_message("age_skipBtn")
                     )
                 ],
             ]
@@ -43,10 +43,10 @@ class AgeState(State):
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
             await message.answer(
-                self.context.getMessage("age_text"), reply_markup=keyboard
+                self.context.get_message("age_text"), reply_markup=keyboard
             )
         else:
             await message.answer(
-                self.context.getMessage("age_text"),
+                self.context.get_message("age_text"),
                 reply_markup=types.ReplyKeyboardRemove(),
             )

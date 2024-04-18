@@ -29,10 +29,10 @@ class StateUpdater:
         context = stateCacheHolder.get(chat_id, None)
         if context is None:
             return None
-        return context.getSentMessage()
+        return context.get_sent_message()
 
     @staticmethod
     def setSentMessage(chat_id, message):
         context = stateCacheHolder.get(chat_id, None)
         if context is not None:
-            context.setSentMessage(message)
+            context.set_sent_message(message)

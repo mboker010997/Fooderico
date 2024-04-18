@@ -12,16 +12,16 @@ class InterestsTagState(State):
         self.options.append(tags.nothing_tag)
         self.hasPoll = True
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         message = update.getMessage()
 
         if (
             self.context.user.interests_tags is not None
             and message is not None
-            and message.text == self.context.getMessage("interests_skipBtn")
+            and message.text == self.context.get_message("interests_skipBtn")
         ):
-            self.context.setState(profile.GeoState(self.context))
-            self.context.saveToDb()
+            self.context.set_state(profile.GeoState(self.context))
+            self.context.save_to_db()
             self.hasPoll = False
             return
 
@@ -36,17 +36,17 @@ class InterestsTagState(State):
                     continue
                 self.context.user.interests_tags.add(option_name)
             self.context.user.active_poll_id = None
-            self.context.setState(profile.GeoState(self.context))
-            self.context.saveToDb()
+            self.context.set_state(profile.GeoState(self.context))
+            self.context.save_to_db()
         self.hasPoll = False
 
-    async def sendMessage(self, update: Update):
-        options = list(map(lambda x: self.context.getMessage(x), self.options))
+    async def send_message(self, update: Update):
+        options = list(map(lambda x: self.context.get_message(x), self.options))
 
         kb = [
             [
                 types.KeyboardButton(
-                    text=self.context.getMessage("interests_skipBtn")
+                    text=self.context.get_message("interests_skipBtn")
                 )
             ],
         ]
@@ -58,7 +58,7 @@ class InterestsTagState(State):
             if self.context.user.interests_tags is not None:
                 poll_info = await update.bot.send_poll(
                     chat_id=update.getChatId(),
-                    question=self.context.getMessage("interests_tag_text"),
+                    question=self.context.get_message("interests_tag_text"),
                     options=options,
                     is_anonymous=False,
                     allows_multiple_answers=True,
@@ -67,11 +67,11 @@ class InterestsTagState(State):
             else:
                 poll_info = await update.bot.send_poll(
                     chat_id=update.getChatId(),
-                    question=self.context.getMessage("interests_tag_text"),
+                    question=self.context.get_message("interests_tag_text"),
                     options=options,
                     is_anonymous=False,
                     allows_multiple_answers=True,
                     reply_markup=types.ReplyKeyboardRemove(),
                 )
             self.context.user.active_poll_id = poll_info.poll.id
-            self.context.saveToDb()
+            self.context.save_to_db()

@@ -9,13 +9,13 @@ class PhotoSelectionState(State):
         super().__init__(context)
         self.is_error = False
 
-    async def processUpdate(self, update: Update):
+    async def process_update(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
         if (
             self.context.user.photo_file_ids is None
-            or message.text != self.context.getMessage("photo_skipBtn")
+            or message.text != self.context.get_message("photo_skipBtn")
         ):
             self.context.user.photo_file_ids = list()
             photo_ids = self.context.user.photo_file_ids
@@ -34,10 +34,10 @@ class PhotoSelectionState(State):
                 self.text = "Загрузите фото, а не файл/текст"
                 self.is_error = True
                 return
-        self.context.setState(profile.AgeState(self.context))
-        self.context.saveToDb()
+        self.context.set_state(profile.AgeState(self.context))
+        self.context.save_to_db()
 
-    async def sendMessage(self, update: Update):
+    async def send_message(self, update: Update):
         if not update.getMessage():
             return
         message = update.getMessage()
@@ -49,7 +49,7 @@ class PhotoSelectionState(State):
             kb = [
                 [
                     types.KeyboardButton(
-                        text=self.context.getMessage("photo_skipBtn")
+                        text=self.context.get_message("photo_skipBtn")
                     )
                 ],
             ]
@@ -57,10 +57,10 @@ class PhotoSelectionState(State):
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
             await message.answer(
-                self.context.getMessage("photo_text"), reply_markup=keyboard
+                self.context.get_message("photo_text"), reply_markup=keyboard
             )
         else:
             await message.answer(
-                self.context.getMessage("photo_text"),
+                self.context.get_message("photo_text"),
                 reply_markup=types.ReplyKeyboardRemove(),
             )
