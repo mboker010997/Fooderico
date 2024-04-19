@@ -16,9 +16,6 @@ class AboutState(State):
 
         if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
             self.context.user.about = message.text
-            self.context.user.others_interests = (
-                Matching.MatchingClass().getOtherTags(message.text)
-            )
 
         self.context.set_state(profile.OtherInterests(self.context))
         self.context.save_to_db()
@@ -32,9 +29,7 @@ class AboutState(State):
             buttons = [
                 [types.KeyboardButton(text=self.context.get_message("about_skipBtn"))],
             ]
-            keyboard = types.ReplyKeyboardMarkup(
-                keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
-            )
+            keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
             await message.answer(self.context.get_message("about_text"), reply_markup=keyboard)
         else:
             await message.answer(

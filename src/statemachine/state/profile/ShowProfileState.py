@@ -31,27 +31,19 @@ class ShowProfileState(State):
             [types.KeyboardButton(text=self.context.get_message("edit_profileBtn"))],
             [types.KeyboardButton(text=self.context.get_message("menuBtn"))],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
         photo_ids = self.context.user.photo_file_ids
         name = self.context.user.profile_name
         age = self.context.user.age
         city = self.context.user.city
         info = self.context.user.about
 
-        preferences = TagsModel.getReadableTagsDescription(
-            self.context.user.preferences_tags, self.context.bot_config
-        )
+        preferences = TagsModel.getReadableTagsDescription(self.context.user.preferences_tags, self.context.bot_config)
         restrictions = TagsModel.getReadableTagsDescription(
             self.context.user.restrictions_tags, self.context.bot_config
         )
-        diets = TagsModel.getReadableTagsDescription(
-            self.context.user.dietary, self.context.bot_config
-        )
-        interests = TagsModel.getReadableTagsDescription(
-            self.context.user.interests_tags, self.context.bot_config
-        )
+        diets = TagsModel.getReadableTagsDescription(self.context.user.dietary, self.context.bot_config)
+        interests = TagsModel.getReadableTagsDescription(self.context.user.interests_tags, self.context.bot_config)
 
         text = self.context.get_message("show_profile_template").format(
             name, age, city, info, preferences, restrictions, diets, interests

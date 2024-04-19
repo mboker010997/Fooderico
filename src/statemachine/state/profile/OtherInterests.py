@@ -21,11 +21,7 @@ class OtherInterests(State):
         else:
             tmp = re.split(r"[ ,]+", tags)
             self.context.user.others_interests = " ".join(
-                [
-                    tag
-                    for tag in self.context.user.others_interests.split()
-                    if tag not in tmp
-                ]
+                [tag for tag in self.context.user.others_interests.split() if tag not in tmp]
             )
 
     async def process_update(self, update: Update):
@@ -54,29 +50,19 @@ class OtherInterests(State):
         buttons = [
             [types.KeyboardButton(text=self.context.get_message("addBtn"))],
             [types.KeyboardButton(text=self.context.get_message("deleteBtn"))],
-            [
-                types.KeyboardButton(
-                    text=self.context.get_message("continueBtn")
-                )
-            ],
+            [types.KeyboardButton(text=self.context.get_message("continueBtn"))],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=buttons, resize_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         if self.is_updating:
             if self.state == "add":
                 await message.answer(self.context.get_message("add_interests"))
             elif self.state == "delete":
-                await message.answer(
-                    self.context.get_message("delete_interests")
-                )
+                await message.answer(self.context.get_message("delete_interests"))
         else:
             await message.answer(
                 "Ваши интересы: "
                 + (
-                    bot.DBController()
-                    .getUser(self.context.user.id)
-                    .others_interests
+                    bot.DBController().getUser(self.context.user.id).others_interests
                     or self.context.get_message("empty_interests")
                 ),
                 reply_markup=keyboard,

@@ -46,12 +46,8 @@ class PhotoSelectionState(State):
             buttons = [
                 [types.KeyboardButton(text=self.context.get_message("photo_skipBtn"))],
             ]
-            keyboard = types.ReplyKeyboardMarkup(
-                keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
-            )
-            await message.answer(
-                self.context.get_message("photo_text"), reply_markup=keyboard
-            )
+            keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
+            await message.answer(self.context.get_message("photo_text"), reply_markup=keyboard)
         else:
             await message.answer(
                 self.context.get_message("photo_text"),
