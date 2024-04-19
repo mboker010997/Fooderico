@@ -12,10 +12,6 @@ class MatchingClass:
             cls.instance = super(MatchingClass, cls).__new__(cls)
         return cls.instance
 
-    def getOtherTags(self, text):
-        # TODO need algorithm to get tags from text (smth like dataset)
-        return ""
-
     def getTagsFromAboutText(self, id):
         user = bot.DBController().getUser(id)
         about_text = user.about
@@ -55,7 +51,7 @@ class MatchingClass:
             other_about_tags = self.getTagsFromAboutText(other_id)
             count_matches += self.matchOneTag(
                 current_about_tags, other_about_tags
-            )
+            ) * 0.5
             matching_queue.append((count_matches, other_id))
         matching_queue.sort(reverse=True)
         return self.deleteUsersRelations(
