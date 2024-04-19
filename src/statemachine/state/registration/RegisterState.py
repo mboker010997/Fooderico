@@ -29,17 +29,10 @@ class RegisterState(State):
         if not update.getMessage():
             return
         message = update.getMessage()
-        kb = [
-            [
-                types.KeyboardButton(
-                    text=self.context.get_message("register_regBtn"),
-                    request_contact=True,
-                )
-            ],
+        buttons = [
+            [types.KeyboardButton(text=self.context.get_message("register_regBtn"), request_contact=True)],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
         await message.answer(
             self.context.get_message("register_error" if self.is_error else "register_text"),
             reply_markup=keyboard,

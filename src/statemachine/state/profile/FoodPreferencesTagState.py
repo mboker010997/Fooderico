@@ -43,9 +43,7 @@ class FoodPreferencesTagState(State):
         buttons = [
             [types.KeyboardButton(text=self.context.get_message("preferences_skipBtn"))],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
 
         if self.hasPoll:
             if self.context.user.preferences_tags is not None:

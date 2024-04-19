@@ -21,19 +21,14 @@ class GeoState(State):
             return
         message = update.getMessage()
 
-        if (
-            self.context.user.geolocation is not None
-            and message.text == self.context.get_message("geo_skipBtn")
-        ):
+        if self.context.user.geolocation is not None and message.text == self.context.get_message("geo_skipBtn"):
             self.set_state_in_context()
             self.context.save_to_db()
             return
 
         self.status = Status.INIT
         if message.location:
-            geolocation = Geolocation(
-                message.location.latitude, message.location.longitude
-            )
+            geolocation = Geolocation(message.location.latitude, message.location.longitude)
             self.context.user.geolocation = geolocation
             city = self.get_city_by_geolocation(geolocation)
             if city:
@@ -73,7 +68,7 @@ class GeoState(State):
         next_state = self.context.get_next_state()
         if next_state is None:
             next_state = profile.AboutState
-        self.context.setState(next_state(self.context))
+        self.context.set_state(next_state(self.context))
 
     async def send_message(self, update: Update):
         chat_id = update.getChatId()
@@ -89,18 +84,10 @@ class GeoState(State):
             ]
 
         if self.status == Status.CONFIRMATION:
-            buttons.append(
-                [types.KeyboardButton(text="Да, это мой город")]
-            )
-            buttons.append(
-                [types.KeyboardButton(text="Нет, это не мой город")]
-            )
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
-        )
-        await update.bot.send_message(
-            chat_id=chat_id, text=self.text, reply_markup=keyboard
-        )
+            buttons.append([types.KeyboardButton(text="Да, это мой город")])
+            buttons.append([types.KeyboardButton(text="Нет, это не мой город")])
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
+        await update.bot.send_message(chat_id=chat_id, text=self.text, reply_markup=keyboard)
 
     @staticmethod
     def get_city_by_geolocation(geolocation):
@@ -126,7 +113,7 @@ class GeoState(State):
         try:
             response = requests.get(url, headers=headers)
             data = response.json()
-            city = data['address']['city']
+            city = data["address"]["city"]
         except Exception:
             city = None
         return city
@@ -153,8 +140,8 @@ class GeoState(State):
         try:
             response = requests.get(url, headers=headers)
             data = response.json()
-            lat, lon = data[0]['lat'], data[0]['lon']
-            name = data[0]['display_name'].split(',')[0]
+            lat, lon = data[0]["lat"], data[0]["lon"]
+            name = data[0]["display_name"].split(",")[0]
         except Exception:
             lat, lon, name = None, None, None
         return lat, lon, name
@@ -192,9 +179,7 @@ class GeoState(State):
                 ellipsoid="WGS-84",
             ).m
             for city in nearest_cities:
-                current = geodesic(
-                    (lat, lon), (city["lat"], city["lon"]), ellipsoid="WGS-84"
-                ).m
+                current = geodesic((lat, lon), (city["lat"], city["lon"]), ellipsoid="WGS-84").m
                 if best_city_dist > current:
                     best_city = city
                     best_city_dist = current

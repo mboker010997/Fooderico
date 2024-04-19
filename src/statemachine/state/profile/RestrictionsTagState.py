@@ -26,9 +26,7 @@ class RestrictionsTagState(State):
             return
 
         poll_answer = update.getPollAnswer()
-        if poll_answer and int(poll_answer.poll_id) == int(
-            self.context.user.active_poll_id
-        ):
+        if poll_answer and int(poll_answer.poll_id) == int(self.context.user.active_poll_id):
             self.context.user.restrictions_tags = set()
             for option_id in poll_answer.option_ids:
                 option_name = self.options[option_id]
@@ -46,9 +44,7 @@ class RestrictionsTagState(State):
         buttons = [
             [types.KeyboardButton(text=self.context.get_message("restrictions_skipBtn"))],
         ]
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
 
         if self.hasPoll:
             if self.context.user.restrictions_tags is not None:
