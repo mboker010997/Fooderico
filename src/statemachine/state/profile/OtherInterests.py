@@ -1,6 +1,6 @@
 from src.statemachine import State
 from src.model import Update
-from src import bot
+from src import bot, model
 from src.statemachine.state import menu
 from aiogram import types
 import re
@@ -41,6 +41,7 @@ class OtherInterests(State):
             elif message.text == self.continueBtn:
                 self.context.set_state(menu.MenuState(self.context))
                 self.is_updating = True
+                self.context.user.status = model.Status.ENABLED
         self.context.save_to_db()
 
     async def send_message(self, update: Update):

@@ -1,6 +1,7 @@
 from src.statemachine import State
 from src.statemachine.state.registration import RegisterState
 from src.model import Update
+from src import model
 from src.statemachine import Context
 
 
@@ -23,6 +24,7 @@ class InitialState(State):
         self.context.user.language_code = lang_code
         self.context.user.username = message.from_user.username
         self.context.user.others_interests = ""
+        self.context.user.status = model.Status.HIDDEN
 
         self.context.set_state(RegisterState(self.context))
         self.context.save_to_db()
