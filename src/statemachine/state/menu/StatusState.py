@@ -12,7 +12,6 @@ class StatusState(State):
         self.nextState = self
         self.enabled = ["status_enabled", "changeStatus_enableBtn"]
         self.hidden = ["status_hidden", "changeStatus_hideBtn"]
-        self.disabled = ["status_disabled", "changeStatus_disableBtn"]
 
     async def process_update(self, update: Update):
         if not update.getMessage():
@@ -24,8 +23,6 @@ class StatusState(State):
             self.context.user.status = model.Status.ENABLED
         elif text == self.context.get_message(self.hidden[1]):
             self.context.user.status = model.Status.HIDDEN
-        elif text == self.context.get_message(self.disabled[1]):
-            self.context.user.status = model.Status.DISABLED
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
@@ -33,7 +30,7 @@ class StatusState(State):
             return
 
         message = update.getMessage()
-        text = "Статус аккаунта: "
+        text = "Видимость анкеты: "
         current_user_status = self.context.get_message(self.context.user.status.value)
 
         text += current_user_status
@@ -41,9 +38,6 @@ class StatusState(State):
                     text=self.context.get_message(self.enabled[1]))],
               [types.KeyboardButton(
                     text=self.context.get_message(self.hidden[1])
-                )],
-              [types.KeyboardButton(
-                    text=self.context.get_message(self.disabled[1])
                 )],
               [types.KeyboardButton(
                   text=self.context.get_message("menuBtn"))],
@@ -57,8 +51,6 @@ class StatusState(State):
             description = self.context.get_message("status_enabled_desc")
         elif self.context.user.status == model.Status.HIDDEN:
             description = self.context.get_message("status_hidden_desc")
-        elif self.context.user.status == model.Status.DISABLED:
-            description = self.context.get_message("status_disabled_desc")
         else:
             logging.error(f"no such user status : {self.context.user.status}")
             return

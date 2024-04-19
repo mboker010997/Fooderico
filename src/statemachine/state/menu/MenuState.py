@@ -42,21 +42,10 @@ class MenuState(State):
         message = update.getMessage()
         text = "Главное меню"
         buttons = [
-            [
-                types.KeyboardButton(text=self.searchBtn),
-                types.KeyboardButton(text=self.photosBtn)
-            ],
-            [
-                types.KeyboardButton(text=self.profileBtn),
-                types.KeyboardButton(text=self.statusBtn)
-            ],
-            [
-                types.KeyboardButton(text=self.viewChatsBtn),
-                types.KeyboardButton(text=self.contactsBtn)
-            ],
-            [
-                types.KeyboardButton(text=self.aboutBtn)
-            ],
+            [types.KeyboardButton(text=self.searchBtn)],
+            [types.KeyboardButton(text=self.photosBtn), types.KeyboardButton(text=self.profileBtn)],
+            [types.KeyboardButton(text=self.statusBtn), types.KeyboardButton(text=self.viewChatsBtn)],
+            [types.KeyboardButton(text=self.contactsBtn), types.KeyboardButton(text=self.aboutBtn)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         return await message.answer(text, reply_markup=keyboard)
