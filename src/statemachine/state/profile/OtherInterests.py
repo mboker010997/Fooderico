@@ -63,7 +63,7 @@ class OtherInterests(State):
             await message.answer(
                 "Ваши интересы: "
                 + (
-                    bot.DBController().getUser(self.context.user.id).others_interests
+                    bot.DBController().get_user(self.context.user.id).others_interests
                     or self.context.get_message("empty_interests")
                 ),
                 reply_markup=keyboard,

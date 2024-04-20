@@ -32,8 +32,8 @@ class ChatState(State):
 
         callback = update.get_callback_query()
         chat_id = update.get_chat_id()
-        user = bot.DBController().getUserByChatId(update.get_chat_id())
-        other_user = bot.DBController().getUserByChatId(self.other_chat_id)
+        user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
+        other_user = bot.DBController().get_user_by_chat_id(self.other_chat_id)
         if self.first_entered:
             kb = [
                 [types.KeyboardButton(text="Выйти из чата")],

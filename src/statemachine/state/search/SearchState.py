@@ -53,8 +53,8 @@ class SearchState(State):
                 self.is_match = True
 
     async def __notify_both(self, update: Update):
-        my_user = bot.DBController().getUser(self.last_relation.user_id)
-        other_user = bot.DBController().getUser(
+        my_user = bot.DBController().get_user(self.last_relation.user_id)
+        other_user = bot.DBController().get_user(
             self.last_relation.other_user_id
         )
 
@@ -102,7 +102,7 @@ class SearchState(State):
             await self.__notify_both(update)
         message = update.get_message()
         chatId = update.get_chat_id()
-        other_user = bot.MatchingClass().tagsMatchingQueue(chatId)
+        other_user = bot.MatchingClass().tags_matching_queue(chatId)
         if other_user is None:
             kb = [[types.KeyboardButton(text=self.menu_text)],
                   ]
@@ -115,7 +115,7 @@ class SearchState(State):
             )
             return
 
-        other_user = bot.DBController().getUser(other_user)
+        other_user = bot.DBController().get_user(other_user)
 
         photo_ids = other_user.photo_file_ids
         self.last_relation = UserRelation(

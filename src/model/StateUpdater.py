@@ -10,7 +10,7 @@ class StateUpdater:
     def get_state(chat_id):
         context = state_cache_holder.get(chat_id, None)
         if context is None:
-            user = bot.DBController().getUserByChatId(chat_id)
+            user = bot.DBController().get_user_by_chat_id(chat_id)
             state_class = user.state_class
             if state_class is None:
                 return InitialState()
