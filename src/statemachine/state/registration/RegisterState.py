@@ -20,7 +20,6 @@ class RegisterState(State):
         user.first_name = message.contact.first_name
         user.last_name = message.contact.last_name
         user.phone_number = message.contact.phone_number
-        user.status = model.Status.ENABLED
         self.context.user = user
         self.context.set_state(UsernameState(self.context))
         self.context.save_to_db()

@@ -39,25 +39,29 @@ class MatchingClass:
 
         list_of_tags = bot.DBController().getTags()
 
+        available_users_for_match = self.deleteUsersRelations(
+            bot.DBController().getIdByChatId(chat_id),
+            [person_tags[0] for person_tags in list_of_tags],
+        )
+
         matching_queue = []
         for person_tags in list_of_tags:
+            other_id = person_tags[0]
+            if other_id not in available_users_for_match:
+                continue
             count_matches = 0
             for tag_position in range(1, len(person_tags)):
                 count_matches += self.matchOneTag(
                     person_tags[tag_position], current_tags[tag_position]
                 )
 
-            other_id = person_tags[0]
             other_about_tags = self.getTagsFromAboutText(other_id)
             count_matches += self.matchOneTag(
                 current_about_tags, other_about_tags
             ) * 0.5
             matching_queue.append((count_matches, other_id))
         matching_queue.sort(reverse=True)
-        return self.deleteUsersRelations(
-            bot.DBController().getIdByChatId(chat_id),
-            [id for count_matches, id in matching_queue],
-        )
+        return matching_queue[0][1] if matching_queue else None
 
     def deleteUsersRelations(self, id, list_of_users):
         list_of_relations = bot.DBController().getUserRelationsIds(id)
@@ -66,6 +70,8 @@ class MatchingClass:
             relations_id[0] for relations_id in list_of_relations
         ]
 
+        updated_list_of_users = []
+
         for user_id in list_of_users:
             if (
                 (list_of_relations is None or user_id not in list_of_relations)
@@ -73,5 +79,5 @@ class MatchingClass:
                 and bot.DBController().getUserStatus(user_id)[0]
                 == "status_enabled"
             ):
-                return user_id
-        return None
+                updated_list_of_users.append(user_id)
+        return updated_list_of_users
