@@ -24,9 +24,7 @@ class Handler:
         chat_id = update.get_chat_id()
         sentMessage = StateUpdater.get_sent_message(chat_id)
         if sentMessage is not None:
-            await self.bot.delete_message(
-                chat_id=sentMessage.chat.id, message_id=sentMessage.message_id
-            )
+            await self.bot.delete_message(chat_id=sentMessage.chat.id, message_id=sentMessage.message_id)
 
         curState = StateUpdater.get_state(chat_id)
         nextState = await curState.go_next_state(update)
@@ -116,9 +114,7 @@ class Handler:
             parts = callback.data.split("_")
             idx = parts[3]
             user = context.user
-            query = (
-                f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
-            )
+            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
             bot.DBController().cursor.execute(query)
             self.other_user_rows = bot.DBController().cursor.fetchall()
             num = int(idx)
@@ -163,16 +159,13 @@ class Handler:
             parts = callback.data.split("_")
             idx = parts[1]
             user = context.user
-            query = (
-                f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
-            )
+            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
             bot.DBController().cursor.execute(query)
             self.other_user_rows = bot.DBController().cursor.fetchall()
             num = int(idx)
             other_user_id = self.other_user_rows[num][2]
             bot.DBController().cursor.execute(
-                f"DELETE FROM tele_meet_relations WHERE"
-                f"user_id = {user.id} AND other_user_id = {other_user_id};"
+                f"DELETE FROM tele_meet_relations WHERE" f"user_id = {user.id} AND other_user_id = {other_user_id};"
             )
             context.save_to_db()
             await context.state.send_message(update)

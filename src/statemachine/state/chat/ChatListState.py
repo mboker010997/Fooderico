@@ -23,7 +23,7 @@ class ChatListState(State):
             return
         message = update.get_message()
 
-        list_of_matches = bot.DBController().getUserRelationsIds(
+        list_of_matches = bot.DBController().get_user_relations_ids(
             self.context.user.id
         )  ###
         list_of_user_ids = [user_id[0] for user_id in list_of_matches]
@@ -36,8 +36,8 @@ class ChatListState(State):
 
     @staticmethod
     async def __send_match(update, from_user_id, to_user_id):
-        from_user = bot.DBController().getUser(from_user_id)
-        to_user = bot.DBController().getUser(to_user_id)
+        from_user = bot.DBController().get_user(from_user_id)
+        to_user = bot.DBController().get_user(to_user_id)
 
         text = f"{from_user.profile_name}\n{from_user.about}"
         send_contacts_button = types.InlineKeyboardButton(
