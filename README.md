@@ -5,7 +5,7 @@
 
 ---
 ### Схема системного контекста
-![Alt text](/pictures/1_level.png?raw=true "Context")
+![Alt text](pictures/1_level.png?raw=true "Context")
 
 ### Схема контейнеров
 ![Alt text](/pictures/2_level.png?raw=true "Containers")
