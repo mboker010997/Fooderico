@@ -13,13 +13,13 @@ class InitialState(State):
         pass
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         lang_code = message.from_user.language_code
         self.context = Context(lang_code)
 
-        self.context.user.chat_id = update.getChatId()
+        self.context.user.chat_id = update.get_chat_id()
         self.context.user.language_code = lang_code
         self.context.user.username = message.from_user.username
         self.context.user.others_interests = ""

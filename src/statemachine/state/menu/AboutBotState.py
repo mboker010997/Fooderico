@@ -12,10 +12,10 @@ class AboutBotState(State):
         pass
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         await message.answer(
             self.context.get_message("aboutBot_text"), parse_mode=ParseMode.HTML
         )

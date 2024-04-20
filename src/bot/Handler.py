@@ -21,18 +21,18 @@ class Handler:
         self.register_handlers()
 
     async def update_handler(self, update: Update):
-        chat_id = update.getChatId()
-        sentMessage = StateUpdater.getSentMessage(chat_id)
+        chat_id = update.get_chat_id()
+        sentMessage = StateUpdater.get_sent_message(chat_id)
         if sentMessage is not None:
             await self.bot.delete_message(
                 chat_id=sentMessage.chat.id, message_id=sentMessage.message_id
             )
 
-        curState = StateUpdater.getState(chat_id)
+        curState = StateUpdater.get_state(chat_id)
         nextState = await curState.go_next_state(update)
         try:
             newMessage = await nextState.send_message(update)
-            StateUpdater.setSentMessage(chat_id, newMessage)
+            StateUpdater.set_sent_message(chat_id, newMessage)
         except Exception as exc:
             logging.exception("Handler")
             logging.exception(exc)
@@ -58,7 +58,7 @@ class Handler:
         async def transition_to_anon_chat(callback: types.CallbackQuery):
             chat_id = callback.from_user.id
             update = CallbackQuery(self.telebot, callback)
-            context = StateUpdater.getContext(chat_id)
+            context = StateUpdater.get_context(chat_id)
             if context is None:
                 return
 
@@ -74,7 +74,7 @@ class Handler:
         async def delete_photo_handler(callback: types.CallbackQuery):
             chat_id = callback.from_user.id
             update = CallbackQuery(self.telebot, callback)
-            context = StateUpdater.getContext(chat_id)
+            context = StateUpdater.get_context(chat_id)
             if context is None:
                 return
             print(callback.data)
@@ -92,7 +92,7 @@ class Handler:
         async def main_photo_handler(callback: types.CallbackQuery):
             chat_id = callback.from_user.id
             update = CallbackQuery(self.telebot, callback)
-            context = StateUpdater.getContext(chat_id)
+            context = StateUpdater.get_context(chat_id)
             if context is None:
                 return
 
@@ -110,7 +110,7 @@ class Handler:
         async def relation_handler(callback: types.CallbackQuery, relation):
             chat_id = callback.from_user.id
             update = CallbackQuery(self.telebot, callback)
-            context = StateUpdater.getContext(chat_id)
+            context = StateUpdater.get_context(chat_id)
             if context is None:
                 return
             parts = callback.data.split("_")
@@ -157,7 +157,7 @@ class Handler:
         ):
             chat_id = callback.from_user.id
             update = CallbackQuery(self.telebot, callback)
-            context = StateUpdater.getContext(chat_id)
+            context = StateUpdater.get_context(chat_id)
             if context is None:
                 return
             parts = callback.data.split("_")

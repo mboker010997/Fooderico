@@ -22,9 +22,9 @@ class ContactsState(State):
         await self.context.state.send_message(update)
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         my_chat_id = bot.DBController().getUser(self.context.user.id).chat_id
 
         query = (f"SELECT * FROM tele_meet_relations "

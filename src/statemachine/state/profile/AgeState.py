@@ -10,10 +10,10 @@ class AgeState(State):
         self.text = self.context.get_message("age_text")
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         if self.context.user.age is None or message.text != self.context.get_message("age_skipBtn"):
             if message.text.isdigit() and (int(message.text) in range(1, 100)):
                 self.context.user.age = int(message.text)
@@ -25,9 +25,9 @@ class AgeState(State):
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         if self.context.user.age is not None:
             buttons = [

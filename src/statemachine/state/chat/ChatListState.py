@@ -19,9 +19,9 @@ class ChatListState(State):
         await self.context.state.send_message(update)
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         list_of_matches = bot.DBController().getUserRelationsIds(
             self.context.user.id

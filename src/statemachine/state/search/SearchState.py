@@ -28,12 +28,12 @@ class SearchState(State):
 
     async def process_update(self, update: Update):
         # add relations to db: BLACKLIST, SKIPPED, FOLLOW
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         if message.text in self.nextStateDict.keys():
-            self.context.set_state(self.nextStateDict[update.getMessage().text](self.context))
+            self.context.set_state(self.nextStateDict[update.get_message().text](self.context))
             self.context.save_to_db()
             self.asked_more = False
             self.asked_view_photos = False
@@ -100,8 +100,8 @@ class SearchState(State):
     async def send_message(self, update: Update):
         if self.is_match:
             await self.__notify_both(update)
-        message = update.getMessage()
-        chatId = update.getChatId()
+        message = update.get_message()
+        chatId = update.get_chat_id()
         other_user = bot.MatchingClass().tagsMatchingQueue(chatId)
         if other_user is None:
             kb = [[types.KeyboardButton(text=self.menu_text)],
@@ -129,16 +129,16 @@ class SearchState(State):
             await self.__send_user_info(message, other_user, photo_ids)
 
     async def __send_more_info(self, message, other_user, photo_ids):
-        preferences = tags.getReadableTagsDescription(
+        preferences = tags.get_readable_tags_description(
             self.context.user.preferences_tags, self.context.bot_config
         )
-        restrictions = tags.getReadableTagsDescription(
+        restrictions = tags.get_readable_tags_description(
             self.context.user.restrictions_tags, self.context.bot_config
         )
-        diets = tags.getReadableTagsDescription(
+        diets = tags.get_readable_tags_description(
             self.context.user.dietary, self.context.bot_config
         )
-        interests = tags.getReadableTagsDescription(
+        interests = tags.get_readable_tags_description(
             self.context.user.interests_tags, self.context.bot_config
         )
 

@@ -10,9 +10,9 @@ class RegisterState(State):
         self.is_error = False
 
     async def process_update(self, update: model.Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         if message.contact is None:
             self.is_error = True
             return
@@ -26,9 +26,9 @@ class RegisterState(State):
         self.context.save_to_db()
 
     async def send_message(self, update: model.Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         buttons = [
             [types.KeyboardButton(text=self.context.get_message("register_regBtn"), request_contact=True)],
         ]

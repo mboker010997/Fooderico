@@ -13,7 +13,7 @@ class InterestsTagState(State):
         self.hasPoll = True
 
     async def process_update(self, update: Update):
-        message = update.getMessage()
+        message = update.get_message()
 
         if (
             self.context.user.interests_tags is not None
@@ -25,7 +25,7 @@ class InterestsTagState(State):
             self.hasPoll = False
             return
 
-        poll_answer = update.getPollAnswer()
+        poll_answer = update.get_poll_answer()
         if poll_answer and int(poll_answer.poll_id) == int(self.context.user.active_poll_id):
             self.context.user.interests_tags = set()
             for option_id in poll_answer.option_ids:
@@ -49,7 +49,7 @@ class InterestsTagState(State):
         if self.hasPoll:
             if self.context.user.interests_tags is not None:
                 poll_info = await update.bot.send_poll(
-                    chat_id=update.getChatId(),
+                    chat_id=update.get_chat_id(),
                     question=self.context.get_message("interests_tag_text"),
                     options=options,
                     is_anonymous=False,
@@ -58,7 +58,7 @@ class InterestsTagState(State):
                 )
             else:
                 poll_info = await update.bot.send_poll(
-                    chat_id=update.getChatId(),
+                    chat_id=update.get_chat_id(),
                     question=self.context.get_message("interests_tag_text"),
                     options=options,
                     is_anonymous=False,

@@ -14,9 +14,9 @@ class StatusState(State):
         self.hidden = ["status_hidden", "changeStatus_hideBtn"]
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        text = update.getMessage().text
+        text = update.get_message().text
         if text == self.context.get_message("menuBtn"):
             self.context.set_state(menu.MenuState(self.context))
         elif text == self.context.get_message(self.enabled[1]):
@@ -26,10 +26,10 @@ class StatusState(State):
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         text = "Видимость анкеты: "
         current_user_status = self.context.get_message(self.context.user.status.value)
 

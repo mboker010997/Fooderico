@@ -7,7 +7,7 @@ default_lang = "ru"
 
 class Localization:
     @staticmethod
-    def loadInfo():
+    def load_info():
         for lang_code in langs:
             filename = f"/src/resources/{lang_code}.yml"
             with open(filename, "r") as stream:
