@@ -1,6 +1,5 @@
-import logging
-from aiogram import Bot, Dispatcher, types
 from abc import abstractmethod
+from aiogram import types
 
 
 class Update:
