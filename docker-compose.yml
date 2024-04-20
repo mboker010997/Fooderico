@@ -24,9 +24,6 @@ services:
       DATABASE_PASSWORD: root
       TOKEN: "6645685311:AAEv2S99I2KCXcJa8ZtEZHpLxVKO3_fL-6I"
 
-#    networks:
-#      - proxynet
-
   #  DATABASES
   db:
     image: postgres

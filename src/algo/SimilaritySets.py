@@ -1,4 +1,14 @@
 def similarity(user, other_user, context):
+    """The function of determining matching tags for two users.
+
+    Args:
+        user: The first user.
+        other_user: The second user.
+        context: The context for extracting tag values.
+
+    Returns:
+        Matching tags
+    """
     tags = []
     if user.preferences_tags is not None and other_user.preferences_tags is not None:
         for user_tag in user.preferences_tags:
