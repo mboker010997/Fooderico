@@ -7,6 +7,15 @@ train_text = (
 
 
 def extract_tags_from_text(text, lang_code):
+    """A function for extracting tags from text.
+
+    Arguments:
+        text: Text.
+        lang_code: The language code.
+
+    Returns:
+        Highlighted tags from this text.
+    """
     rake = Rake(
         max_words=1,
         language_code=lang_code,

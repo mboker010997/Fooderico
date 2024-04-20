@@ -8,6 +8,7 @@ import logging
 
 
 class DBController:
+    """Class for interacting with a DB."""
     __initialized = False
 
     def __new__(cls):
@@ -83,12 +84,14 @@ class DBController:
         self.createTables()
 
     def deleteTable(self):
+        """Delete created tables from DB."""
         self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_match")
         self.connection.commit()
 
     def deleteUser(self, chat_id):
+        """Delete user from DB by id of chat"""
         id = self.getIdByChatId(chat_id)
 
         print(id)
@@ -103,14 +106,25 @@ class DBController:
         self.connection.commit()
 
     def createTables(self):
+        """Create tables in DB."""
         self.createQuery("tele_meet_users", self.users_table_columns)
         self.createQuery("tele_meet_relations", self.relations_table_columns)
         self.createQuery("tele_meet_match", self.match_table_columns)
 
     def selectQuery(self, table_name, args):
+        """SELECT query in DB."""
         self.cursor.execute(f"SELECT {args} FROM {table_name}")
 
     def createQuery(self, table_name, columns: dict):
+        """Creating a table in the database.
+
+        Arguments:
+            table_name: The name of the table.
+            columns: The names of the columns of the table.
+
+        Returns:
+            None
+        """
         args = []
         for key in columns.keys():
             args.append(key + " " + columns[key])
