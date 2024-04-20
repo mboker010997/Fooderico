@@ -25,7 +25,7 @@ class TelegramBot:
 if __name__ == "__main__":
     try:
         dbcontroller = bot.DBController()
-        Localization.loadInfo()
+        Localization.load_info()
         bot = TelegramBot()
         bot.dp.message.middleware(AlbumMiddleware())
         asyncio.run(bot.start_polling())
@@ -33,5 +33,5 @@ if __name__ == "__main__":
         if dbcontroller.connection:
             dbcontroller.connection.commit()
             dbcontroller.connection.close()
-    except Exception as _ex:
+    except Exception:
         logging.exception("Main (TeleMeetBot)")

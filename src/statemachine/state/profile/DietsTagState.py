@@ -13,7 +13,7 @@ class DietsTagState(State):
         self.hasPoll = True
 
     async def process_update(self, update: Update):
-        message = update.getMessage()
+        message = update.get_message()
 
         if (
             self.context.user.dietary is not None
@@ -25,7 +25,7 @@ class DietsTagState(State):
             self.hasPoll = False
             return
 
-        poll_answer = update.getPollAnswer()
+        poll_answer = update.get_poll_answer()
         if poll_answer and int(poll_answer.poll_id) == int(self.context.user.active_poll_id):
             self.context.user.dietary = set()
             for option_id in poll_answer.option_ids:
@@ -48,7 +48,7 @@ class DietsTagState(State):
         if self.hasPoll:
             if self.context.user.dietary is not None:
                 poll_info = await update.bot.send_poll(
-                    chat_id=update.getChatId(),
+                    chat_id=update.get_chat_id(),
                     question=self.context.get_message("diets_tag_text"),
                     options=options,
                     is_anonymous=False,
@@ -57,7 +57,7 @@ class DietsTagState(State):
                 )
             else:
                 poll_info = await update.bot.send_poll(
-                    chat_id=update.getChatId(),
+                    chat_id=update.get_chat_id(),
                     question=self.context.get_message("diets_tag_text"),
                     options=options,
                     is_anonymous=False,

@@ -22,10 +22,10 @@ class ContactsState(State):
         await self.context.state.send_message(update)
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
-        my_chat_id = bot.DBController().getUser(self.context.user.id).chat_id
+        message = update.get_message()
+        my_chat_id = bot.DBController().get_user(self.context.user.id).chat_id
 
         query = (f"SELECT * FROM tele_meet_relations "
                  f"WHERE user_id = {self.context.user.id} "
@@ -38,7 +38,7 @@ class ContactsState(State):
         for other_user_row in self.other_user_rows:
             other_relation = other_user_row[3]
             other_user_id = other_user_row[2]
-            other_user = bot.DBController().getUser(other_user_id)
+            other_user = bot.DBController().get_user(other_user_id)
             other_profile_name = other_user.profile_name
 
             buttons = []

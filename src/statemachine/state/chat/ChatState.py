@@ -15,25 +15,25 @@ class ChatState(State):
 
     async def process_update(self, update: Update):
         self.first_entered = False
-        if update.getMessage().text == "Выйти из чата":
-            await update.message_storage.close(update.getChatId(), self.other_chat_id)
+        if update.get_message().text == "Выйти из чата":
+            await update.message_storage.close(update.get_chat_id(), self.other_chat_id)
             self.context.set_state(menu.MenuState(self.context))
             self.context.save_to_db()
-        elif update.getMessage().text == "Поделиться контактами":
+        elif update.get_message().text == "Поделиться контактами":
             self.share_contacts = True
         else:
-            message = update.getMessage()
+            message = update.get_message()
             if message is not None:
                 self.text = message.text
 
     async def send_message(self, update: Update):
-        # if not update.getMessage():
+        # if not update.get_message():
         #     return
 
-        callback = update.getCallbackQuery()
-        chat_id = update.getChatId()
-        user = bot.DBController().getUserByChatId(update.getChatId())
-        other_user = bot.DBController().getUserByChatId(self.other_chat_id)
+        callback = update.get_callback_query()
+        chat_id = update.get_chat_id()
+        user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
+        other_user = bot.DBController().get_user_by_chat_id(self.other_chat_id)
         if self.first_entered:
             kb = [
                 [types.KeyboardButton(text="Выйти из чата")],

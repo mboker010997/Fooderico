@@ -11,9 +11,9 @@ class ShowProfileState(State):
         self.nextState = self
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        answer = update.getMessage().text
+        answer = update.get_message().text
         if answer == self.context.get_message("edit_profileBtn"):
             self.context.set_state(profile.UsernameState(self.context))
             self.context.save_to_db()
@@ -22,9 +22,9 @@ class ShowProfileState(State):
             self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         text = self.context.get_message("show_profile_text")
         await message.answer(text)
         buttons = [
@@ -38,12 +38,12 @@ class ShowProfileState(State):
         city = self.context.user.city
         info = self.context.user.about
 
-        preferences = TagsModel.getReadableTagsDescription(self.context.user.preferences_tags, self.context.bot_config)
-        restrictions = TagsModel.getReadableTagsDescription(
+        preferences = TagsModel.get_readable_tags_description(self.context.user.preferences_tags, self.context.bot_config)
+        restrictions = TagsModel.get_readable_tags_description(
             self.context.user.restrictions_tags, self.context.bot_config
         )
-        diets = TagsModel.getReadableTagsDescription(self.context.user.dietary, self.context.bot_config)
-        interests = TagsModel.getReadableTagsDescription(self.context.user.interests_tags, self.context.bot_config)
+        diets = TagsModel.get_readable_tags_description(self.context.user.dietary, self.context.bot_config)
+        interests = TagsModel.get_readable_tags_description(self.context.user.interests_tags, self.context.bot_config)
 
         text = self.context.get_message("show_profile_template").format(
             name, age, city, info, preferences, restrictions, diets, interests

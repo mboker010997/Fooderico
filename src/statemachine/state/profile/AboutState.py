@@ -10,20 +10,20 @@ class AboutState(State):
         super().__init__(context)
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
-        if self.context.user.about is None or message.text != self.context.getMessage("about_skipBtn"):
+        if self.context.user.about is None or message.text != self.context.get_message("about_skipBtn"):
             self.context.user.about = message.text
 
         self.context.set_state(profile.OtherInterests(self.context))
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         if self.context.user.about is not None:
             buttons = [

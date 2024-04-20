@@ -26,9 +26,9 @@ class MenuState(State):
         }
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         if message.text:
             if message.text in self.nextStateDict.keys():
                 if message.text == self.searchBtn:
@@ -37,9 +37,9 @@ class MenuState(State):
                 self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         text = "Главное меню"
         buttons = [
             [types.KeyboardButton(text=self.searchBtn)],

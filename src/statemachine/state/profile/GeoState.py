@@ -17,9 +17,9 @@ class GeoState(State):
         self.status = Status.INIT
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         if self.context.user.geolocation is not None and message.text == self.context.get_message("geo_skipBtn"):
             self.set_state_in_context()
@@ -71,7 +71,7 @@ class GeoState(State):
         self.context.set_state(next_state(self.context))
 
     async def send_message(self, update: Update):
-        chat_id = update.getChatId()
+        chat_id = update.get_chat_id()
 
         if self.context.user.geolocation is not None:
             buttons = [

@@ -10,9 +10,9 @@ class PhotoSelectionState(State):
         self.is_error = False
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         if self.context.user.photo_file_ids is None or message.text != self.context.get_message("photo_skipBtn"):
             self.context.user.photo_file_ids = list()
             photo_ids = self.context.user.photo_file_ids
@@ -35,9 +35,9 @@ class PhotoSelectionState(State):
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         if self.is_error:
             await message.answer(self.text)
             return

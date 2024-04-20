@@ -36,7 +36,7 @@ class Context:
         return next_state
 
     def get_message(self, text):
-        return self.bot_config.getMessage(text)
+        return self.bot_config.get_message(text)
 
     def save_to_db(self):
-        bot.DBController().setUser(self.user)
+        bot.DBController().set_user(self.user)

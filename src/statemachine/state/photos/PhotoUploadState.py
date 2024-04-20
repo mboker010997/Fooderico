@@ -11,14 +11,14 @@ class PhotoUploadState(State):
         self.is_error = False
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
         if self.context.user.photo_file_ids is None:
             self.context.user.photo_file_ids = list()
         photo_ids = self.context.user.photo_file_ids
 
-        message = update.getMessage()
+        message = update.get_message()
         if self.is_error and message.text == self.context.get_message("photo_back"):
             self.is_error = False
             self.context.set_state(photos.PhotosState(self.context))
@@ -44,7 +44,7 @@ class PhotoUploadState(State):
             self.is_error = True
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
         buttons = [
@@ -52,7 +52,7 @@ class PhotoUploadState(State):
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
 
-        message = update.getMessage()
+        message = update.get_message()
         if self.is_error:
             await message.answer(self.text, reply_markup=keyboard)
         else:
