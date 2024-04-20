@@ -110,11 +110,11 @@ class GeoState(State):
         lat = geolocation.latitude
         lon = geolocation.longitude
         url = f"http://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
+        response = requests.get(url, headers=headers)
+        data = response.json()
         try:
-            response = requests.get(url, headers=headers)
-            data = response.json()
             city = data["address"]["city"]
-        except Exception:
+        except IndexError or TypeError:
             city = None
         return city
 
@@ -137,12 +137,12 @@ class GeoState(State):
             "cookie": "_osm_totp_token=114327",
         }
         url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
+        response = requests.get(url, headers=headers)
+        data = response.json()
         try:
-            response = requests.get(url, headers=headers)
-            data = response.json()
             lat, lon = data[0]["lat"], data[0]["lon"]
             name = data[0]["display_name"].split(",")[0]
-        except Exception:
+        except IndexError or TypeError:
             lat, lon, name = None, None, None
         return lat, lon, name
 

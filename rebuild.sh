@@ -7,7 +7,7 @@ if [ -n "$IMAGE_PGADMIN" ]; then
     docker rmi -f $IMAGE_PGADMIN
 fi
 
-IMAGE_ID_backend=$(docker images -q tele-meet-bot_backend)
+IMAGE_ID_backend=$(docker images -q tele-meet-bot-backend)
 if [ -n "$IMAGE_ID_backend" ]; then
     docker rmi -f $IMAGE_ID_backend
 fi
