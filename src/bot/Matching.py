@@ -1,5 +1,4 @@
 from src import bot
-from src.model.Status import Status
 import re
 from src.algo.TagsExtraction import extract_tags_from_text
 

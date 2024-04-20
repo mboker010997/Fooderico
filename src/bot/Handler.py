@@ -61,7 +61,7 @@ class Handler:
                 return
 
             expected_prefix = "go_anon_chat_"
-            other_chat_id = int(callback.data[len(expected_prefix) :])
+            other_chat_id = int(callback.data[len(expected_prefix):])
             context.other_chat_id = other_chat_id
             context.set_state(chat.ChatState(context))
             context.save_to_db()
