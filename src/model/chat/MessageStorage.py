@@ -36,5 +36,5 @@ class MessageStorage:
     async def is_closed(self, from_user, to_user):
         key = (from_user, to_user)
         async with self.lock:
-            result = (key not in self.opened)
+            result = key not in self.opened
         return result

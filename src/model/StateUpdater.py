@@ -7,7 +7,7 @@ stateCacheHolder = dict()
 
 class StateUpdater:
     @staticmethod
-    def getState(chat_id):
+    def get_state(chat_id):
         context = stateCacheHolder.get(chat_id, None)
         if context is None:
             user = bot.DBController().getUserByChatId(chat_id)
@@ -20,19 +20,19 @@ class StateUpdater:
         return context.state
 
     @staticmethod
-    def getContext(chat_id) -> statemachine.Context:
+    def get_context(chat_id) -> statemachine.Context:
         context = stateCacheHolder.get(chat_id, None)
         return context
 
     @staticmethod
-    def getSentMessage(chat_id):
+    def get_sent_message(chat_id):
         context = stateCacheHolder.get(chat_id, None)
         if context is None:
             return None
         return context.get_sent_message()
 
     @staticmethod
-    def setSentMessage(chat_id, message):
+    def set_sent_message(chat_id, message):
         context = stateCacheHolder.get(chat_id, None)
         if context is not None:
             context.set_sent_message(message)

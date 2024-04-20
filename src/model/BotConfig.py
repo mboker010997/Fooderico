@@ -7,7 +7,5 @@ class BotConfig:
         if lang_code not in lang_dict.keys():
             self.lang_code = default_lang
 
-    def getMessage(self, text):
-        return lang_dict[self.lang_code]["tele-meet-bot"]["messages"].get(
-            text, ""
-        )
+    def get_message(self, text):
+        return lang_dict[self.lang_code]["tele-meet-bot"]["messages"].get(text, "")

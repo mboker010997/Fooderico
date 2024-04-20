@@ -11,16 +11,16 @@ class Update:
         self.album = None
 
     @abstractmethod
-    def getChatId(self):
+    def get_chat_id(self):
         pass
 
-    def getMessage(self) -> types.Message:
+    def get_message(self) -> types.Message:
         pass
 
-    def getPollAnswer(self) -> types.PollAnswer:
+    def get_poll_answer(self) -> types.PollAnswer:
         pass
 
-    def getCallbackQuery(self) -> types.CallbackQuery:
+    def get_callback_query(self) -> types.CallbackQuery:
         pass
 
 
@@ -29,10 +29,10 @@ class Message(Update):
         super().__init__(telebot)
         self.message = message
 
-    def getChatId(self):
+    def get_chat_id(self):
         return self.message.from_user.id
 
-    def getMessage(self) -> types.Message:
+    def get_message(self) -> types.Message:
         return self.message
 
 
@@ -41,22 +41,20 @@ class PollAnswer(Update):
         super().__init__(telebot)
         self.poll = poll
 
-    def getChatId(self):
+    def get_chat_id(self):
         return self.poll.user.id
 
-    def getPollAnswer(self) -> types.PollAnswer:
+    def get_poll_answer(self) -> types.PollAnswer:
         return self.poll
 
 
 class CallbackQuery(Update):
-    def __init__(
-        self, telebot, callback_query: types.CallbackQuery
-    ):
+    def __init__(self, telebot, callback_query: types.CallbackQuery):
         super().__init__(telebot)
         self.callback_query = callback_query
 
-    def getChatId(self):
+    def get_chat_id(self):
         return self.callback_query.from_user.id
 
-    def getCallbackQuery(self) -> types.CallbackQuery:
+    def get_callback_query(self) -> types.CallbackQuery:
         return self.callback_query

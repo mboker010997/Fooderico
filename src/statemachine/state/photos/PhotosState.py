@@ -17,16 +17,16 @@ class PhotosState(State):
         }
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         if message.text and message.text in self.next_state_dict.keys():
-            self.context.set_state(self.next_state_dict[update.getMessage().text](self.context))
+            self.context.set_state(self.next_state_dict[update.get_message().text](self.context))
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        chat_id = update.getChatId()
+        chat_id = update.get_chat_id()
         text = self.context.get_message("photos_text")
         buttons = [
             [types.KeyboardButton(text=self.photo_list_btn)],

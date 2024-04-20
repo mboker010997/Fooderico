@@ -9,10 +9,10 @@ class GenderState(State):
         super().__init__(context)
 
     async def process_update(self, update: model.Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         if self.context.user.gender is None or message.text != self.context.get_message("gender_skipBtn"):
             if message.text == self.context.get_message("gender_M"):
                 gender = model.Gender.MALE
@@ -26,9 +26,9 @@ class GenderState(State):
         self.context.save_to_db()
 
     async def send_message(self, update: model.Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         buttons = [
             [types.KeyboardButton(text=self.context.get_message("gender_M"))],

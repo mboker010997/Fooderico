@@ -25,9 +25,9 @@ class OtherInterests(State):
             )
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         if self.is_updating:
             self.update_tags(message.text)
             self.is_updating = False
@@ -45,9 +45,9 @@ class OtherInterests(State):
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
         buttons = [
             [types.KeyboardButton(text=self.context.get_message("addBtn"))],
             [types.KeyboardButton(text=self.context.get_message("deleteBtn"))],

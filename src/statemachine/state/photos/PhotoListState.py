@@ -19,10 +19,10 @@ class PhotoListState(State):
         await self.context.state.send_message(update)
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         photo_ids = self.context.user.photo_file_ids
 
         if not photo_ids:

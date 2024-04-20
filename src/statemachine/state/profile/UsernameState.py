@@ -9,19 +9,19 @@ class UsernameState(State):
         super().__init__(context)
 
     async def process_update(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
 
-        message = update.getMessage()
+        message = update.get_message()
         if self.context.user.profile_name is None or message.text != self.context.get_message("username_skipBtn"):
             self.context.user.profile_name = message.text
         self.context.set_state(profile.PhotoSelectionState(self.context))
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        if not update.getMessage():
+        if not update.get_message():
             return
-        message = update.getMessage()
+        message = update.get_message()
 
         if self.context.user.profile_name is not None:
             buttons = [
