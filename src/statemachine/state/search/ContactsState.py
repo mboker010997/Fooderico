@@ -27,17 +27,8 @@ class ContactsState(State):
         message = update.get_message()
         my_chat_id = bot.DBController().get_user(self.context.user.id).chat_id
 
-<<<<<<< HEAD
         query = (f"SELECT * FROM tele_meet_relations "
                  f"WHERE user_id = {self.context.user.id}")
-=======
-        query = (
-            f"SELECT * FROM tele_meet_relations "
-            f"WHERE user_id = {self.context.user.id} "
-            f"ORDER BY id DESC "
-            f"LIMIT 1"
-        )
->>>>>>> feature/FOOD-102
 
         bot.DBController().cursor.execute(query)
         self.other_user_rows = bot.DBController().cursor.fetchall()
