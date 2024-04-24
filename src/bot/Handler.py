@@ -1,5 +1,5 @@
 from aiogram import types
-from src.model import Update, Message, PollAnswer, CallbackQuery
+from src.model.Update import Update, Message, PollAnswer, CallbackQuery
 import logging
 from src.model import StateUpdater
 from typing import List

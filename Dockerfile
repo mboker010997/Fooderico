@@ -11,9 +11,12 @@ COPY . .
 EXPOSE 8080
 
 ARG RUN_TESTS=False
+ARG UNIT_TEST=False
 
 CMD if [ "$RUN_TESTS" = "True" ]; then \
         python tests/test.py; \
+    elif [ "$UNIT_TEST" = "True" ]; then \
+        python src/algo/SimilaritySets_Test.py; \
     else \
         python -u src/bot/TeleMeetBot.py; \
     fi
