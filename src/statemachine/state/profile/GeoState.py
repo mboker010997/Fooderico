@@ -3,6 +3,7 @@ from src.statemachine.State import State
 from aiogram import types
 from src.statemachine.state import profile
 from src.model import Update
+from src.bot.config import nominatim_URL
 
 from geopy.distance import geodesic
 import requests
@@ -109,7 +110,7 @@ class GeoState(State):
         }
         lat = geolocation.latitude
         lon = geolocation.longitude
-        url = f"http://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
+        url = f"{nominatim_URL}/reverse?format=json&lat={lat}&lon={lon}"
         response = requests.get(url, headers=headers)
         data = response.json()
         try:
@@ -136,7 +137,8 @@ class GeoState(State):
             "upgrade-insecure-requests": "1",
             "cookie": "_osm_totp_token=114327",
         }
-        url = f"http://nominatim.openstreetmap.org/search?format=json&city={city}"
+        print("odaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        url = f"{nominatim_URL}/search?format=json&city={city}"
         response = requests.get(url, headers=headers)
         data = response.json()
         try:
