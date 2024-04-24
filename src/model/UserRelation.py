@@ -23,11 +23,13 @@ class UserRelation:
         existing_relation = cursor.fetchone()
         if existing_relation:
             cursor.execute(
-                f"UPDATE tele_meet_relations SET relation = '{self.relation_to_db_alias[self.relation]}' WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
+                f"UPDATE tele_meet_relations SET relation = '{self.relation_to_db_alias[self.relation]}'"
+                f"WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
             )
         else:
             cursor.execute(
-                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation) VALUES ({self.user_id}, {self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
+                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation)" 
+                f"VALUES ({self.user_id}, {self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
             )
         if self.relation == self.search_like:
             query = (

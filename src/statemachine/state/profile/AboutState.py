@@ -2,7 +2,6 @@ from src.statemachine import State
 from src.model import Update
 from src.statemachine.state import profile
 from aiogram import types
-from src.bot import Matching
 
 
 class AboutState(State):
