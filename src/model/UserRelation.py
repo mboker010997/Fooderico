@@ -28,7 +28,7 @@ class UserRelation:
             )
         else:
             cursor.execute(
-                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation)" 
+                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation) "
                 f"VALUES ({self.user_id}, {self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
             )
         if self.relation == self.search_like:
