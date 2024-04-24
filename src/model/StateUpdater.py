@@ -1,5 +1,5 @@
 from src import bot
-from src.statemachine.state import *
+from src.statemachine.state import InitialState
 from src import statemachine
 
 state_cache_holder = dict()

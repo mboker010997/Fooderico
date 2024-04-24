@@ -27,10 +27,12 @@ class ContactsState(State):
         message = update.get_message()
         my_chat_id = bot.DBController().get_user(self.context.user.id).chat_id
 
-        query = (f"SELECT * FROM tele_meet_relations "
-                 f"WHERE user_id = {self.context.user.id} "
-                 f"ORDER BY id DESC "
-                 f"LIMIT 1")
+        query = (
+            f"SELECT * FROM tele_meet_relations "
+            f"WHERE user_id = {self.context.user.id} "
+            f"ORDER BY id DESC "
+            f"LIMIT 1"
+        )
 
         bot.DBController().cursor.execute(query)
         self.other_user_rows = bot.DBController().cursor.fetchall()
@@ -46,53 +48,68 @@ class ContactsState(State):
 
             if other_relation == "FOLLOW":
                 text = self.context.get_message("contacts_you_have_liked")
-                buttons = [[
+                buttons = [
+                    [
                         types.InlineKeyboardButton(
                             text=self.context.get_message("contacts_change_to_dislike"),
                             callback_data=f"change_to_dislike_{counter}",
-                        )],
-                    [types.InlineKeyboardButton(
+                        )
+                    ],
+                    [
+                        types.InlineKeyboardButton(
                             text=self.context.get_message("contacts_change_to_skip"),
                             callback_data=f"change_to_skip_{counter}",
-                        )],
-                    [types.InlineKeyboardButton(
-                            text=self.context.get_message("contacts_remove"),
-                            callback_data=f"remove_{counter}"
-                        )],
+                        )
+                    ],
+                    [
+                        types.InlineKeyboardButton(
+                            text=self.context.get_message("contacts_remove"), callback_data=f"remove_{counter}"
+                        )
+                    ],
                 ]
 
             elif other_relation == "BLACKLIST":
                 text = self.context.get_message("contacts_you_have_disliked")
-                buttons = [[
+                buttons = [
+                    [
                         types.InlineKeyboardButton(
                             text=self.context.get_message("contacts_change_to_like"),
                             callback_data=f"change_to_like_{counter}",
-                        )],
-                    [types.InlineKeyboardButton(
+                        )
+                    ],
+                    [
+                        types.InlineKeyboardButton(
                             text=self.context.get_message("contacts_change_to_skip"),
                             callback_data=f"change_to_skip_{counter}",
-                        )],
-                    [types.InlineKeyboardButton(
-                            text=self.context.get_message("contacts_remove"),
-                            callback_data=f"remove_{counter}"
-                        )],
+                        )
+                    ],
+                    [
+                        types.InlineKeyboardButton(
+                            text=self.context.get_message("contacts_remove"), callback_data=f"remove_{counter}"
+                        )
+                    ],
                 ]
 
             elif other_relation == "SKIPPED":
                 text = self.context.get_message("contacts_you_have_skiped")
-                buttons = [[
+                buttons = [
+                    [
                         types.InlineKeyboardButton(
                             text=self.context.get_message("contacts_change_to_like"),
                             callback_data=f"change_to_like_{counter}",
-                        )],
-                    [types.InlineKeyboardButton(
+                        )
+                    ],
+                    [
+                        types.InlineKeyboardButton(
                             text=self.context.get_message("contacts_change_to_dislike"),
                             callback_data=f"change_to_dislike_{counter}",
-                        )],
-                    [types.InlineKeyboardButton(
-                            text=self.context.get_message("contacts_remove"),
-                            callback_data=f"remove_{counter}"
-                        )],
+                        )
+                    ],
+                    [
+                        types.InlineKeyboardButton(
+                            text=self.context.get_message("contacts_remove"), callback_data=f"remove_{counter}"
+                        )
+                    ],
                 ]
 
             keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
