@@ -34,18 +34,13 @@ class StatusState(State):
         current_user_status = self.context.get_message(self.context.user.status.value)
 
         text += current_user_status
-        kb = [[types.KeyboardButton(
-                    text=self.context.get_message(self.enabled[1]))],
-              [types.KeyboardButton(
-                    text=self.context.get_message(self.hidden[1])
-                )],
-              [types.KeyboardButton(
-                  text=self.context.get_message("menuBtn"))],
-              ]
+        kb = [
+            [types.KeyboardButton(text=self.context.get_message(self.enabled[1]))],
+            [types.KeyboardButton(text=self.context.get_message(self.hidden[1]))],
+            [types.KeyboardButton(text=self.context.get_message("menuBtn"))],
+        ]
 
-        keyboard = types.ReplyKeyboardMarkup(
-            keyboard=kb, resize_keyboard=True, one_time_keyboard=True
-        )
+        keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
 
         if self.context.user.status == model.Status.ENABLED:
             description = self.context.get_message("status_enabled_desc")
