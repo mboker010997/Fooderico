@@ -1,5 +1,3 @@
-from aiogram.types import InlineKeyboardButton
-
 from src.statemachine.State import State
 from src.statemachine.state.photos import PhotosState
 from src.model.Update import Update

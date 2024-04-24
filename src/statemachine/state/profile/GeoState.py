@@ -92,7 +92,7 @@ class GeoState(State):
     @staticmethod
     def get_city_by_geolocation(geolocation):
         headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",  # nopep8
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",
@@ -121,7 +121,7 @@ class GeoState(State):
     @staticmethod
     def get_coordinats(city):
         headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",  # nopep8
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
             "pragma": "no-cache",

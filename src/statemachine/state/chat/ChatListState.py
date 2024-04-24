@@ -25,8 +25,6 @@ class ChatListState(State):
 
         list_of_matches = bot.DBController().get_user_matches_ids(self.context.user.id)
         list_of_user_ids = [user_id[0] for user_id in list_of_matches]
-        print('===============CHATLISTSTATE', list_of_matches)
-        print('===============CHATLISTSTATE', list_of_user_ids)
 
         if not list_of_user_ids:
             await message.answer(self.context.get_message("chat_no_match"))
