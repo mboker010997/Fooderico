@@ -3,7 +3,6 @@ from src.model import Update
 from src import bot
 from aiogram import types
 from src.statemachine.state import menu
-from aiogram import types
 
 
 class ChatState(State):

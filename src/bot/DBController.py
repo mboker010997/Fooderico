@@ -2,8 +2,6 @@ import psycopg2
 import re
 from config import host, user, password, db_name, port
 from src import model
-from src.statemachine.state import *
-from src import model
 import logging
 
 

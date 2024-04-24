@@ -38,7 +38,9 @@ class ShowProfileState(State):
         city = self.context.user.city
         info = self.context.user.about
 
-        preferences = TagsModel.get_readable_tags_description(self.context.user.preferences_tags, self.context.bot_config)
+        preferences = TagsModel.get_readable_tags_description(
+            self.context.user.preferences_tags, self.context.bot_config
+        )
         restrictions = TagsModel.get_readable_tags_description(
             self.context.user.restrictions_tags, self.context.bot_config
         )
