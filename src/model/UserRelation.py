@@ -23,11 +23,13 @@ class UserRelation:
         existing_relation = cursor.fetchone()
         if existing_relation:
             cursor.execute(
-                f"UPDATE tele_meet_relations SET relation = '{self.relation_to_db_alias[self.relation]}' WHERE user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
+                f"UPDATE tele_meet_relations SET relation = '{self.relation_to_db_alias[self.relation]}' WHERE "
+                f"user_id = {self.user_id} AND other_user_id = {self.other_user_id}"
             )
         else:
             cursor.execute(
-                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation) VALUES ({self.user_id}, {self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
+                f"INSERT INTO tele_meet_relations (user_id, other_user_id, relation) VALUES ({self.user_id}, "
+                f"{self.other_user_id}, '{self.relation_to_db_alias[self.relation]}')"
             )
         if self.relation == self.search_like:
             query = (
@@ -41,7 +43,8 @@ class UserRelation:
                 other_user_row = other_user_rows[-1]
                 other_relation = other_user_row[3]
                 return other_relation == "FOLLOW"
-        self.remove_match()
+        else:
+            self.remove_match()
         return False
 
     def match_select_one(self):
