@@ -28,9 +28,7 @@ class ContactsState(State):
         my_chat_id = bot.DBController().get_user(self.context.user.id).chat_id
 
         query = (f"SELECT * FROM tele_meet_relations "
-                 f"WHERE user_id = {self.context.user.id} "
-                 f"ORDER BY id DESC "
-                 f"LIMIT 1")
+                 f"WHERE user_id = {self.context.user.id}")
 
         bot.DBController().cursor.execute(query)
         self.other_user_rows = bot.DBController().cursor.fetchall()

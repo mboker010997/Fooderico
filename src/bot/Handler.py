@@ -120,9 +120,9 @@ class Handler:
             num = int(idx)
             other_user_id = self.other_user_rows[num][2]
             bot.DBController().cursor.execute(
-                f"UPDATE tele_meet_relations"
-                f"SET relation = '{relation}'"
-                f"WHERE"
+                f"UPDATE tele_meet_relations "
+                f"SET relation = '{relation}' "
+                f"WHERE "
                 f"user_id = {user.id} AND other_user_id = {other_user_id};"
             )
             context.save_to_db()

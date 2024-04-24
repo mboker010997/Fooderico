@@ -233,6 +233,10 @@ class DBController:
         self.cursor.execute(f"SELECT other_user_id FROM tele_meet_relations WHERE user_id={id}")
         return self.cursor.fetchall()
 
+    def get_user_matches_ids(self, id):
+        self.cursor.execute(f"SELECT other_user_id FROM tele_meet_match WHERE user_id={id}")
+        return self.cursor.fetchall()
+
     def get_user_status(self, id):
         self.cursor.execute(f"SELECT status FROM {self.table_name} WHERE id={id}")
         return self.cursor.fetchone()
