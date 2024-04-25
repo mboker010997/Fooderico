@@ -15,7 +15,7 @@ class TestCodeStyle(unittest.TestCase):
 
         all_errors = []
         for python_file in python_files:
-            result = subprocess.run(['flake8', '--max-line-length', '124', '--ignore', 'F403, W503', python_file],
+            result = subprocess.run(['flake8', '--max-line-length', '124', python_file],
                                     capture_output=True, text=True)
             if result.returncode != 0:
                 error_message = (
