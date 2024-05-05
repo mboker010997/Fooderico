@@ -126,11 +126,32 @@ class Handler:
             parts = callback.data.split("_")
             idx = parts[3]
             user = context.user
-            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
+            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id};"
             bot.DBController().cursor.execute(query)
             self.other_user_rows = bot.DBController().cursor.fetchall()
             num = int(idx)
             other_user_id = self.other_user_rows[num][2]
+            if relation == "FOLLOW":
+                bot.DBController().cursor.execute(
+                    f"SELECT * FROM tele_meet_relations "
+                    f"WHERE "
+                    f"user_id = {other_user_id} AND other_user_id = {user.id} AND relation = 'FOLLOW';"
+                )
+                rows = bot.DBController().cursor.fetchall()
+                print(rows)
+                if rows and len(rows) > 0:
+                    my_user = bot.DBController().get_user(user.id)
+                    other_user = bot.DBController().get_user(other_user_id)
+                    cursor = bot.DBController().cursor
+                    cursor.execute(
+                        f"INSERT INTO tele_meet_match (user_id, other_user_id) VALUES ({user.id}, {other_user_id})"
+                    )
+                    cursor.execute(
+                        f"INSERT INTO tele_meet_match (user_id, other_user_id) VALUES ({other_user_id}, {user.id})"
+                    )
+                    await __send_match(update, my_user, other_user)
+                    await __send_match(update, other_user, my_user)
+
             bot.DBController().cursor.execute(
                 f"UPDATE tele_meet_relations "
                 f"SET relation = '{relation}' "
@@ -140,6 +161,33 @@ class Handler:
             context.save_to_db()
             await context.state.send_message(update)
             await callback.answer()
+
+        async def __send_match(update, from_user, to_user):
+            text = (
+                f"Вас лайкнул в ответ: {from_user.profile_name}\n{from_user.about}"
+            )
+
+            send_contacts_button = types.InlineKeyboardButton(
+                text="Анонимный чат",
+                callback_data=f"go_anon_chat_{from_user.chat_id}",
+            )
+            send_contacts_keyboard = types.InlineKeyboardMarkup(
+                inline_keyboard=[[send_contacts_button]]
+            )
+
+            if from_user.photo_file_ids:
+                await update.bot.send_photo(
+                    chat_id=to_user.chat_id,
+                    photo=from_user.photo_file_ids[0],
+                    caption=text,
+                    reply_markup=send_contacts_keyboard,
+                )
+            else:
+                await update.bot.send_message(
+                    chat_id=to_user.chat_id,
+                    text=text,
+                    reply_markup=send_contacts_keyboard,
+                )
 
         @self.dp.callback_query(F.data.startswith("change_to_like_"))
         async def change_to_like_callback_handler(
@@ -171,13 +219,13 @@ class Handler:
             parts = callback.data.split("_")
             idx = parts[1]
             user = context.user
-            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id}"
+            query = f"SELECT * FROM tele_meet_relations WHERE user_id = {user.id};"
             bot.DBController().cursor.execute(query)
             self.other_user_rows = bot.DBController().cursor.fetchall()
             num = int(idx)
             other_user_id = self.other_user_rows[num][2]
             bot.DBController().cursor.execute(
-                f"DELETE FROM tele_meet_relations WHERE" f"user_id = {user.id} AND other_user_id = {other_user_id};"
+                f"DELETE FROM tele_meet_relations WHERE " f"user_id = {user.id} AND other_user_id = {other_user_id};"
             )
             context.save_to_db()
             await context.state.send_message(update)
