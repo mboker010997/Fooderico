@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from src import bot
 import os
+from src.model.chat import create_message_table
 from src.model import Localization
 from src.bot.middlewares import AlbumMiddleware
 import src.model.chat as chat_model
@@ -28,6 +29,7 @@ if __name__ == "__main__":
         Localization.load_info()
         bot = TelegramBot()
         bot.dp.message.middleware(AlbumMiddleware())
+        create_message_table()
         asyncio.run(bot.start_polling())
 
         if dbcontroller.connection:
