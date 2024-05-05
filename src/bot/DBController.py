@@ -4,6 +4,7 @@ from config import host, user, password, db_name, port
 from src import model
 from src.statemachine.state import * # noqa
 import logging
+from datetime import datetime
 
 
 class DBController:
@@ -64,6 +65,7 @@ class DBController:
             "interests_tags": "VARCHAR(1000)",
             "others_interests": "VARCHAR(1000)",
             "preferences_tags": "VARCHAR(1000)",
+            "time_last_action": "TIMESTAMP DEFAULT NULL"
         }
 
         self.relations_table_columns = {
@@ -201,6 +203,8 @@ class DBController:
         if update_fields.get("gender", None) is not None:
             update_fields["gender"] = user.gender.value
 
+        update_fields["time_last_action"] = datetime.now()
+
         self.update_user_information(user.id, update_fields)
 
     def get_id_by_chat_id(self, chat_id):
@@ -241,3 +245,27 @@ class DBController:
     def get_user_status(self, id):
         self.cursor.execute(f"SELECT status FROM {self.table_name} WHERE id={id}")
         return self.cursor.fetchone()
+
+    def metric_number_of_users(self):
+        self.cursor.execute(f"SELECT count(*) FROM {self.table_name}")
+        return self.cursor.fetchone()
+
+    def metric_number_of_active_users(self, number_of_days=1):
+        self.cursor.execute(f"SELECT count(*) FROM {self.table_name} \
+                            WHERE time_last_action > NOW() - INTERVAL '{number_of_days} day'")
+        return self.cursor.fetchone()
+
+    def metric_most_common_city(self):
+        self.cursor.execute(f"SELECT city, count(*) FROM {self.table_name} \
+                            WHERE city IS NOT NULL GROUP BY city \
+                            ORDER BY 2 DESC \
+                            LIMIT 10;")
+        return self.cursor.fetchone()
+
+    def metric_number_of_match(self):
+        self.cursor.execute("SELECT count(*) FROM tele_meet_match")
+        res = self.cursor.fetchone()
+        if res:
+            return res[0] // 2
+        else:
+            return 0
