@@ -79,18 +79,27 @@ class DBController:
             "other_user_id": "BIGINT",
         }
 
+        self.products_table_colums = {
+            "id": "SERIAL PRIMARY KEY",
+            "user_id": "BIGINT",
+            "product": "VARCHAR(255)",
+            "type": "BIGINT",
+        }
+
         self.create_tables()
 
     def delete_table(self):
         self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_match")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_products")
         self.connection.commit()
 
     def create_tables(self):
         self.create_query("tele_meet_users", self.users_table_columns)
         self.create_query("tele_meet_relations", self.relations_table_columns)
         self.create_query("tele_meet_match", self.match_table_columns)
+        self.create_query("tele_meet_products", self.products_table_colums)
 
     def create_query(self, table_name, columns: dict):
         args = []

@@ -16,3 +16,4 @@ from src.statemachine.state.profile.OtherInterests import OtherInterests
 from src.statemachine.state.profile.PhotoSelectionState import (
     PhotoSelectionState,
 )
+from src.statemachine.state.profile.ProductState import ProductState

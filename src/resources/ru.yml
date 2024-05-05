@@ -45,6 +45,9 @@ tele-meet-bot:
     tag_nothing_of_this: "Ничего из перечисленного"
     no_tags: "нет"
     tag_another: "Другие (далее напишу)"
+    # Products
+    favourite_products: "Введите любимые продукты. Появится опрос(ы) c наиболее похожими продуктами из нашей базы"
+    unfavourite_products: "Введите нелюбимые продукты. Появится опрос(ы) c наиболее похожими продуктами из нашей базы."
     #    Preferences Tags
     tag_allergy_food_intolerance: "Аллергия и пищевая непереносимость"
     tag_vegetable_food: "Только (почти) растительная пища"

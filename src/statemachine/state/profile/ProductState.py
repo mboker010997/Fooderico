@@ -1,0 +1,103 @@
+from src.statemachine import State
+from src.statemachine.state import profile
+from src.model.Update import Update
+from src.model import Tags as TagsModel
+from aiogram import types
+from src.resources import products
+from src import bot
+import difflib, re
+
+
+
+
+class ProductState(State):
+    def __init__(self, context):
+        super().__init__(context)
+        self.type = "Like"
+        self.is_question = True
+        self.variants = []
+        self.current_poll = 0
+        self.count_polls = 0
+
+    async def process_update(self, update: Update):
+        message = update.get_message()
+
+        if (self.is_question):
+            if not message:
+                return
+            variants = []
+            for food in re.split(", |,", message.text):
+                variants.extend(difflib.get_close_matches(food, products, n=3, cutoff=0.0))
+            self.variants = list(set(variants))
+            self.is_question = False
+            self.current_poll = 0
+            self.count_polls = (len(self.variants) - 1) // 9 + 1
+            return
+        else:
+            poll_answer = update.get_poll_answer()
+            if poll_answer and int(poll_answer.poll_id) == int(self.context.user.active_poll_id):
+                for option_id in poll_answer.option_ids:
+                    if option_id == 9 or self.current_poll * 9 + option_id >= len(self.variants):
+                        continue
+                    query = "INSERT INTO tele_meet_products (user_id, product, type) VALUES ({}, \'{}\', {})".format(
+                        self.context.user.id, self.variants[self.current_poll * 9 + option_id], 1 if self.type == 'Like' else -1
+                    )
+                    print("INSERT in products:", query)
+                    bot.DBController().cursor.execute(query)
+            self.current_poll += 1
+            if (self.current_poll == self.count_polls):
+                self.is_question = True
+                if (self.type == 'Like'):
+                    self.type = 'Dislike'
+                else:
+                    self.context.set_state(profile.FoodPreferencesTagState(self.context))
+            self.context.save_to_db()
+
+    async def send_message(self, update: Update):
+        
+        if (self.type == 'Like'):
+            if (self.is_question):
+                if not update.get_message():
+                    return
+                message = update.get_message()
+                text = self.context.get_message("favourite_products")
+                await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
+            else:
+                options = []
+                if ((self.current_poll + 1) * 9 <= len(self.variants)):
+                    options = self.variants[self.current_poll * 9:(self.current_poll + 1)*9]
+                else:
+                    options = self.variants[self.current_poll * 9:]
+                options.append(self.context.get_message("tag_nothing_of_this"))
+
+                poll_info = await update.bot.send_poll(
+                    chat_id=update.get_chat_id(),
+                    question="{} / {}".format(self.current_poll + 1, (len(self.variants) - 1) // 9 + 1),
+                    options=options,
+                    is_anonymous=False,
+                    allows_multiple_answers=True,
+                )
+                self.context.user.active_poll_id = poll_info.poll.id
+                self.context.save_to_db()
+        elif (self.type == 'Dislike'):
+            if (self.is_question):
+                message = update.get_message()
+                text = self.context.get_message("unfavourite_products")
+                await update.bot.send_message(chat_id=update.get_chat_id(), text=text)
+            else:
+                options = []
+                if ((self.current_poll + 1) * 9 <= len(self.variants)):
+                    options = self.variants[self.current_poll * 9:(self.current_poll + 1)*9]
+                else:
+                    options = self.variants[self.current_poll * 9:]
+                options.append(self.context.get_message("tag_nothing_of_this"))
+
+                poll_info = await update.bot.send_poll(
+                    chat_id=update.get_chat_id(),
+                    question="{} / {}".format(self.current_poll + 1, (len(self.variants) - 1) // 9 + 1),
+                    options=options,
+                    is_anonymous=False,
+                    allows_multiple_answers=True,
+                )
+                self.context.user.active_poll_id = poll_info.poll.id
+                self.context.save_to_db()

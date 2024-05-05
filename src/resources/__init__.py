@@ -1,0 +1,1 @@
+from src.resources.products import products
