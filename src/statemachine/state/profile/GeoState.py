@@ -7,6 +7,7 @@ from src.bot.config import nominatim_URL
 
 from geopy.distance import geodesic
 import requests
+import logging
 
 
 class GeoState(State):
@@ -112,11 +113,13 @@ class GeoState(State):
         lon = geolocation.longitude
         url = f"{nominatim_URL}/reverse?format=json&lat={lat}&lon={lon}"
         response = requests.get(url, headers=headers)
-        data = response.json()
         try:
+            data = response.json()
             city = data["address"]["city"]
-        except IndexError or TypeError:
+        except Exception as exc:
             city = None
+            logging.exception("get_city_by_geolocation (GeoState)")
+            logging.exception(exc)
         return city
 
     @staticmethod
@@ -140,12 +143,14 @@ class GeoState(State):
         url = f"{nominatim_URL}/search?format=json&city={city}"
         response = requests.get(url, headers=headers)
         print(response)
-        data = response.json()
         try:
+            data = response.json()
             lat, lon = data[0]["lat"], data[0]["lon"]
             name = data[0]["display_name"].split(",")[0]
-        except IndexError or TypeError:
+        except Exception as exc:
             lat, lon, name = None, None, None
+            logging.exception("get_coordinats (GeoState)")
+            logging.exception(exc)
         return lat, lon, name
 
     @staticmethod

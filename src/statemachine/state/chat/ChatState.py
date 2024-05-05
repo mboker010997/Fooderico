@@ -3,6 +3,8 @@ from src.model import Update
 from src import bot
 from aiogram import types
 from src.statemachine.state import menu
+# from src.admin import crud
+from src.model import Update, Tags as tags
 
 
 class ChatState(State):
@@ -11,6 +13,7 @@ class ChatState(State):
         self.other_chat_id = self.context.other_chat_id
         self.share_contacts = False
         self.first_entered = True
+        self.complain = False
 
     async def process_update(self, update: Update):
         self.first_entered = False
@@ -24,6 +27,8 @@ class ChatState(State):
             self.context.save_to_db()
         elif update.get_message().text == "Поделиться контактами":
             self.share_contacts = True
+        elif update.get_message().text == "Пожаловаться на собеседника":
+            self.complain = True
         else:
             message = update.get_message()
             if message is not None:
@@ -41,6 +46,7 @@ class ChatState(State):
             kb = [
                 [types.KeyboardButton(text="Выйти из чата")],
                 [types.KeyboardButton(text="Поделиться контактами")],
+                [types.KeyboardButton(text="Пожаловаться на собеседника")]
             ]
             keyboard = types.ReplyKeyboardMarkup(
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
@@ -92,6 +98,9 @@ class ChatState(State):
             await update.bot.send_message(
                 chat_id=self.other_chat_id, text=text
             )
+        if self.complain:
+            self.complain = False
+            await self.send_complaint(update)
         if callback is not None:
             await callback.answer()
 
@@ -101,3 +110,61 @@ class ChatState(State):
             return (f"https://t.me/{username}", True)
         else:
             return (phone_number, False)
+
+    async def send_complaint(self, update: Update):
+        user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
+        other_user = bot.DBController().get_user_by_chat_id(self.other_chat_id)
+
+        my_info, my_is_link = self.__generate_telegram_user_link(
+            user.username, user.phone_number
+        )
+        other_info, other_is_link = self.__generate_telegram_user_link(
+            user.username, user.phone_number
+        )
+        text = (f"#Жалоба\n "
+                f"  *От:* {user.profile_name} -- {my_info}\n"
+                f"  *На:* {other_user.profile_name} -- {other_info}\n"
+                f"\n")
+
+        name = other_user.profile_name
+        age = other_user.age
+        city = other_user.city
+        info = other_user.about
+        preferences = tags.get_readable_tags_description(
+            other_user.preferences_tags, self.context.bot_config
+        )
+        restrictions = tags.get_readable_tags_description(
+            other_user.restrictions_tags, self.context.bot_config
+        )
+        diets = tags.get_readable_tags_description(
+            other_user.dietary, self.context.bot_config
+        )
+        interests = tags.get_readable_tags_description(
+            other_user.interests_tags, self.context.bot_config
+        )
+        photo_ids = other_user.photo_file_ids
+
+        text += (f"*Анкета:*\n"
+                 f"  *Имя:* {name}\n"
+                 f"  *Возраст:* {age}\n"
+                 f"  *Город:* {city}\n"
+                 f"  *Пищевые предпочтения:* {preferences}\n"
+                 f"  *Ограничения:* {restrictions}\n"
+                 f"  *Диета:* {diets}\n"
+                 f"  *Интересы:* {interests}\n"
+                 f"  *О себе:* {info}")
+
+        # crud.add_admin(self.other_chat_id)
+        # all_admins = crud.get_all_admins()
+        for admin_chat_id in []:
+            if photo_ids:
+                await update.bot.send_photo(
+                    chat_id=admin_chat_id,
+                    photo=photo_ids[0],
+                    caption=text,
+                )
+            else:
+                await update.bot.send_message(
+                    chat_id=admin_chat_id,
+                    text=text,
+                )
