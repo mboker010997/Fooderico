@@ -1,5 +1,5 @@
 from src.statemachine import State
-from src.statemachine.state import search, photos, profile, menu, chat
+from src.statemachine.state import search, photos, profile, menu, chat, constructor
 from src.model import Update
 from aiogram import types
 
@@ -14,6 +14,7 @@ class MenuState(State):
         self.aboutBtn = context.get_message("menu_aboutBtn")
         self.contactsBtn = context.get_message("menu_recentActions")
         self.viewChatsBtn = context.get_message("menu_view_chats")
+        self.constructorMenuBtn = context.get_message("menu_constructor_menu")
 
         self.nextStateDict = {
             self.searchBtn: profile.GeoState,
@@ -23,6 +24,7 @@ class MenuState(State):
             self.viewChatsBtn: chat.ChatListState,
             self.aboutBtn: menu.AboutBotState,
             self.contactsBtn: search.ContactsState,
+            self.constructorMenuBtn: constructor.ConstructorMenuState,
         }
 
     async def process_update(self, update: Update):
@@ -46,6 +48,7 @@ class MenuState(State):
             [types.KeyboardButton(text=self.photosBtn), types.KeyboardButton(text=self.profileBtn)],
             [types.KeyboardButton(text=self.statusBtn), types.KeyboardButton(text=self.viewChatsBtn)],
             [types.KeyboardButton(text=self.contactsBtn), types.KeyboardButton(text=self.aboutBtn)],
+            [types.KeyboardButton(text=self.constructorMenuBtn)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         return await message.answer(text, reply_markup=keyboard)

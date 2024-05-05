@@ -99,7 +99,12 @@ tele-meet-bot:
     menu_aboutBtn: "О сервисе"
     menu_recentActions: "Последние действия"
     menu_view_chats: "Посмотреть чаты"
+    menu_constructor_menu: "Конструктор меню"
     returned_into_menu: "Вы вернулись в меню"
+    # Constructor menu
+    constructor_menu_generateBtn: "Сгенерировать меню"
+    constructor_menu_addDietsBtn: "Редактировать диеты"
+    constructorMenuBtn: "Вернуться в конструктор меню"
      # Contacts
     contacts_you_have_liked: "Вы лайкнули"
     contacts_change_to_dislike: "Изменить на дизлайк"
