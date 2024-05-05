@@ -7,6 +7,7 @@ import os
 from src.model import Localization
 from src.bot.middlewares import AlbumMiddleware
 import src.model.chat as chat_model
+from src.admin import crud as admin
 
 
 class TelegramBot:
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     try:
         dbcontroller = bot.DBController()
         Localization.load_info()
+        admin.create_admin_table()
         bot = TelegramBot()
         bot.dp.message.middleware(AlbumMiddleware())
         asyncio.run(bot.start_polling())
