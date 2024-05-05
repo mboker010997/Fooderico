@@ -14,7 +14,7 @@ class ConstructorMenuState(State):
         self.nextStateDict = {
             self.generateBtn: constructor.GeneratorState,
             self.addDietsBtn: constructor.DietState,
-            self.MenuBtn: menu.MenuState,
+            self.menuBtn: menu.MenuState,
         }
 
     async def process_update(self, update: Update):
@@ -23,8 +23,6 @@ class ConstructorMenuState(State):
         message = update.get_message()
         if message.text:
             if message.text in self.nextStateDict.keys():
-                if message.text == self.searchBtn:
-                    self.context.set_next_state(search.SearchState)
                 self.context.set_state(self.nextStateDict.get(message.text)(self.context))
                 self.context.save_to_db()
 
@@ -36,7 +34,7 @@ class ConstructorMenuState(State):
         buttons = [
             [types.KeyboardButton(text=self.generateBtn)],
             [types.KeyboardButton(text=self.addDietsBtn)],
-            [types.KeyboardButton(text=self.MenuBtn)],
+            [types.KeyboardButton(text=self.menuBtn)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         return await message.answer(text, reply_markup=keyboard)

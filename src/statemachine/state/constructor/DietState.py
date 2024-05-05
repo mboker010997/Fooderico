@@ -19,8 +19,6 @@ class DietState(State):
         message = update.get_message()
         if message.text:
             if message.text in self.nextStateDict.keys():
-                if message.text == self.searchBtn:
-                    self.context.set_next_state(search.SearchState)
                 self.context.set_state(self.nextStateDict.get(message.text)(self.context))
                 self.context.save_to_db()
 
@@ -28,7 +26,7 @@ class DietState(State):
         if not update.get_message():
             return
         message = update.get_message()
-        text = "Конструктор меню"
+        text = "Редактирование диет"
         buttons = [
             [types.KeyboardButton(text=self.constructorMenuBtn)],
         ]
