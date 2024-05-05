@@ -137,7 +137,6 @@ class GeoState(State):
             "upgrade-insecure-requests": "1",
             "cookie": "_osm_totp_token=114327",
         }
-        print("odaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         url = f"{nominatim_URL}/search?format=json&city={city}"
         response = requests.get(url, headers=headers)
         data = response.json()

@@ -14,7 +14,11 @@ class ChatState(State):
 
     async def process_update(self, update: Update):
         self.first_entered = False
-        if update.get_message().text == "Выйти из чата":
+        if update.video_note_id:
+            self.text = [update.video_note_id, "video_note"]
+        elif update.voice_id:
+            self.text = [update.voice_id, "voice"]
+        elif update.get_message().text == "Выйти из чата":
             await update.message_storage.close(update.get_chat_id(), self.other_chat_id)
             self.context.set_state(menu.MenuState(self.context))
             self.context.save_to_db()
@@ -48,13 +52,29 @@ class ChatState(State):
             await update.message_storage.open(chat_id, self.other_chat_id)
             delayed_messages = await update.message_storage.dump_messages(self.other_chat_id, chat_id)
             for message in delayed_messages:
-                await callback.message.answer(message)
+                if isinstance(message, list):
+                    if message[1] == "video_note":
+                        video_note_id = message[0]
+                        await callback.message.answer_video_note(video_note=video_note_id)
+                    else:
+                        voice_id = message[0]
+                        await callback.message.answer_voice(voice=voice_id)
+                else:
+                    await callback.message.answer(message)
         else:
             is_closed = await update.message_storage.is_closed(self.other_chat_id, chat_id)
             if is_closed:
                 await update.message_storage.put_message(chat_id, self.other_chat_id, self.text)
             else:
-                await update.bot.send_message(chat_id=self.other_chat_id, text=self.text)
+                if isinstance(self.text, list):
+                    if self.text[1] == "video_note":
+                        video_note_id = self.text[0]
+                        await update.bot.send_video_note(chat_id=self.other_chat_id, video_note=video_note_id)
+                    else:
+                        voice_id = self.text[0]
+                        await update.bot.send_voice(chat_id=self.other_chat_id, voice=voice_id)
+                else:
+                    await update.bot.send_message(chat_id=self.other_chat_id, text=self.text)
 
         if self.share_contacts:
             self.share_contacts = False
