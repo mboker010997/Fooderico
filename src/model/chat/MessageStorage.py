@@ -41,10 +41,10 @@ class MessageStorage:
                 self.messages[key] = []
             self.messages[key].append(message)
 
-        controller = DBController()
-        controller.cursor.execute(f"INSERT INTO {table_name} (from_user_id, to_user_id, message_text) "
-                                  f"VALUES ({from_user}, {to_user}, '{message}')")
-        controller.connection.commit()
+        # controller = DBController()
+        # controller.cursor.execute(f"INSERT INTO {table_name} (from_user_id, to_user_id, message_text) "
+        #                           f"VALUES ({from_user}, {to_user}, '{message}')")
+        # controller.connection.commit()
 
     async def close(self, from_user, to_user):
         key = (from_user, to_user)
