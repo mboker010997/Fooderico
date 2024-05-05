@@ -8,6 +8,8 @@ class Update:
         self.dp = telebot.dp
         self.message_storage = telebot.message_storage
         self.album = None
+        self.voice_id = None
+        self.video_note_id = None
 
     @abstractmethod
     def get_chat_id(self):

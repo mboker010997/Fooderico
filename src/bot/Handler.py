@@ -42,6 +42,18 @@ class Handler:
             update.album = album
             await self.update_handler(update)
 
+        @self.dp.message(F.content_type.in_([CT.VIDEO_NOTE]))
+        async def handle_video_note(message: mes):
+            update = Message(self.telebot, message)
+            update.video_note_id = message.video_note.file_id
+            await self.update_handler(update)
+
+        @self.dp.message(F.content_type.in_([CT.VOICE]))
+        async def handle_voice(message: mes):
+            update = Message(self.telebot, message)
+            update.voice_id = message.voice.file_id
+            await self.update_handler(update)
+
         @self.dp.poll_answer()
         async def poll_answer_handler(poll: types.PollAnswer):
             update = PollAnswer(self.telebot, poll)
