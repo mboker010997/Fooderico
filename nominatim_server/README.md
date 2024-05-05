@@ -38,8 +38,8 @@ services:
     shm_size: 2gb
 ```
 
-### GeoState.py
-В запросах заменить ```http://nominatim.openstreetmap.org/``` на ```http://nominatim:8080/```.
+### src/bot/config.py
+В ```nominatim_URL``` заменить ```http://nominatim.openstreetmap.org``` на ```http://nominatim:8080```.
 
 ---
 ### Тестирование запросов вручную в браузере при запущенном контейнере 
