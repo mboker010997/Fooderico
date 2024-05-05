@@ -1,4 +1,23 @@
 import asyncio
+from src.bot import DBController
+
+table_name = "tele_meet_messages"
+table_columns = {
+    "id": "SERIAL PRIMARY KEY",
+    "from_user_id": "VARCHAR(255)",
+    "to_user_id": "VARCHAR(255)",
+    "message_text": "VARCHAR(2000)",
+}
+
+
+def create_message_table():
+    controller = DBController()
+    args = []
+    for key in table_columns.keys():
+        args.append(key + " " + table_columns[key])
+    args = ",".join(args)
+    controller.cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name} ({args})')
+    controller.connection.commit()
 
 
 class MessageStorage:
@@ -21,6 +40,11 @@ class MessageStorage:
             if key not in self.messages:
                 self.messages[key] = []
             self.messages[key].append(message)
+
+        controller = DBController()
+        controller.cursor.execute(f"INSERT INTO {table_name} (from_user_id, to_user_id, message_text) "
+                                  f"VALUES ({from_user}, {to_user}, '{message}')")
+        controller.connection.commit()
 
     async def close(self, from_user, to_user):
         key = (from_user, to_user)
