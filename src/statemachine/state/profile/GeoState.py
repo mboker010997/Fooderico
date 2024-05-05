@@ -139,6 +139,7 @@ class GeoState(State):
         }
         url = f"{nominatim_URL}/search?format=json&city={city}"
         response = requests.get(url, headers=headers)
+        print(response)
         data = response.json()
         try:
             lat, lon = data[0]["lat"], data[0]["lon"]
