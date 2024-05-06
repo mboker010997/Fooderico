@@ -22,7 +22,7 @@ class GenderState(State):
                 return
             self.context.user.gender = gender
 
-        self.context.set_state(profile.FoodPreferencesTagState(self.context))
+        self.context.set_state(profile.ProductState(self.context))
         self.context.save_to_db()
 
     async def send_message(self, update: model.Update):
