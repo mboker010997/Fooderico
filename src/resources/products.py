@@ -154,4 +154,6 @@ products = [
     'Сыр',
     'Творог',
     'Хлеб',
+    'яблоко', # remove it later
+    'банан' # remove it later
 ]

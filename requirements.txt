@@ -11,3 +11,5 @@ transformers
 flake8
 textdistance
 fuzzywuzzy
+pandas
+openpyxl
