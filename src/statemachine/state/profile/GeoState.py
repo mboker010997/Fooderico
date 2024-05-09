@@ -1,3 +1,5 @@
+import random
+
 from src.model.Geolocation import Geolocation, Status
 from src.statemachine.State import State
 from aiogram import types
@@ -93,7 +95,13 @@ class GeoState(State):
 
     @staticmethod
     def get_city_by_geolocation(geolocation):
+        # different fake User Agents to use nominatim API without violated the usage policy of
+        # nominatim.openstreetmap.org
+        user_agent_list = [
+            "Fooderico", "Telemeetbot", "Foodbot", "abcd", "Registration"
+        ]
         headers = {
+            "User-Agent": random.choice(user_agent_list),
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
@@ -116,6 +124,8 @@ class GeoState(State):
         try:
             data = response.json()
             city = data["address"]["city"]
+        except IndexError or TypeError:
+            city = None
         except Exception as exc:
             city = None
             logging.exception("get_city_by_geolocation (GeoState)")
@@ -124,7 +134,13 @@ class GeoState(State):
 
     @staticmethod
     def get_coordinats(city):
+        # different fake User Agents to use nominatim API without violated the usage policy of
+        # nominatim.openstreetmap.org
+        user_agent_list = [
+            "Fooderico", "Telemeetbot", "Foodbot", "abcd", "Registration"
+        ]
         headers = {
+            "User-Agent": random.choice(user_agent_list),
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.8, ru-RU, ru;q=0.9",
             "cache-control": "no-cache",
@@ -147,6 +163,8 @@ class GeoState(State):
             data = response.json()
             lat, lon = data[0]["lat"], data[0]["lon"]
             name = data[0]["display_name"].split(",")[0]
+        except IndexError or TypeError:
+            lat, lon, name = None, None, None
         except Exception as exc:
             lat, lon, name = None, None, None
             logging.exception("get_coordinats (GeoState)")
