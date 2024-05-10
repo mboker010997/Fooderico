@@ -34,9 +34,10 @@ if __name__ == "__main__":
     try:
         dbcontroller = bot.DBController()
         Localization.load_info()
-        # create admin table and add main admin
+        # create admin table and add main admins
         bot.DBController().create_admin_table()
-        bot.DBController().add_admin(main_admin)
+        for admin in main_admin:
+            bot.DBController().add_admin(admin)
 
         bot = TelegramBot()
         bot.dp.message.middleware(AlbumMiddleware())
