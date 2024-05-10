@@ -5,9 +5,9 @@ from src.model import Tags as TagsModel
 from aiogram import types
 from src.resources import products
 from src import bot
-import difflib, re
-
-
+import re
+from fuzzywuzzy import fuzz
+import textdistance
 
 
 class ProductState(State):
@@ -19,6 +19,28 @@ class ProductState(State):
         self.current_poll = 0
         self.count_polls = 0
 
+    @staticmethod
+    def tokenize(text):
+        return re.findall(r'[^\w\s]+|\w+', text)
+
+    @staticmethod
+    def find_closest_words_fuzzy(input_words, word_list, threshold=75, n=10):
+        closest_words = []
+        for input_word in input_words:
+            # Fuzzy matching
+            fuzzy_matches = [word for word in word_list if fuzz.ratio(input_word, word) > threshold]
+            # If no fuzzy matches, use Levenshtein distance
+            if not fuzzy_matches:
+                closest_words_input_word = sorted(word_list,
+                                                  key=lambda x: textdistance.levenshtein.normalized_distance(input_word,
+                                                                                                             x))[:n]
+            else:
+                closest_words_input_word = sorted(fuzzy_matches,
+                                                  key=lambda x: textdistance.levenshtein.normalized_distance(input_word,
+                                                                                                             x))[:n]
+            closest_words.extend(closest_words_input_word)
+        return closest_words
+
     async def process_update(self, update: Update):
         message = update.get_message()
 
@@ -26,8 +48,10 @@ class ProductState(State):
             if not message:
                 return
             variants = []
-            for food in re.split(", |,", message.text):
-                variants.extend(difflib.get_close_matches(food, products, n=3, cutoff=0.0))
+            array = self.tokenize(message.text)
+            array = [word for word in array if word != ","]
+            for food in array:
+                variants.extend(self.find_closest_words_fuzzy([food], products, n=3))
             self.variants = list(set(variants))
             self.is_question = False
             self.current_poll = 0
