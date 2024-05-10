@@ -42,7 +42,10 @@ class ChatState(State):
         chat_id = update.get_chat_id()
         user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
         other_user = bot.DBController().get_user_by_chat_id(self.other_chat_id)
-        if self.first_entered:
+        if self.complain:
+            self.complain = False
+            await self.send_complaint(update)
+        elif self.first_entered:
             kb = [
                 [types.KeyboardButton(text="Выйти из чата")],
                 [types.KeyboardButton(text="Поделиться контактами")],
@@ -98,9 +101,6 @@ class ChatState(State):
             await update.bot.send_message(
                 chat_id=self.other_chat_id, text=text
             )
-        if self.complain:
-            self.complain = False
-            await self.send_complaint(update)
         if callback is not None:
             await callback.answer()
 
@@ -119,11 +119,11 @@ class ChatState(State):
             user.username, user.phone_number
         )
         other_info, other_is_link = self.__generate_telegram_user_link(
-            user.username, user.phone_number
+            other_user.username, other_user.phone_number
         )
-        text = (f"#Жалоба\n "
-                f"  *От:* {user.profile_name} -- {my_info}\n"
-                f"  *На:* {other_user.profile_name} -- {other_info}\n"
+        text = (f"#Жалоба\n"
+                f"  <b>От:</b> {user.profile_name} -- {my_info}\n"
+                f"  <b>На:</b> {other_user.profile_name} -- {other_info}\n"
                 f"\n")
 
         name = other_user.profile_name
@@ -144,27 +144,27 @@ class ChatState(State):
         )
         photo_ids = other_user.photo_file_ids
 
-        text += (f"*Анкета:*\n"
-                 f"  *Имя:* {name}\n"
-                 f"  *Возраст:* {age}\n"
-                 f"  *Город:* {city}\n"
-                 f"  *Пищевые предпочтения:* {preferences}\n"
-                 f"  *Ограничения:* {restrictions}\n"
-                 f"  *Диета:* {diets}\n"
-                 f"  *Интересы:* {interests}\n"
-                 f"  *О себе:* {info}")
-
-        # crud.add_admin(self.other_chat_id)
-        # all_admins = crud.get_all_admins()
-        for admin_chat_id in []:
+        text += (f"<b>Анкета:</b>\n"
+                 f"  <b>Имя:</b> {name}\n"
+                 f"  <b>Возраст:</b> {age}\n"
+                 f"  <b>Город:</b> {city}\n"
+                 f"  <b>Пищевые предпочтения:</b> {preferences}\n"
+                 f"  <b>Ограничения:</b> {restrictions}\n"
+                 f"  <b>Диета:</b> {diets}\n"
+                 f"  <b>Интересы:</b> {interests}\n"
+                 f"  <b>О себе:</b> {info}")
+        all_admins = bot.DBController().get_all_admins()
+        for admin_chat_id in all_admins:
             if photo_ids:
                 await update.bot.send_photo(
-                    chat_id=admin_chat_id,
+                    chat_id=int(admin_chat_id),
                     photo=photo_ids[0],
                     caption=text,
+                    parse_mode='HTML',
                 )
             else:
                 await update.bot.send_message(
-                    chat_id=admin_chat_id,
+                    chat_id=int(admin_chat_id),
                     text=text,
+                    parse_mode='HTML',
                 )
