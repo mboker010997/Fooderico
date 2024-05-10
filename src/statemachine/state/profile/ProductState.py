@@ -1,7 +1,6 @@
 from src.statemachine import State
 from src.statemachine.state import profile
 from src.model.Update import Update
-from src.model import Tags as TagsModel
 from aiogram import types
 from src.resources import products
 from src import bot
@@ -64,7 +63,8 @@ class ProductState(State):
                     if option_id == 9 or self.current_poll * 9 + option_id >= len(self.variants):
                         continue
                     query = "INSERT INTO tele_meet_products (user_id, product, type) VALUES ({}, \'{}\', {})".format(
-                        self.context.user.id, self.variants[self.current_poll * 9 + option_id], 1 if self.type == 'Like' else -1
+                        self.context.user.id, self.variants[self.current_poll * 9 + option_id],
+                        1 if self.type == 'Like' else -1
                     )
                     print("INSERT in products:", query)
                     bot.DBController().cursor.execute(query)
@@ -78,7 +78,6 @@ class ProductState(State):
             self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        
         if (self.type == 'Like'):
             if (self.is_question):
                 if not update.get_message():

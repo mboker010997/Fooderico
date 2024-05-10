@@ -32,7 +32,7 @@ def add_admin(chat_id):
     try:
         controller.cursor.execute(f"INSERT INTO {table_name} (chat_id) VALUES {chat_id}")
         controller.connection.commit()
-    except Exception as exc:
+    except Exception:
         logging.info(f"user with chat_id {chat_id} already exists")
 
 # def create_admin_table():

@@ -4,4 +4,4 @@ password = "root"
 db_name = "telebot"
 port = 5432
 nominatim_URL = "http://nominatim.openstreetmap.org"
-main_admin = 1007570423
+main_admin = 801924891

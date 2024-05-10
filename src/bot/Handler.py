@@ -34,6 +34,9 @@ class Handler:
         except Exception as exc:
             logging.exception("Handler")
             logging.exception(exc)
+            admins = bot.DBController().get_all_admins()
+            for id in admins:
+                await self.bot.send_message(id, f"An error occurred in Handler: {exc}")
 
     def register_handlers(self):
         @self.dp.message(F.content_type.in_([CT.PHOTO]))
