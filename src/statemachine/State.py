@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import logging
 from src.model import Update
+from src import bot
 
 
 class State:
@@ -21,4 +22,7 @@ class State:
             await self.process_update(update)
         except Exception as exc:
             logging.exception(exc)
+            admins = bot.DBController().get_all_admins()
+            for id in admins:
+                await self.bot.send_message(id, f"An error occurred in State: {exc}")
         return self.context.state

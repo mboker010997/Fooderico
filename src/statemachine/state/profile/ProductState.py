@@ -1,13 +1,12 @@
 from src.statemachine import State
 from src.statemachine.state import profile
 from src.model.Update import Update
-from src.model import Tags as TagsModel
 from aiogram import types
 from src.resources import products
 from src import bot
-import difflib, re
-
-
+import re
+from fuzzywuzzy import fuzz
+import textdistance
 
 
 class ProductState(State):
@@ -19,6 +18,28 @@ class ProductState(State):
         self.current_poll = 0
         self.count_polls = 0
 
+    @staticmethod
+    def tokenize(text):
+        return re.findall(r'[^\w\s]+|\w+', text)
+
+    @staticmethod
+    def find_closest_words_fuzzy(input_words, word_list, threshold=75, n=10):
+        closest_words = []
+        for input_word in input_words:
+            # Fuzzy matching
+            fuzzy_matches = [word for word in word_list if fuzz.ratio(input_word, word) > threshold]
+            # If no fuzzy matches, use Levenshtein distance
+            if not fuzzy_matches:
+                closest_words_input_word = sorted(word_list,
+                                                  key=lambda x: textdistance.levenshtein.normalized_distance(input_word,
+                                                                                                             x))[:n]
+            else:
+                closest_words_input_word = sorted(fuzzy_matches,
+                                                  key=lambda x: textdistance.levenshtein.normalized_distance(input_word,
+                                                                                                             x))[:n]
+            closest_words.extend(closest_words_input_word)
+        return closest_words
+
     async def process_update(self, update: Update):
         message = update.get_message()
 
@@ -26,8 +47,10 @@ class ProductState(State):
             if not message:
                 return
             variants = []
-            for food in re.split(", |,", message.text):
-                variants.extend(difflib.get_close_matches(food, products, n=3, cutoff=0.0))
+            array = self.tokenize(message.text)
+            array = [word for word in array if word != ","]
+            for food in array:
+                variants.extend(self.find_closest_words_fuzzy([food], products, n=3))
             self.variants = list(set(variants))
             self.is_question = False
             self.current_poll = 0
@@ -40,7 +63,8 @@ class ProductState(State):
                     if option_id == 9 or self.current_poll * 9 + option_id >= len(self.variants):
                         continue
                     query = "INSERT INTO tele_meet_products (user_id, product, type) VALUES ({}, \'{}\', {})".format(
-                        self.context.user.id, self.variants[self.current_poll * 9 + option_id], 1 if self.type == 'Like' else -1
+                        self.context.user.id, self.variants[self.current_poll * 9 + option_id],
+                        1 if self.type == 'Like' else -1
                     )
                     print("INSERT in products:", query)
                     bot.DBController().cursor.execute(query)
@@ -54,7 +78,6 @@ class ProductState(State):
             self.context.save_to_db()
 
     async def send_message(self, update: Update):
-        
         if (self.type == 'Like'):
             if (self.is_question):
                 if not update.get_message():

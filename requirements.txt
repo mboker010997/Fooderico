@@ -9,3 +9,5 @@ geopy
 nltk
 transformers
 flake8
+textdistance
+fuzzywuzzy

@@ -7,7 +7,7 @@ if [ -n "$IMAGE_PGADMIN" ]; then
     docker rmi -f $IMAGE_PGADMIN
 fi
 
-IMAGE_ID_backend=$(docker images -q tele-meet-bot-backend)
+IMAGE_ID_backend=$(docker images -q 'tele-meet-bot_backend')
 if [ -n "$IMAGE_ID_backend" ]; then
     docker rmi -f $IMAGE_ID_backend
 fi
@@ -23,4 +23,4 @@ if [ -n "$IMAGE_ID_nominatim" ]; then
 fi
 
 docker-compose up -d
-#docker-compose up
+# docker-compose up

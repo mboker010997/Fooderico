@@ -21,7 +21,13 @@ class TelegramBot:
         logging.basicConfig(level=logging.INFO)
 
     async def start_polling(self):
-        await self.dp.start_polling(self.bot)
+        try:
+            await self.dp.start_polling(self.bot)
+        except Exception as e:
+            logging.exception("An error occurred while polling: %s", e)
+            admins = bot.DBController().get_all_admins()
+            for id in admins:
+                await self.bot.send_message(id, f"An error occurred in Main (TeleMeetBot): {e}")
 
 
 if __name__ == "__main__":
