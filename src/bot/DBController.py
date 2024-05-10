@@ -289,14 +289,14 @@ class DBController:
         isExist = False
         try:
             self.cursor.execute(f"INSERT INTO tele_meet_admin (chat_id) VALUES ({str(chat_id)})")
-        except Exception as exc:
+        except Exception:
             logging.info(f"user with chat_id {chat_id} already exists")
             isExist = True
         self.connection.commit()
         return isExist
 
     def get_all_admins(self):
-        self.cursor.execute(f"SELECT * FROM tele_meet_admin")
+        self.cursor.execute("SELECT * FROM tele_meet_admin")
         rows = self.cursor.fetchall()
         res = []
         for row in rows:

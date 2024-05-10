@@ -1,9 +1,7 @@
 from src.statemachine import State
-from src.model import Update
 from src import bot
 from aiogram import types
 from src.statemachine.state import menu
-# from src.admin import crud
 from src.model import Update, Tags as tags
 
 
