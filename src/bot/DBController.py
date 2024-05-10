@@ -87,7 +87,9 @@ class DBController:
             "product": "VARCHAR(255)",
             "type": "BIGINT",
         }
-
+        self.admin_table_columns = {
+            "chat_id": "VARCHAR(255) PRIMARY KEY",
+        }
         self.create_tables()
 
     def delete_table(self):
@@ -95,6 +97,7 @@ class DBController:
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_relations")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_match")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_products")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_admin")
         self.connection.commit()
 
     def create_tables(self):
@@ -257,19 +260,19 @@ class DBController:
 
     def metric_number_of_users(self):
         self.cursor.execute(f"SELECT count(*) FROM {self.table_name}")
-        return self.cursor.fetchone()
+        return self.cursor.fetchone()[0]
 
     def metric_number_of_active_users(self, number_of_days=1):
         self.cursor.execute(f"SELECT count(*) FROM {self.table_name} \
                             WHERE time_last_action > NOW() - INTERVAL '{number_of_days} day'")
-        return self.cursor.fetchone()
+        return self.cursor.fetchone()[0]
 
     def metric_most_common_city(self):
         self.cursor.execute(f"SELECT city, count(*) FROM {self.table_name} \
                             WHERE city IS NOT NULL GROUP BY city \
                             ORDER BY 2 DESC \
                             LIMIT 10;")
-        return self.cursor.fetchone()
+        return self.cursor.fetchall()
 
     def metric_number_of_match(self):
         self.cursor.execute("SELECT count(*) FROM tele_meet_match")
@@ -278,3 +281,24 @@ class DBController:
             return res[0] // 2
         else:
             return 0
+
+    def create_admin_table(self):
+        self.create_query("tele_meet_admin", self.admin_table_columns)
+
+    def add_admin(self, chat_id):
+        isExist = False
+        try:
+            self.cursor.execute(f"INSERT INTO tele_meet_admin (chat_id) VALUES ({str(chat_id)})")
+        except Exception as exc:
+            logging.info(f"user with chat_id {chat_id} already exists")
+            isExist = True
+        self.connection.commit()
+        return isExist
+
+    def get_all_admins(self):
+        self.cursor.execute(f"SELECT * FROM tele_meet_admin")
+        rows = self.cursor.fetchall()
+        res = []
+        for row in rows:
+            res.append(row[0])
+        return res
