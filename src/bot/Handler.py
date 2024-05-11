@@ -26,9 +26,9 @@ class Handler:
         if sentMessage is not None:
             await self.bot.delete_message(chat_id=sentMessage.chat.id, message_id=sentMessage.message_id)
 
-        curState = StateUpdater.get_state(chat_id)
-        nextState = await curState.go_next_state(update)
         try:
+            curState = StateUpdater.get_state(chat_id)
+            nextState = await curState.go_next_state(update)
             newMessage = await nextState.send_message(update)
             StateUpdater.set_sent_message(chat_id, newMessage)
         except Exception as exc:
