@@ -21,12 +21,12 @@ tmp_products = [
     'Персик',
     'Банан',
     'Ананас',
-    'Киви',  
+    'Киви',
     'Вишня, черешня'
     'Консервант Бензоат натрия',
     'Консервант SO2 (вино)',
     'Моллюски',
-    'Люпин',  
+    'Люпин',
     'Коровье молоко',
     'Орехи',
     'Ракообразные',
@@ -50,9 +50,9 @@ def choose_dish(table, good_products):
 
 
 def generator(user_id, table, dish_type, food_time):
-    bot.DBController().cursor.execute(f"SELECT product FROM tele_meet_products WHERE type = -1")
+    bot.DBController().cursor.execute("SELECT product FROM tele_meet_products WHERE type = -1")
     bad_products = bot.DBController().cursor.fetchone() or []
-    bot.DBController().cursor.execute(f"SELECT product FROM tele_meet_products WHERE type = 1")
+    bot.DBController().cursor.execute("SELECT product FROM tele_meet_products WHERE type = 1")
     good_products = bot.DBController().cursor.fetchone() or []
     table = table.loc[(table["Тип блюда"] == dish_type) & (table[food_time] == 1)]
     for bad_product in bad_products:
@@ -84,7 +84,7 @@ class GeneratorState(State):
         if not update.get_message():
             return
         message = update.get_message()
-        dataframe = pd.read_excel(f"/src/resources/final.xlsx")
+        dataframe = pd.read_excel("/src/resources/final.xlsx")
         text = "Генерация меню\n"
         text += "Завтрак\n"
         text += "Основное - " + generator(self.context.user.id, dataframe, "Основное", "Завтрак") + '\n'
