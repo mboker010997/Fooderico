@@ -33,13 +33,31 @@ class ChatState(State):
                 self.text = message.text
 
     async def send_message(self, update: Update):
-        # if not update.get_message():
-        #     return
-
         callback = update.get_callback_query()
         chat_id = update.get_chat_id()
         user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
         other_user = bot.DBController().get_user_by_chat_id(self.other_chat_id)
+
+        if self.share_contacts:
+            self.share_contacts = False
+            my_info, my_is_link = self.__generate_telegram_user_link(
+                user.username, user.phone_number
+            )
+            text = "С вами поделились контактами: {}\n".format(
+                user.profile_name
+            )
+            text += (
+                "Ссылка на этого пользователя - {}\n".format(my_info)
+                if my_is_link
+                else "Номер этого пользователя - {}\n".format(my_info)
+            )
+            await update.bot.send_message(
+                chat_id=self.other_chat_id, text=text
+            )
+            if callback is not None:
+                await callback.answer()
+            return
+
         if self.complain:
             self.complain = False
             await self.send_complaint(update)
@@ -83,22 +101,6 @@ class ChatState(State):
                 else:
                     await update.bot.send_message(chat_id=self.other_chat_id, text=self.text)
 
-        if self.share_contacts:
-            self.share_contacts = False
-            my_info, my_is_link = self.__generate_telegram_user_link(
-                user.username, user.phone_number
-            )
-            text = "С вами поделились контактами: {}\n".format(
-                user.profile_name
-            )
-            text += (
-                "Ссылка на этого пользователя - {}\n".format(my_info)
-                if my_is_link
-                else "Номер этого пользователя - {}\n".format(my_info)
-            )
-            await update.bot.send_message(
-                chat_id=self.other_chat_id, text=text
-            )
         if callback is not None:
             await callback.answer()
 

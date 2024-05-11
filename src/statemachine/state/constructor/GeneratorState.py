@@ -3,7 +3,6 @@ from src.statemachine.state import constructor
 from src.model import Update
 from aiogram import types
 from src import bot
-from src import resources
 import pandas as pd
 import random as rnd
 import numpy as np
@@ -38,6 +37,7 @@ tmp_products = [
     'Гречка',
     'Пшеница'
 ]
+
 
 def choose_dish(table, good_products):
     dishes = table["Блюдо"].to_numpy()

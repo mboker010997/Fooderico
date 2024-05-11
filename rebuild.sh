@@ -23,4 +23,4 @@ if [ -n "$IMAGE_ID_nominatim" ]; then
 fi
 
 docker-compose up -d
-# docker-compose up
+#docker-compose up

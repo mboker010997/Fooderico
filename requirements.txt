@@ -7,6 +7,7 @@ psycopg2-binary
 requests
 geopy
 nltk
+numpy
 transformers
 flake8
 textdistance
