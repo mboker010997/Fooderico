@@ -85,7 +85,7 @@ class DBController:
             "id": "SERIAL PRIMARY KEY",
             "user_id": "BIGINT",
             "product": "VARCHAR(255)",
-            "type": "BIGINT",
+            "type": "INTEGER",
         }
         self.admin_table_columns = {
             "chat_id": "VARCHAR(255) PRIMARY KEY",

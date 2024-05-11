@@ -8,12 +8,12 @@ class ConstructorMenuState(State):
     def __init__(self, context):
         super().__init__(context)
         self.generateBtn = context.get_message("constructor_menu_generateBtn")
-        self.addDietsBtn = context.get_message("constructor_menu_addDietsBtn")
+        # self.addDietsBtn = context.get_message("constructor_menu_addDietsBtn")
         self.menuBtn = context.get_message("menuBtn")
 
         self.nextStateDict = {
             self.generateBtn: constructor.GeneratorState,
-            self.addDietsBtn: constructor.DietState,
+            # self.addDietsBtn: constructor.DietState,
             self.menuBtn: menu.MenuState,
         }
 
@@ -33,7 +33,7 @@ class ConstructorMenuState(State):
         text = "Конструктор меню"
         buttons = [
             [types.KeyboardButton(text=self.generateBtn)],
-            [types.KeyboardButton(text=self.addDietsBtn)],
+            # [types.KeyboardButton(text=self.addDietsBtn)],
             [types.KeyboardButton(text=self.menuBtn)],
         ]
         keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
