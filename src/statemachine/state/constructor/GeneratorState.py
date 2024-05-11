@@ -8,10 +8,43 @@ import pandas as pd
 import random as rnd
 import numpy as np
 
+tmp_products = [
+    'Рыба',
+    'Яйцо',
+    'Сельдерей',
+    'Соя',
+    'Карп',
+    'Треска',
+    'Мед',
+    'Грибы',
+    'Яблоко',
+    'Абрикос',
+    'Персик',
+    'Банан',
+    'Ананас',
+    'Киви',  
+    'Вишня, черешня'
+    'Консервант Бензоат натрия',
+    'Консервант SO2 (вино)',
+    'Моллюски',
+    'Люпин',  
+    'Коровье молоко',
+    'Орехи',
+    'Ракообразные',
+    'Креветка',
+    'Арахис',
+    'Горчица',
+    'Злаки',
+    'Гречка',
+    'Пшеница'
+]
+
 def choose_dish(table, good_products):
-    dishes = table["блюдо"].to_numpy()
+    dishes = table["Блюдо"].to_numpy()
     weights = np.zeros(len(dishes)) + 1
     for product in good_products:
+        if product not in tmp_products:
+            continue
         weights += table[product].to_numpy()
     return rnd.choices(dishes, weights)[0]
 
@@ -21,10 +54,12 @@ def generator(user_id, table, dish_type, food_time):
     bad_products = bot.DBController().cursor.fetchone() or []
     bot.DBController().cursor.execute(f"SELECT product FROM tele_meet_products WHERE type = 1")
     good_products = bot.DBController().cursor.fetchone() or []
-    table = table.loc[(table["тип блюда"] == dish_type) & (table["прием пищи"] == food_time)]
+    table = table.loc[(table["Тип блюда"] == dish_type) & (table[food_time] == 1)]
     for bad_product in bad_products:
+        if bad_product not in tmp_products:
+            continue
         table = table.loc[table[bad_product] != -1]
-    return "" if table.empty else choose_dish(table, good_products)
+    return "Не найдено" if table.empty else choose_dish(table, good_products)
 
 
 class GeneratorState(State):
@@ -49,9 +84,20 @@ class GeneratorState(State):
         if not update.get_message():
             return
         message = update.get_message()
+        dataframe = pd.read_excel(f"/src/resources/final.xlsx")
         text = "Генерация меню\n"
         text += "Завтрак\n"
-        text += "Основное - " + generator(self.context.user.id, pd.read_excel(f"/src/resources/table_for_test.xlsx"), "основное", "завтрак") + '\n'
+        text += "Основное - " + generator(self.context.user.id, dataframe, "Основное", "Завтрак") + '\n'
+        text += "Напиток - " + generator(self.context.user.id, dataframe, "Напиток", "Завтрак") + '\n'
+        text += "Обед\n"
+        text += "Суп - " + generator(self.context.user.id, dataframe, "Суп", "Обед") + '\n'
+        text += "Основное - " + generator(self.context.user.id, dataframe, "Основное", "Обед") + '\n'
+        text += "Салат - " + generator(self.context.user.id, dataframe, "Салат", "Обед") + '\n'
+        text += "Напиток - " + generator(self.context.user.id, dataframe, "Напиток", "Обед") + '\n'
+        text += "Ужин\n"
+        text += "Основное - " + generator(self.context.user.id, dataframe, "Основное", "Ужин") + '\n'
+        text += "Салат - " + generator(self.context.user.id, dataframe, "Салат", "Ужин") + '\n'
+        text += "Напиток - " + generator(self.context.user.id, dataframe, "Напиток", "Ужин") + '\n'
         buttons = [
             [types.KeyboardButton(text=self.constructorMenuBtn)],
         ]
