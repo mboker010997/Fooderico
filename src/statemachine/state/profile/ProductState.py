@@ -14,6 +14,7 @@ class ProductState(State):
         super().__init__(context)
         self.type = "Like"
         self.is_question = True
+        self.skip = False
         self.variants = []
         self.current_poll = 0
         self.count_polls = 0
@@ -41,10 +42,12 @@ class ProductState(State):
         return closest_words
 
     async def process_update(self, update: Update):
+        self.skip = False
         message = update.get_message()
 
-        if (self.is_question):
+        if self.is_question:
             if not message:
+                self.skip = True
                 return
             variants = []
             array = self.tokenize(message.text)
@@ -68,26 +71,30 @@ class ProductState(State):
                     )
                     print("INSERT in products:", query)
                     bot.DBController().cursor.execute(query)
-            self.current_poll += 1
-            if (self.current_poll == self.count_polls):
-                self.is_question = True
-                if (self.type == 'Like'):
-                    self.type = 'Dislike'
-                else:
-                    self.context.set_state(profile.FoodPreferencesTagState(self.context))
-            self.context.save_to_db()
+                self.current_poll += 1
+                if self.current_poll == self.count_polls:
+                    self.is_question = True
+                    if self.type == 'Like':
+                        self.type = 'Dislike'
+                    else:
+                        self.context.set_state(profile.FoodPreferencesTagState(self.context))
+                self.context.save_to_db()
+            else:
+                self.skip = True
 
     async def send_message(self, update: Update):
-        if (self.type == 'Like'):
-            if (self.is_question):
+        if self.skip:
+            return
+
+        if self.type == 'Like':
+            if self.is_question:
                 if not update.get_message():
                     return
                 message = update.get_message()
                 text = self.context.get_message("favourite_products")
                 await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
             else:
-                options = []
-                if ((self.current_poll + 1) * 9 <= len(self.variants)):
+                if (self.current_poll + 1) * 9 <= len(self.variants):
                     options = self.variants[self.current_poll * 9:(self.current_poll + 1)*9]
                 else:
                     options = self.variants[self.current_poll * 9:]
@@ -102,14 +109,12 @@ class ProductState(State):
                 )
                 self.context.user.active_poll_id = poll_info.poll.id
                 self.context.save_to_db()
-        elif (self.type == 'Dislike'):
-            if (self.is_question):
-                message = update.get_message()
+        elif self.type == 'Dislike':
+            if self.is_question:
                 text = self.context.get_message("unfavourite_products")
                 await update.bot.send_message(chat_id=update.get_chat_id(), text=text)
             else:
-                options = []
-                if ((self.current_poll + 1) * 9 <= len(self.variants)):
+                if (self.current_poll + 1) * 9 <= len(self.variants):
                     options = self.variants[self.current_poll * 9:(self.current_poll + 1)*9]
                 else:
                     options = self.variants[self.current_poll * 9:]
