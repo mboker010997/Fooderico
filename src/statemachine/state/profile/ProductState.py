@@ -21,7 +21,7 @@ class ProductState(State):
 
     @staticmethod
     def tokenize(text):
-        return re.findall(r'[^\w\s]+|\w+', text)
+        return re.findall(r'[^\w\s]+|\w+', text.lower())
 
     @staticmethod
     def find_closest_words_fuzzy(input_words, word_list, threshold=75, n=10):
@@ -44,6 +44,13 @@ class ProductState(State):
     async def process_update(self, update: Update):
         self.skip = False
         message = update.get_message()
+        if (message is not None and (message.text == self.context.get_message("products_skipBtn") or message.text == self.context.get_message("products_nextBtn"))):
+            if self.type == 'Like':
+                self.type = 'Dislike'
+            else:
+                self.context.set_state(profile.FoodPreferencesTagState(self.context))
+            self.context.save_to_db()
+            return
 
         if self.is_question:
             if not message:
@@ -92,7 +99,16 @@ class ProductState(State):
                     return
                 message = update.get_message()
                 text = self.context.get_message("favourite_products")
-                await message.answer(text, reply_markup=types.ReplyKeyboardRemove())
+                if self.context.user.preferences_tags is not None:
+                    buttons = [
+                        [types.KeyboardButton(text=self.context.get_message("products_skipBtn"))],
+                    ]
+                else:
+                    buttons = [
+                        [types.KeyboardButton(text=self.context.get_message("products_nextBtn"))],
+                    ]
+                keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
+                await message.answer(text, reply_markup=keyboard)
             else:
                 if (self.current_poll + 1) * 9 <= len(self.variants):
                     options = self.variants[self.current_poll * 9:(self.current_poll + 1)*9]
@@ -106,13 +122,23 @@ class ProductState(State):
                     options=options,
                     is_anonymous=False,
                     allows_multiple_answers=True,
+                    reply_markup=types.ReplyKeyboardRemove(),
                 )
                 self.context.user.active_poll_id = poll_info.poll.id
                 self.context.save_to_db()
         elif self.type == 'Dislike':
             if self.is_question:
                 text = self.context.get_message("unfavourite_products")
-                await update.bot.send_message(chat_id=update.get_chat_id(), text=text)
+                if self.context.user.preferences_tags is not None:
+                    buttons = [
+                        [types.KeyboardButton(text=self.context.get_message("products_skipBtn"))],
+                    ]
+                else:
+                    buttons = [
+                        [types.KeyboardButton(text=self.context.get_message("products_nextBtn"))],
+                    ]
+                keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
+                await update.bot.send_message(chat_id=update.get_chat_id(), text=text, reply_markup=keyboard)
             else:
                 if (self.current_poll + 1) * 9 <= len(self.variants):
                     options = self.variants[self.current_poll * 9:(self.current_poll + 1)*9]
@@ -126,6 +152,7 @@ class ProductState(State):
                     options=options,
                     is_anonymous=False,
                     allows_multiple_answers=True,
+                    reply_markup=types.ReplyKeyboardRemove()
                 )
                 self.context.user.active_poll_id = poll_info.poll.id
                 self.context.save_to_db()

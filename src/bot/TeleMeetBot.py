@@ -14,7 +14,8 @@ from src.bot.config import main_admin
 class TelegramBot:
     def __init__(self):
         load_dotenv()
-        self.bot = Bot(os.getenv("TOKEN"))
+        self.bot = Bot(token="6828269667:AAFr1c6IuDeuyWJnMJUG17ivPkbdIisLEA0")
+        # self.bot = Bot(os.getenv("TOKEN"))
         self.dp = Dispatcher()
         self.message_storage = chat_model.MessageStorage()
         self.handler = bot.Handler(self)
