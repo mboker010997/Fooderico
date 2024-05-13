@@ -94,6 +94,7 @@ tele-meet-bot:
     about_skipBtn: "Оставить текущую"
     # Feedback
     feedback_text: "Нам важно ваше мнение! Поделитесь своими мыслями, предложениями или просто скажите, как вам наш бот."
+    feedback_back: "Назад"
     # Menu
     menu_text: "Главное меню"
     menuBtn: "Вернуться в меню"

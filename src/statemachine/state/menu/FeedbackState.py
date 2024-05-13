@@ -2,6 +2,7 @@ from src.statemachine import State
 from src.model import Update
 from src.statemachine.state import menu
 from src import bot
+from aiogram import types
 
 
 class FeedbackState(State):
@@ -13,7 +14,7 @@ class FeedbackState(State):
             return
         message = update.get_message()
 
-        if message.text:
+        if message.text and message.text != self.context.get_message("feedback_back"):
             bot.DBController().insert_feedback(self.context.user.chat_id, message.text)
 
         self.context.set_state(menu.MenuState(self.context))
@@ -24,4 +25,8 @@ class FeedbackState(State):
             return
         message = update.get_message()
 
-        await message.answer(self.context.get_message("feedback_text"))
+        buttons = [
+            [types.KeyboardButton(text=self.context.get_message("feedback_back"))],
+        ]
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True, one_time_keyboard=True)
+        await message.answer(self.context.get_message("feedback_text"), reply_markup=keyboard)
