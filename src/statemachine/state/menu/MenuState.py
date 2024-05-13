@@ -28,7 +28,7 @@ class MenuState(State):
             self.aboutBtn: menu.AboutBotState,
             self.contactsBtn: search.ContactsState,
             self.constructorMenuBtn: constructor.ConstructorMenuState,
-            self.feedback: menu.FeedbackState,  ###
+            self.feedback: menu.FeedbackState,
             self.adminBtn: admin.AdminState,
         }
 
