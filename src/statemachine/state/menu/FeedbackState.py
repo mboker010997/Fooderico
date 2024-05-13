@@ -14,13 +14,7 @@ class FeedbackState(State):
         message = update.get_message()
 
         if message.text:
-            admins = bot.DBController().get_all_admins()
-            for id in admins:
-                await update.bot.send_message(
-                    chat_id=id,
-                    text=message.text,
-                )
-                # await bot.TelegramBot.bot.send_message(id, message.text)
+            bot.DBController().insert_feedback(self.context.user.chat_id, message.text)
 
         self.context.set_state(menu.MenuState(self.context))
         self.context.save_to_db()

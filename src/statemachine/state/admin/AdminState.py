@@ -24,6 +24,7 @@ class AdminState(State):
         self.user_infoBtn = context.get_message("admin_user_infoBtn")
         self.returnBtn = context.get_message("admin_returnBtn")
         self.menuBtn = context.get_message("menuBtn")
+        self.feedbackBtn = context.get_message("admin_feedbackBtn")
         self.status = Status.MAIN
 
     async def process_update(self, update: Update):
@@ -85,6 +86,27 @@ class AdminState(State):
         elif text == self.user_infoBtn:
             self.status = Status.USER_INFO
             self.text = self.context.get_message("admin_user_get_id")
+        elif text == self.feedbackBtn:
+            feedback_number = bot.DBController().get_feedback_number(self.context.user.chat_id)
+            feedback_size = bot.DBController().get_feedback_size()
+            assert feedback_number <= feedback_size
+
+            if feedback_number == feedback_size:
+                text = self.context.get_message("admin_feedback_everything_has_been_viewed")
+                self.text = "Панель админки"
+                await update.bot.send_message(chat_id=self.context.user.chat_id, text=text)
+            else:
+                res = bot.DBController().get_feedback(feedback_number)
+                bot.DBController().set_feedback_number(self.context.user.chat_id, feedback_number + len(res))
+                text = self.context.get_message("admin_feedback_everything_has_been_viewed")
+                text = ""
+                for feedback_item in res:
+                    text += f"chat_id = {feedback_item[0]}\n{feedback_item[1]}\n\n"
+                await update.bot.send_message(chat_id=self.context.user.chat_id, text=text)
+                self.text = "Панель админки"
+
+            self.status = Status.MAIN
+
         self.context.save_to_db()
 
     async def send_message(self, update: Update):
@@ -96,6 +118,7 @@ class AdminState(State):
                 [types.KeyboardButton(text=self.user_infoBtn)],
                 [types.KeyboardButton(text=self.add_adminBtn)],
                 [types.KeyboardButton(text=self.metricsBtn)],
+                [types.KeyboardButton(text=self.feedbackBtn)],
                 [types.KeyboardButton(text=self.menuBtn)],
             ]
         else:

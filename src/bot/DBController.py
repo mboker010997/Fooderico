@@ -89,6 +89,12 @@ class DBController:
         }
         self.admin_table_columns = {
             "chat_id": "VARCHAR(255) PRIMARY KEY",
+            "feedback_number": "INTEGER DEFAULT 0",
+        }
+        self.feedback_table_columns = {
+            "id": "SERIAL PRIMARY KEY",
+            "chat_id": "VARCHAR(255)",
+            "text": "TEXT",
         }
         self.create_tables()
 
@@ -98,6 +104,7 @@ class DBController:
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_match")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_products")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_admin")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_feedback")
         self.connection.commit()
 
     def create_tables(self):
@@ -105,6 +112,7 @@ class DBController:
         self.create_query("tele_meet_relations", self.relations_table_columns)
         self.create_query("tele_meet_match", self.match_table_columns)
         self.create_query("tele_meet_products", self.products_table_colums)
+        self.create_query("tele_meet_feedback", self.feedback_table_columns)
 
     def create_query(self, table_name, columns: dict):
         args = []
@@ -302,3 +310,35 @@ class DBController:
         for row in rows:
             res.append(row[0])
         return res
+
+    def insert_feedback(self, chat_id, text):
+        chat_id = str(chat_id)
+        print("INSERT INTO tele_meet_feedback (chat_id, text) VALUES (%s, %s)")
+        self.cursor.execute("INSERT INTO tele_meet_feedback (chat_id, text) VALUES (%s, %s)", (chat_id, text))
+        self.connection.commit()
+
+    def get_feedback_number(self, chat_id):
+        self.cursor.execute("SELECT feedback_number FROM tele_meet_admin WHERE chat_id = %s", (chat_id,))
+        return self.cursor.fetchone()[0]
+
+    def get_feedback_size(self):
+        self.cursor.execute("SELECT count(*) FROM tele_meet_feedback")
+        res = self.cursor.fetchone()
+        if not res:
+            return 0
+        return res[0]
+
+    def get_feedback(self, start_id):
+        self.cursor.execute("SELECT chat_id, text FROM tele_meet_feedback WHERE id > %s ORDER BY chat_id LIMIT 5",
+                            (start_id,))
+        rows = self.cursor.fetchall()
+        res = []
+        for row in rows:
+            res.append((row[0], row[1]))
+        return res
+
+    def set_feedback_number(self, chat_id, new_val):
+        chat_id = str(chat_id)
+        print("UPDATE tele_meet_admin SET feedback_number = %s WHERE chat_id = %s;", (new_val, chat_id))
+        self.cursor.execute("UPDATE tele_meet_admin SET feedback_number = %s WHERE chat_id = %s;", (new_val, chat_id))
+        self.connection.commit()
