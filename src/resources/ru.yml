@@ -48,6 +48,8 @@ tele-meet-bot:
     # Products
     favourite_products: "Введите любимые продукты. Появится опрос(ы) c наиболее похожими продуктами из нашей базы"
     unfavourite_products: "Введите нелюбимые продукты. Появится опрос(ы) c наиболее похожими продуктами из нашей базы."
+    products_skipBtn: "Оставить текущие"
+    products_nextBtn: "Пропустить опрос"
     #    Preferences Tags
     tag_allergy_food_intolerance: "Аллергия и пищевая непереносимость"
     tag_vegetable_food: "Только (почти) растительная пища"
