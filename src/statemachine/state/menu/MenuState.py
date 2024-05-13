@@ -16,6 +16,7 @@ class MenuState(State):
         self.contactsBtn = context.get_message("menu_recentActions")
         self.viewChatsBtn = context.get_message("menu_view_chats")
         self.constructorMenuBtn = context.get_message("menu_constructor_menu")
+        self.feedback = context.get_message("menu_feedback")
         self.adminBtn = context.get_message("menu_adminBtn")
 
         self.nextStateDict = {
@@ -27,6 +28,7 @@ class MenuState(State):
             self.aboutBtn: menu.AboutBotState,
             self.contactsBtn: search.ContactsState,
             self.constructorMenuBtn: constructor.ConstructorMenuState,
+            self.feedback: menu.FeedbackState,  ###
             self.adminBtn: admin.AdminState,
         }
 
@@ -53,7 +55,8 @@ class MenuState(State):
             [types.KeyboardButton(text=self.searchBtn), types.KeyboardButton(text=self.constructorMenuBtn)],
             [types.KeyboardButton(text=self.photosBtn), types.KeyboardButton(text=self.profileBtn)],
             [types.KeyboardButton(text=self.statusBtn), types.KeyboardButton(text=self.viewChatsBtn)],
-            [types.KeyboardButton(text=self.contactsBtn), types.KeyboardButton(text=self.aboutBtn)],
+            [types.KeyboardButton(text=self.contactsBtn), types.KeyboardButton(text=self.feedback),
+             types.KeyboardButton(text=self.aboutBtn)],
         ]
         if str(update.get_chat_id()) in bot.DBController().get_all_admins():
             buttons.append([types.KeyboardButton(text=self.adminBtn)])

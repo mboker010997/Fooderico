@@ -92,6 +92,8 @@ tele-meet-bot:
     # About
     about_text: "Напишите информацию о себе"
     about_skipBtn: "Оставить текущую"
+    # Feedback
+    feedback_text: "Нам важно ваше мнение! Поделитесь своими мыслями, предложениями или просто скажите, как вам наш бот."
     # Menu
     menu_text: "Главное меню"
     menuBtn: "Вернуться в меню"
@@ -101,6 +103,7 @@ tele-meet-bot:
     menu_searchBtn: "Поиск"
     menu_aboutBtn: "О сервисе"
     menu_adminBtn: "Админка"
+    menu_feedback: "Обратная связь"
     menu_recentActions: "Последние действия"
     menu_view_chats: "Посмотреть чаты"
     menu_constructor_menu: "Конструктор меню"
@@ -159,6 +162,9 @@ tele-meet-bot:
     admin_wrong_id: "Неверный формат id"
     admin_no_user: "Пользователя нет в БД"
     admin_add_admin_message: "#Админка\n Вас добавили в админы!"
+    admin_feedbackBtn: "Посмотреть feedback"
+    admin_feedback_everything_has_been_viewed: "Пока нет новых отзывов"
+
     # About bot
     aboutBot_text: |
       <b>Fooderico</b> - это чат-бот, предназначенный для объединения людей с определенными пищевыми предпочтениями, такими как аллергии или диеты, с целью встреч, обмена рецептами и общения.
