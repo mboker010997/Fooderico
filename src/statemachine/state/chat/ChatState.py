@@ -2,6 +2,7 @@ from src.statemachine import State
 from src import bot
 from aiogram import types
 from src.statemachine.state import menu
+from src.statemachine.state import chat
 from src.model import Update, Tags as tags
 
 
@@ -11,7 +12,6 @@ class ChatState(State):
         self.other_chat_id = self.context.other_chat_id
         self.share_contacts = False
         self.first_entered = True
-        self.complain = False
 
     async def process_update(self, update: Update):
         self.first_entered = False
@@ -26,7 +26,10 @@ class ChatState(State):
         elif update.get_message().text == "Поделиться контактами":
             self.share_contacts = True
         elif update.get_message().text == "Пожаловаться на собеседника":
-            self.complain = True
+            await update.message_storage.close(update.get_chat_id(), self.other_chat_id)
+            photo_id, complaint_text = await self.get_complaint_text(update)
+            self.context.set_state(chat.ComplaintState(self.context, photo_id, complaint_text))
+            self.context.save_to_db()
         else:
             message = update.get_message()
             if message is not None:
@@ -58,10 +61,7 @@ class ChatState(State):
                 await callback.answer()
             return
 
-        if self.complain:
-            self.complain = False
-            await self.send_complaint(update)
-        elif self.first_entered:
+        if self.first_entered:
             kb = [
                 [types.KeyboardButton(text="Выйти из чата")],
                 [types.KeyboardButton(text="Поделиться контактами")],
@@ -111,7 +111,7 @@ class ChatState(State):
         else:
             return (phone_number, False)
 
-    async def send_complaint(self, update: Update):
+    async def get_complaint_text(self, update: Update):
         user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
         other_user = bot.DBController().get_user_by_chat_id(self.other_chat_id)
 
@@ -121,8 +121,7 @@ class ChatState(State):
         other_info, other_is_link = self.__generate_telegram_user_link(
             other_user.username, other_user.phone_number
         )
-        text = (f"#Жалоба\n"
-                f"  <b>От:</b> {user.profile_name} -- {my_info}\n"
+        text = (f"  <b>От:</b> {user.profile_name} -- {my_info}\n"
                 f"  <b>На:</b> {other_user.profile_name} -- {other_info}\n"
                 f"\n")
 
@@ -130,6 +129,7 @@ class ChatState(State):
         age = other_user.age
         city = other_user.city
         info = other_user.about
+        id = other_user.chat_id
         preferences = tags.get_readable_tags_description(
             other_user.preferences_tags, self.context.bot_config
         )
@@ -145,6 +145,7 @@ class ChatState(State):
         photo_ids = other_user.photo_file_ids
 
         text += (f"<b>Анкета:</b>\n"
+                 f"  <b>id:</b> {id}\n"
                  f"  <b>Имя:</b> {name}\n"
                  f"  <b>Возраст:</b> {age}\n"
                  f"  <b>Город:</b> {city}\n"
@@ -153,18 +154,7 @@ class ChatState(State):
                  f"  <b>Диета:</b> {diets}\n"
                  f"  <b>Интересы:</b> {interests}\n"
                  f"  <b>О себе:</b> {info}")
-        all_admins = bot.DBController().get_all_admins()
-        for admin_chat_id in all_admins:
-            if photo_ids:
-                await update.bot.send_photo(
-                    chat_id=int(admin_chat_id),
-                    photo=photo_ids[0],
-                    caption=text,
-                    parse_mode='HTML',
-                )
-            else:
-                await update.bot.send_message(
-                    chat_id=int(admin_chat_id),
-                    text=text,
-                    parse_mode='HTML',
-                )
+        if photo_ids:
+            return photo_ids[0], text
+        else:
+            return None, text

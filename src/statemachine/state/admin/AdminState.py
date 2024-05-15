@@ -13,18 +13,22 @@ class Status(Enum):
     MAIN = "Главная панель"
     ADD_ADMIN = "Добавление админа"
     USER_INFO = "Информация о пользователе"
+    BLOCK = "Блокировка"
+    UNBLOCK = "Разблокировка"
 
 
 class AdminState(State):
     def __init__(self, context):
         super().__init__(context)
-        self.text = "Панель админки"
+        self.text = context.get_message("admin_panel")
         self.metricsBtn = context.get_message("admin_metricsBtn")
         self.add_adminBtn = context.get_message("admin_add_adminBtn")
         self.user_infoBtn = context.get_message("admin_user_infoBtn")
         self.returnBtn = context.get_message("admin_returnBtn")
         self.menuBtn = context.get_message("menuBtn")
         self.feedbackBtn = context.get_message("admin_feedbackBtn")
+        self.blockBtn = context.get_message("admin_blockBtn")
+        self.unblockBtn = context.get_message("admin_unblockBtn")
         self.status = Status.MAIN
 
     async def process_update(self, update: Update):
@@ -35,12 +39,9 @@ class AdminState(State):
             self.text = text
             self.status = Status.MAIN
         elif self.status == Status.ADD_ADMIN:
-            if not text.isdigit():
-                self.text = self.context.get_message("admin_wrong_id")
-            else:
+            if await self.check_id(text):
                 chat_id = int(text)
-                user = bot.DBController().get_user_by_chat_id(chat_id)
-                self.status = Status.MAIN
+                user = bot.DBController().get_user_by_chat_id(int(text))
                 if not user.id:
                     self.text = self.context.get_message("admin_no_user")
                 else:
@@ -54,16 +55,42 @@ class AdminState(State):
                             text=self.context.get_message("admin_add_admin_message"),
                         )
         elif self.status == Status.USER_INFO:
-            if not text.isdigit():
-                self.text = self.context.get_message("admin_wrong_id")
-            else:
-                chat_id = int(text)
-                user = bot.DBController().get_user_by_chat_id(chat_id)
-                self.status = Status.MAIN
+            if await self.check_id(text):
+                user = bot.DBController().get_user_by_chat_id(int(text))
                 if not user.id:
                     self.text = self.context.get_message("admin_no_user")
                 else:
                     self.text = await self.get_user_info_text(user)
+        elif self.status == Status.BLOCK:
+            if await self.check_id(text):
+                chat_id = int(text)
+                user = bot.DBController().get_user_by_chat_id(chat_id)
+                if not user.id:
+                    self.text = self.context.get_message("admin_no_user")
+                else:
+                    if str(chat_id) in bot.DBController().get_all_admins():
+                        self.text = self.context.get_message("admin_block_user_error_admin")
+                    elif bot.DBController().block_user(chat_id):
+                        self.text = self.context.get_message("admin_block_user_error")
+                    else:
+                        self.text = self.context.get_message("admin_block_user_completed")
+                        await update.bot.send_message(
+                            chat_id=chat_id,
+                            text=self.context.get_message("admin_block_user_message"),
+                        )
+        elif self.status == Status.UNBLOCK:
+            if await self.check_id(text):
+                chat_id = int(text)
+                user = bot.DBController().get_user_by_chat_id(chat_id)
+                if not user.id:
+                    self.text = self.context.get_message("admin_no_user")
+                else:
+                    bot.DBController().unblock_user(chat_id)
+                    self.text = self.context.get_message("admin_unblock_user_completed")
+                    await update.bot.send_message(
+                        chat_id=chat_id,
+                        text=self.context.get_message("admin_unblock_user_message"),
+                    )
         elif text == self.menuBtn:
             self.context.set_state(menu.MenuState(self.context))
             self.status = Status.MAIN
@@ -73,18 +100,26 @@ class AdminState(State):
             most_common_city = bot.DBController().metric_most_common_city()
             match_count = bot.DBController().metric_number_of_match()
             all_admins = bot.DBController().get_all_admins()
+            all_blocked = bot.DBController().get_all_blocked()
             self.text = (f"#Метрики\n"
                          f"  <b>Всего пользователей:</b> {users_count}\n"
                          f"  <b>Активных пользователей:</b> {active_users_count}\n"
                          f"  <b>Наиболее распространенные города:</b> {most_common_city}\n"
                          f"  <b>Текущее количество матчей:</b> {match_count}\n"
-                         f"  <b>Админы:</b> {all_admins}\n")
+                         f"  <b>Админы:</b> {all_admins}\n"
+                         f"  <b>Заблоченные:</b> {all_blocked}")
             self.status = Status.MAIN
         elif text == self.add_adminBtn:
             self.status = Status.ADD_ADMIN
             self.text = self.context.get_message("admin_user_get_id")
         elif text == self.user_infoBtn:
             self.status = Status.USER_INFO
+            self.text = self.context.get_message("admin_user_get_id")
+        elif text == self.blockBtn:
+            self.status = Status.BLOCK
+            self.text = self.context.get_message("admin_user_get_id")
+        elif text == self.unblockBtn:
+            self.status = Status.UNBLOCK
             self.text = self.context.get_message("admin_user_get_id")
         elif text == self.feedbackBtn:
             feedback_number = bot.DBController().get_feedback_number(self.context.user.chat_id)
@@ -104,8 +139,9 @@ class AdminState(State):
                     text += f"chat_id = {feedback_item[0]}\n{feedback_item[1]}\n\n"
                 await update.bot.send_message(chat_id=self.context.user.chat_id, text=text)
                 self.text = "Панель админки"
-
             self.status = Status.MAIN
+        elif self.status == Status.MAIN:
+            self.text = self.context.get_message("admin_panel")
 
         self.context.save_to_db()
 
@@ -115,10 +151,9 @@ class AdminState(State):
         message = update.get_message()
         if self.status == Status.MAIN:
             buttons = [
-                [types.KeyboardButton(text=self.user_infoBtn)],
-                [types.KeyboardButton(text=self.add_adminBtn)],
-                [types.KeyboardButton(text=self.metricsBtn)],
-                [types.KeyboardButton(text=self.feedbackBtn)],
+                [types.KeyboardButton(text=self.user_infoBtn), types.KeyboardButton(text=self.add_adminBtn)],
+                [types.KeyboardButton(text=self.blockBtn), types.KeyboardButton(text=self.unblockBtn)],
+                [types.KeyboardButton(text=self.metricsBtn), types.KeyboardButton(text=self.feedbackBtn)],
                 [types.KeyboardButton(text=self.menuBtn)],
             ]
         else:
@@ -145,7 +180,6 @@ class AdminState(State):
         interests = tags.get_readable_tags_description(
             user.interests_tags, self.context.bot_config
         )
-        # photo_ids = user.photo_file_ids
 
         text = (f"<b>Анкета:</b>\n"
                 f"  <b>Имя:</b> {name}\n"
@@ -157,3 +191,11 @@ class AdminState(State):
                 f"  <b>Интересы:</b> {interests}\n"
                 f"  <b>О себе:</b> {info}")
         return text
+
+    async def check_id(self, text):
+        if not text.isdigit():
+            self.text = self.context.get_message("admin_wrong_id")
+            return False
+        else:
+            self.status = Status.MAIN
+            return True
