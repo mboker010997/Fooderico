@@ -46,7 +46,7 @@ class ChatState(State):
             my_info, my_is_link = self.__generate_telegram_user_link(
                 user.username, user.phone_number
             )
-            text = "С вами поделились контактами: {}\n".format(
+            text = "_С вами поделились контактами: {}_\n".format(
                 user.profile_name
             )
             text += (
@@ -55,7 +55,7 @@ class ChatState(State):
                 else "Номер этого пользователя - {}\n".format(my_info)
             )
             await update.bot.send_message(
-                chat_id=self.other_chat_id, text=text
+                chat_id=self.other_chat_id, text=text, parse_mode="Markdown"
             )
             if callback is not None:
                 await callback.answer()
@@ -71,8 +71,9 @@ class ChatState(State):
                 keyboard=kb, resize_keyboard=True, one_time_keyboard=True
             )
             await callback.message.answer(
-                f"Вы попали в анонимный чат с {other_user.profile_name}",
+                f"*Вы попали в анонимный чат с {other_user.profile_name}*",
                 reply_markup=keyboard,
+                parse_mode="Markdown"
             )
             await update.message_storage.open(chat_id, self.other_chat_id)
             delayed_messages = await update.message_storage.dump_messages(self.other_chat_id, chat_id)
@@ -107,9 +108,9 @@ class ChatState(State):
     @staticmethod
     def __generate_telegram_user_link(username, phone_number):
         if username:
-            return (f"https://t.me/{username}", True)
+            return f"https://t.me/{username}", True
         else:
-            return (phone_number, False)
+            return phone_number, False
 
     async def get_complaint_text(self, update: Update):
         user = bot.DBController().get_user_by_chat_id(update.get_chat_id())
