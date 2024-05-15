@@ -154,19 +154,31 @@ tele-meet-bot:
     search_show_profile_template: "{}, {}, {}\n{}\nСовпадающие теги: {}"
     # Chat
     chat_no_match: "Список чатов пуст"
+    chat_complaint_reason: "Введите причину подачи жалобы на этого пользователя"
+    chat_complaint_send: "Жалоба отправлена."
     # Admin
     admin_metricsBtn: "Посмотреть метрики"
+    admin_panel: "Панель админки"
     admin_add_adminBtn: "Добавить админа"
     admin_user_infoBtn: "Информация о пользователе"
     admin_user_get_id: "Введите id пользователя"
     admin_returnBtn: "Назад"
     admin_add_admin_completed: "Админ успешно добавлен"
+    admin_block_user_completed: "Пользователь заблокирован!"
+    admin_unblock_user_completed: "Пользователь разблокирован!"
     admin_add_admin_error: "Этот пользователь уже является админом"
+    admin_block_user_error: "Этот пользователь уже заблочен"
+    admin_block_user_error_admin: "Блокировка невозможна, этот пользователь является админом"
     admin_wrong_id: "Неверный формат id"
     admin_no_user: "Пользователя нет в БД"
     admin_add_admin_message: "#Админка\n Вас добавили в админы!"
+    admin_block_user_message: "#Администрация\n Вас заблокировали."
+    admin_unblock_user_message: "#Администрация\n Вас разблокировали!"
     admin_feedbackBtn: "Посмотреть feedback"
     admin_feedback_everything_has_been_viewed: "Пока нет новых отзывов"
+    admin_blockBtn: "Заблокировать"
+    admin_unblockBtn: "Разблокировать"
+
 
     # About bot
     aboutBot_text: |

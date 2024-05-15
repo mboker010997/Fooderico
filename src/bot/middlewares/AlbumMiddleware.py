@@ -2,6 +2,7 @@ import asyncio
 from typing import Callable, Any, Awaitable, Union
 from aiogram import BaseMiddleware
 from aiogram.types import Message
+from src import bot
 
 
 class AlbumMiddleware(BaseMiddleware):
@@ -23,6 +24,8 @@ class AlbumMiddleware(BaseMiddleware):
         message: Message,
         data: dict[str, Any],
     ) -> Any:
+        if str(message.from_user.id) in bot.DBController().get_all_blocked():
+            return
         if not message.media_group_id:
             await handler(message, data)
             return

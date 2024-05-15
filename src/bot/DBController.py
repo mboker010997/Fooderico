@@ -96,6 +96,9 @@ class DBController:
             "chat_id": "VARCHAR(255)",
             "text": "TEXT",
         }
+        self.blocked_table_columns = {
+            "chat_id": "VARCHAR(255) PRIMARY KEY",
+        }
         self.create_tables()
 
     def delete_table(self):
@@ -105,6 +108,7 @@ class DBController:
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_products")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_admin")
         self.cursor.execute("DROP TABLE IF EXISTS tele_meet_feedback")
+        self.cursor.execute("DROP TABLE IF EXISTS tele_meet_blocked")
         self.connection.commit()
 
     def create_tables(self):
@@ -113,6 +117,7 @@ class DBController:
         self.create_query("tele_meet_match", self.match_table_columns)
         self.create_query("tele_meet_products", self.products_table_colums)
         self.create_query("tele_meet_feedback", self.feedback_table_columns)
+        self.create_query("tele_meet_blocked", self.blocked_table_columns)
 
     def create_query(self, table_name, columns: dict):
         args = []
@@ -342,3 +347,31 @@ class DBController:
         print("UPDATE tele_meet_admin SET feedback_number = %s WHERE chat_id = %s;", (new_val, chat_id))
         self.cursor.execute("UPDATE tele_meet_admin SET feedback_number = %s WHERE chat_id = %s;", (new_val, chat_id))
         self.connection.commit()
+
+    def block_user(self, chat_id):
+        isExist = False
+        try:
+            self.cursor.execute(f"INSERT INTO tele_meet_blocked (chat_id) VALUES ({str(chat_id)})")
+        except Exception:
+            logging.info(f"user with chat_id {chat_id} already blocked")
+            isExist = True
+        self.connection.commit()
+        return isExist
+
+    def unblock_user(self, chat_id):
+        isExist = False
+        try:
+            self.cursor.execute(f"DELETE FROM tele_meet_blocked WHERE chat_id = '{str(chat_id)}'")
+        except Exception:
+            logging.info(f"user with chat_id {chat_id} already unblocked")
+            isExist = True
+        self.connection.commit()
+        return isExist
+
+    def get_all_blocked(self):
+        self.cursor.execute("SELECT * FROM tele_meet_blocked")
+        rows = self.cursor.fetchall()
+        res = []
+        for row in rows:
+            res.append(row[0])
+        return res
