@@ -23,7 +23,8 @@ class Handler:
     async def update_handler(self, update: Update):
         chat_id = update.get_chat_id()
         sentMessage = StateUpdater.get_sent_message(chat_id)
-        if sentMessage is not None:
+        # print(sentMessage)
+        if sentMessage is not None and not sentMessage.text.startswith('Генерация меню'):
             await self.bot.delete_message(chat_id=sentMessage.chat.id, message_id=sentMessage.message_id)
 
         try:
